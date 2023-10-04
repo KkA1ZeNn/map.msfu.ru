@@ -1,0 +1,11 @@
+.room:hover polygon, #hover {
+	fill: #646333;
+}
+
+.room:hover polygon:last-of-type, #hover {
+	fill: #adab57;
+}
+
+.scheme polygon.active {
+	fill: #FF8C0B !important;
+}
