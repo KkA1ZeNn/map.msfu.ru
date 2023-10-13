@@ -8,7 +8,7 @@ svgElement.addEventListener('click', (event) => {
    const roomElement = event.target.closest('[id^="room"]');
 
    if (roomElement) {
-     // Если такой элемент нашелся, то проверяем, есть ли сейчас уже есть активная комната, то проверяем, что это не она же самаи в противном случае удаляем у нее active
+     // Если кликнули по комнате, то проверяем, есть ли сейчас уже есть активная комната, также проверяем, что это не она же самаи в противном случае удаляем у нее active
      const activeElement = document.querySelector('[id^="room"].active');
      if (activeElement && activeElement !== roomElement) {
        activeElement.classList.remove('active');
