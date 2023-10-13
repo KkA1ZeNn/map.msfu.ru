@@ -1,11 +1,15 @@
 [id^="room-"]:hover polygon, #hover {
-	fill: #646333;
+	fill: #255e36;
 }
 
 [id^="room-"]:hover polygon:last-of-type, #hover {
-	fill: #adab57;
+	fill: #48b148;
 }
 
 .scheme polygon.active {
 	fill: #FF8C0B !important;
 }
+
+[id^="Текст"] * {
+   pointer-events: none;
+ }
