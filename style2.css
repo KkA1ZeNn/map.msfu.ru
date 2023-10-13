@@ -1,8 +1,8 @@
-.room:hover polygon, #hover {
+[id^="room-"]:hover polygon, #hover {
 	fill: #646333;
 }
 
-.room:hover polygon:last-of-type, #hover {
+[id^="room-"]:hover polygon:last-of-type, #hover {
 	fill: #adab57;
 }
 
