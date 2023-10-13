@@ -1,15 +1,27 @@
+/*стили для комнат при наведении*/
 [id^="room-"]:hover polygon, #hover {
 	fill: #255e36;
 }
-
 [id^="room-"]:hover polygon:last-of-type, #hover {
 	fill: #48b148;
 }
 
-.scheme polygon.active {
-	fill: #FF8C0B !important;
-}
-
+/*отключаем курсор на тексте комнат*/
 [id^="Текст"] * {
    pointer-events: none;
- }
+}
+
+/*стили для нажатых комнат*/
+.active polygon{
+   fill: purple !important;
+}
+.active polygon:last-of-type {
+   fill: magenta !important;
+}
+
+/*-----------------временная свалка-----------------*/
+/*стили для контейнера с самой картой*/
+.svgconteiner {
+   width: 100%;
+   height: auto;
+}
