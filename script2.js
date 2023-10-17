@@ -2,15 +2,15 @@
 let http = new XMLHttpRequest();
 let parsedJson;
 
-// переменная, которая хранит главный SVG
-const svgElement = document.getElementById('Слой_1');
+// переменная, которая хранит div блок с главным SVG
+const divSvgElem = document.getElementById('floor-map');
 
 //переменная плавающего окошка с описанием кабинетов
 const infoDiv = document.getElementById('discription');
 
 // allRooms-массив из всех комнат этажа, json; currentFloor - текущий этаж, чтобы в дальнейшем его менять
 let allRooms = [];
-let currentFloor = 0;
+let currentFloor = 1;
 
 //парсим JSON
 http.open('get', './map/bmstuJson.json', true);
@@ -18,15 +18,14 @@ http.send();
 http.onload = function () {
    if (this.readyState === 4 && this.status === 200) {
       parsedJson = JSON.parse(this.responseText);
-      allRooms = parsedJson.levels[currentFloor].locations;
+      allRooms = parsedJson.levels[currentFloor - 1].locations;
    }
 };
 
 // Обработчик событий SVG файла для реагирования комнат на нажатие
-svgElement.addEventListener('click', (event) => {
+divSvgElem.addEventListener('click', (event) => {
    // Устанавливаем ссылку на ближайшего родителя нажатого элемента с id = room... (у нас room висит на элементе с тремя дочерними полигонами, поэтому родитель)
    const roomElement = event.target.closest('[id^="room"]');
-   console.log(roomElement)
    SelectRoom(roomElement);
 });
 
@@ -84,18 +83,35 @@ function searchRoom() {
    let stringId;
    const inputOfSearch = document.getElementById('roomNumberInput').value;
 
-   if (inputOfSearch === "Актовый зал") {
+   if (inputOfSearch === "Актовый зал" && currentFloor === 1) {
       stringId = "room-132_1_";
    }
    else {
-      stringId = "room-" + inputOfSearch + "_1_";
+      stringId = "room-" + inputOfSearch + "_" + currentFloor + "_";
    }
-   
+
    const roomElement = document.getElementById(stringId);
    SelectRoom(roomElement);
 }
 
+function changeFloor(direction) {
+   // после проверки на то, что этаж существует, переключаем его, меняем текст этажа, подгружаем нужный svg файл, переопределяем массив со всеми комнатами этажа и скрываем окно с информацией о комнате, если оно естть
+   if ((currentFloor > 1 && direction < 0) || (currentFloor < 5 && direction > 0)) {
+      currentFloor += direction;
+      document.getElementById('current-floor').textContent = '"Этаж" ' + currentFloor;
 
+      fetch('./map/main_floor-' + currentFloor + '.svg')
+      .then(response => response.text())
+      .then(svg => {
+         divSvgElem.innerHTML = svg;
+      });
 
+      allRooms = parsedJson.levels[currentFloor - 1].locations;
+      infoDiv.style.display = "none";
+   }
+   else {
+      console.log('такого этажа нет');
+   }
+}
 
 
