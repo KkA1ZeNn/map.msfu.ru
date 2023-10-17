@@ -23,9 +23,10 @@ svgElement.addEventListener('click', (event) => {
    const roomElement = event.target.closest('[id^="room"]');
 
    if (roomElement) {
-      //roomId-хранит айди комнаты для дальнейшего поиска в json;  allRooms-массив из всех комнат первого этажа, json
+      //roomId-хранит айди комнаты для дальнейшего поиска в json;  allRooms-массив из всех комнат первого этажа, json; roomHasInfo хранит в себе статус того, нашлась информация о комнате или нет, если нет, то мы закрываем окно
       const roomId = roomElement.getAttribute('id');
       const allRooms = parsedJson.levels[0].locations;
+      let roomHasInfo = false;
 
       // Если кликнули по комнате, то проверяем, есть ли сейчас уже есть активная комната, также проверяем, что это не она же сама и в противном случае удаляем у нее active
       const activeElement = document.querySelector('[id^="room"].active');
@@ -40,9 +41,10 @@ svgElement.addEventListener('click', (event) => {
       //пробегаемся циклом по массиву с комнатами, когда находим нужную нам, берем из нее информацию для описания и вставляем его в div элемент
       for (let i = 0; i < allRooms.length; ++i) {
          if (allRooms[i].id === roomId) {
+            roomHasInfo = true;
             infoDiv.innerHTML =
                `<h4>${allRooms[i].title}</h4>
-            <p>${allRooms[i].about}</p>`;
+               <p>${allRooms[i].about}</p>`;
 
             //функция для считывания размера элемента и перемещения окна, но пока работает КРИВО
             const roomRect = roomElement.getBoundingClientRect();
@@ -52,15 +54,17 @@ svgElement.addEventListener('click', (event) => {
          }
       }
 
+      if (!roomHasInfo) {
+         infoDiv.style.display = "none";
+      }
+      
+
    } else {
       // Если кликнули не по комнате, то находим комнату с классом active и удаляем его, тем самым, выключая выделение комнаты, также скрываем всплывающее окно с описанием и ставим дефолтное описание, потому что есть баг, когда после комнаты с описанием, тыкаешь на ту, где его нет, она показывает описание из предыдущей комнаты
       const activeElement = document.querySelector('[id^="room"].active');
       if (activeElement) {
          activeElement.classList.remove('active');
          infoDiv.style.display = "none";
-         infoDiv.innerHTML =
-            `<h4>${'-'}</h4>
-        <p>${'-'}</p>`;
       }
    }
 });
