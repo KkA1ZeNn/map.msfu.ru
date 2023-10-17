@@ -19,13 +19,6 @@
    fill: magenta !important;
 }
 
-/*-----------------временная свалка-----------------*/
-/*стили для контейнера с самой картой*/
-.svgconteiner {
-   width: 100%;
-   height: auto;
-}
-
 /*стили для блока с информацией*/
 #discription {
    background-color: #fff;
@@ -39,7 +32,6 @@
     align-items: flex-start;
     justify-content: flex-start;
 }
-
 #discription h4 {
    font-family: Roboto, Tahoma, Helvetica, sans-serif;
    font-size: 16px;
@@ -48,10 +40,16 @@
    font-weight: bold;
    margin-bottom: 15px;
 }
-
 #discription p {
    font-family: Roboto, Tahoma, Helvetica, sans-serif;
    font-size: 13px;
    margin: 0;
    color: #333;
+}
+
+/*-----------------временная свалка-----------------*/
+/*стили для контейнера с самой картой*/
+.svgconteiner {
+   width: 100%;
+   height: auto;
 }
