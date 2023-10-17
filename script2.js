@@ -98,7 +98,7 @@ function changeFloor(direction) {
    // после проверки на то, что этаж существует, переключаем его, меняем текст этажа, подгружаем нужный svg файл, переопределяем массив со всеми комнатами этажа и скрываем окно с информацией о комнате, если оно естть
    if ((currentFloor > 1 && direction < 0) || (currentFloor < 5 && direction > 0)) {
       currentFloor += direction;
-      document.getElementById('current-floor').textContent = '"Этаж" ' + currentFloor;
+      document.getElementById('current-floor').textContent = 'Этаж ' + currentFloor;
 
       fetch('./map/main_floor-' + currentFloor + '.svg')
       .then(response => response.text())
