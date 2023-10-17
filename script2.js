@@ -1,11 +1,16 @@
 //переменная, которая хранит JSON
 let http = new XMLHttpRequest();
 let parsedJson;
+
 // переменная, которая хранит главный SVG
 const svgElement = document.getElementById('Слой_1');
 
-//переменная плавающего окошка с описанием кабинета
+//переменная плавающего окошка с описанием кабинетов
 const infoDiv = document.getElementById('discription');
+
+// allRooms-массив из всех комнат этажа, json; currentFloor - текущий этаж, чтобы в дальнейшем его менять
+let allRooms = [];
+let currentFloor = 0;
 
 //парсим JSON
 http.open('get', './map/bmstuJson.json', true);
@@ -13,6 +18,7 @@ http.send();
 http.onload = function () {
    if (this.readyState === 4 && this.status === 200) {
       parsedJson = JSON.parse(this.responseText);
+      allRooms = parsedJson.levels[currentFloor].locations;
    }
 };
 
@@ -23,9 +29,8 @@ svgElement.addEventListener('click', (event) => {
    const roomElement = event.target.closest('[id^="room"]');
 
    if (roomElement) {
-      //roomId-хранит айди комнаты для дальнейшего поиска в json;  allRooms-массив из всех комнат первого этажа, json; roomHasInfo хранит в себе статус того, нашлась информация о комнате или нет, если нет, то мы закрываем окно
+      //roomId-хранит айди комнаты для дальнейшего поиска в json; roomHasInfo хранит в себе статус того, нашлась информация о комнате или нет, если нет, то мы закрываем окно
       const roomId = roomElement.getAttribute('id');
-      const allRooms = parsedJson.levels[0].locations;
       let roomHasInfo = false;
 
       // Если кликнули по комнате, то проверяем, есть ли сейчас уже есть активная комната, также проверяем, что это не она же сама и в противном случае удаляем у нее active
@@ -38,7 +43,7 @@ svgElement.addEventListener('click', (event) => {
       roomElement.classList.add('active');
       infoDiv.style.display = "flex";
 
-      //пробегаемся циклом по массиву с комнатами, когда находим нужную нам, берем из нее информацию для описания и вставляем его в div элемент
+      //пробегаемся циклом по массиву с комнатами, когда находим нужную нам, берем из нее информацию для описания и вставляем его в div элемент, если информации не нашлось, скрываем окно
       for (let i = 0; i < allRooms.length; ++i) {
          if (allRooms[i].id === roomId) {
             roomHasInfo = true;
