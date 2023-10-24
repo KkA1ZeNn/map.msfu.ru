@@ -36,6 +36,7 @@ http.onload = function () {
       allRooms = mapData.floors[currentFloor].locations;
       changeCurrentFloorBlock();
       drawFloor();
+      checkFloor();
    }
 };
 
@@ -61,37 +62,35 @@ function SelectRoom(currentRoom) {
       let roomHasInfo = false;
 
       // Если кликнули по комнате, то проверяем, есть ли сейчас уже есть активная комната, также проверяем, что это не она же сама и в противном случае удаляем у нее active
-      const activeElement = document.querySelector('[id^="room"].active');
-      if (activeElement && activeElement !== currentRoom) {
-         activeElement.classList.remove('active');
+      const activeRoom = document.querySelector('[id^="room"].active');
+      if (activeRoom && activeRoom !== currentRoom) {
+         activeRoom.classList.remove('active');
       }
-
       // Делаем комнату активной и включаем окно с описанием
       currentRoom.classList.add('active');
       show(descriptionBlock);
 
-      //пробегаемся циклом по массиву с комнатами, когда находим нужную нам, берем из нее информацию для описания и вставляем его в div элемент, если информации не нашлось, скрываем окно
-      for (let i = 0; i < allRooms.length; ++i) {
-         if (allRooms[i].id === roomId) {
+      // пробегаемся циклом по массиву с комнатами, когда находим нужную нам, берем из нее информацию для описания и вставляем его в div элемент, если информации не нашлось, скрываем окно
+      allRooms.forEach(room => {
+         if (room.id === roomId) {
             roomHasInfo = true;
-            infoDiv.innerHTML =
-               `<h4>${allRooms[i].title}</h4>
-               <p>${allRooms[i].about}</p>`;
-
-            //функция для считывания размера элемента и перемещения окна, но пока работает КРИВО
+            descriptionBlock.innerHTML =
+               `<h4>${room.title}</h4>
+               <p>${room.about}</p>`;
+            
+            // функция для считывания размера элемента и перемещения окна, но пока работает КРИВО
             const roomRect = currentRoom.getBoundingClientRect();
-            infoDiv.style.position = 'absolute';
-            infoDiv.style.top = `${roomRect.top - 20}px`;
-            infoDiv.style.left = `${roomRect.left - 120}px`;
+            descriptionBlock.style.position = 'absolute';
+            descriptionBlock.style.top = `${roomRect.top - 20}px`;
+            descriptionBlock.style.left = `${roomRect.left - 120}px`;
          }
-      }
+      });
 
       if (!roomHasInfo) {
          hide(descriptionBlock);
       }
-
-
-   } else {
+   }
+   else {
       // Если кликнули не по комнате, то находим комнату с классом active и удаляем его, тем самым, выключая выделение комнаты, также скрываем всплывающее окно с описанием и ставим дефолтное описание, потому что есть баг, когда после комнаты с описанием, тыкаешь на ту, где его нет, она показывает описание из предыдущей комнаты
       const activeElement = document.querySelector('[id^="room"].active');
       if (activeElement) {
