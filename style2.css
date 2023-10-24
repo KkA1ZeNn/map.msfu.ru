@@ -22,7 +22,7 @@
     padding: 16px;
     width: 300px;
     height: 100px;
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
@@ -40,6 +40,15 @@
    font-size: 13px;
    margin: 0;
    color: #333;
+}
+
+/*стили для кнопок + и -, включенных и отключенных*/
+#floorIncrease, #floorReduce {
+   cursor: pointer;
+}
+#floorIncrease.disabled, #floorReduce.disabled {
+   pointer-events: none;
+   opacity: 0.5;
 }
 
 /*-----------------временная свалка-----------------*/

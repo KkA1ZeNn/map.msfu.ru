@@ -68,7 +68,7 @@ function SelectRoom(currentRoom) {
 
       // Делаем комнату активной и включаем окно с описанием
       currentRoom.classList.add('active');
-      infoDiv.style.display = "flex";
+      show(descriptionBlock);
 
       //пробегаемся циклом по массиву с комнатами, когда находим нужную нам, берем из нее информацию для описания и вставляем его в div элемент, если информации не нашлось, скрываем окно
       for (let i = 0; i < allRooms.length; ++i) {
@@ -87,7 +87,7 @@ function SelectRoom(currentRoom) {
       }
 
       if (!roomHasInfo) {
-         infoDiv.style.display = "none";
+         hide(descriptionBlock);
       }
 
 
@@ -96,7 +96,7 @@ function SelectRoom(currentRoom) {
       const activeElement = document.querySelector('[id^="room"].active');
       if (activeElement) {
          activeElement.classList.remove('active');
-         infoDiv.style.display = "none";
+         hide(descriptionBlock);
       }
    }
 };
@@ -119,17 +119,37 @@ function searchRoom() {
 }
 
 function changeFloor(direction) {
+   const floorStatus = mapData.floors[currentFloor].status;
+
    // после проверки на то, что этаж существует, переключаем его, меняем текст этажа, подгружаем нужный svg файл, переопределяем массив со всеми комнатами этажа и скрываем окно с информацией о комнате, если оно естть
-   if ((!mapData.floors[currentFloor].status.includes('ground floor') && direction < 0) || (!mapData.floors[currentFloor].status.includes('last floor') && direction > 0))  {
+   if ((!floorStatus.includes('ground floor') && direction < 0) || (!floorStatus.includes('last floor') && direction > 0))  {
       currentFloor += direction;
       changeCurrentFloorBlock();
+      hide(descriptionBlock);
       drawFloor();
 
       allRooms = mapData.floors[currentFloor].locations;
-      descriptionBlock.style.display = "none";
    }
    else {
       console.log('такого этажа нет');
+   }
+
+   checkFloor();
+}
+
+// функция проверки этажа, на то, что нельзя опуститься ниже или подняться выше
+function checkFloor() {
+   const floorStatus = mapData.floors[currentFloor].status; 
+
+   if(floorStatus.includes("ground floor")) {
+      floorReduce.classList.add('disabled');
+   }
+   else if (floorStatus.includes("last floor")) {
+      floorIncrease.classList.add('disabled');
+   }
+   else {
+      floorReduce.classList.remove('disabled');
+      floorIncrease.classList.remove('disabled');
    }
 }
 
@@ -145,6 +165,14 @@ function drawFloor() {
 // Функция смены текста текущего этажа
 function changeCurrentFloorBlock() {
    currentFloorBlock.textContent = mapData.floors[currentFloor].title;
+}
+
+// фнкции скрытия и показывания элемента
+function hide(element) {
+   element.style.display = 'none'
+}
+function show(element) {
+   element.style.display = "flex";
 }
 
 
