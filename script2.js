@@ -1,33 +1,57 @@
 //переменная, которая хранит JSON
 let http = new XMLHttpRequest();
-let parsedJson;
+let mapData;
 
 // переменная, которая хранит div блок с главным SVG
-const divSvgElem = document.getElementById('floor-map');
+const mapContainer = document.getElementById('floor-map');
 
-//переменная плавающего окошка с описанием кабинетов
-const infoDiv = document.getElementById('discription');
+// переменная плавающего окошка с описанием кабинетов
+const descriptionBlock  = document.getElementById('description');
+
+// переменная блока с текущим номером этажа
+const currentFloorBlock = document.getElementById('current-floor')
+
+// переменные увеличения и уменьшения этажа
+const floorIncrease = document.getElementById('floorIncrease');
+const floorReduce = document.getElementById('floorReduce');
 
 // allRooms-массив из всех комнат этажа, json; currentFloor - текущий этаж, чтобы в дальнейшем его менять
 let allRooms = [];
-let currentFloor = 1;
+let currentFloor;
 
-//парсим JSON
+//----------------------------------------------------------------------------------------------------------------------
+
+//парсим JSON; устанавливаем текущий этаж на тот, у которого  статус главного этажа; формируем массив из комнат всего этажа
 http.open('get', './map/bmstuJson.json', true);
 http.send();
 http.onload = function () {
    if (this.readyState === 4 && this.status === 200) {
-      parsedJson = JSON.parse(this.responseText);
-      allRooms = parsedJson.levels[currentFloor - 1].locations;
+      mapData = JSON.parse(this.responseText);  
+      mapData.floors.forEach(floor => {
+         if (floor.status.includes('main floor')) {
+            currentFloor = mapData.floors.indexOf(floor);
+         }
+      });
+
+      allRooms = mapData.floors[currentFloor].locations;
+      changeCurrentFloorBlock();
+      drawFloor();
    }
 };
 
 // Обработчик событий SVG файла для реагирования комнат на нажатие
-divSvgElem.addEventListener('click', (event) => {
+mapContainer.addEventListener('click', (event) => {
    // Устанавливаем ссылку на ближайшего родителя нажатого элемента с id = room... (у нас room висит на элементе с тремя дочерними полигонами, поэтому родитель)
    const roomElement = event.target.closest('[id^="room"]');
    SelectRoom(roomElement);
 });
+
+// Обработчики событий для смены этажа
+floorIncrease.addEventListener('click', () => {changeFloor(1)});
+floorReduce.addEventListener('click', () => {changeFloor(-1)});
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 // Функция, которая отвечает за реакцию комнаты на выбор этой комнаты (нажатие или поиск)
 function SelectRoom(currentRoom) {
@@ -96,22 +120,31 @@ function searchRoom() {
 
 function changeFloor(direction) {
    // после проверки на то, что этаж существует, переключаем его, меняем текст этажа, подгружаем нужный svg файл, переопределяем массив со всеми комнатами этажа и скрываем окно с информацией о комнате, если оно естть
-   if ((currentFloor > 1 && direction < 0) || (currentFloor < 5 && direction > 0)) {
+   if ((!mapData.floors[currentFloor].status.includes('ground floor') && direction < 0) || (!mapData.floors[currentFloor].status.includes('last floor') && direction > 0))  {
       currentFloor += direction;
-      document.getElementById('current-floor').textContent = 'Этаж ' + currentFloor;
+      changeCurrentFloorBlock();
+      drawFloor();
 
-      fetch('./map/main_floor-' + currentFloor + '.svg')
-      .then(response => response.text())
-      .then(svg => {
-         divSvgElem.innerHTML = svg;
-      });
-
-      allRooms = parsedJson.levels[currentFloor - 1].locations;
-      infoDiv.style.display = "none";
+      allRooms = mapData.floors[currentFloor].locations;
+      descriptionBlock.style.display = "none";
    }
    else {
       console.log('такого этажа нет');
    }
+}
+
+// Функция отрисовки этажа (основывается на currentFloor)
+function drawFloor() {
+   fetch(mapData.floors[currentFloor].map)
+   .then(response => response.text())
+   .then(svg => {
+      mapContainer.innerHTML = svg;
+   });
+}
+
+// Функция смены текста текущего этажа
+function changeCurrentFloorBlock() {
+   currentFloorBlock.textContent = mapData.floors[currentFloor].title;
 }
 
 

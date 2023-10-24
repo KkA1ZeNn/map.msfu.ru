@@ -1,9 +1,7 @@
 /*стили для комнат при наведении*/
-[id^="room-"]:hover polygon, #hover {
-	fill: #255e36;
-}
-[id^="room-"]:hover polygon:last-of-type, #hover {
-	fill: #48b148;
+[id^="room-"]:hover polygon {
+	filter: brightness(1.15);
+   cursor: pointer;
 }
 
 /*отключаем курсор на тексте комнат*/
@@ -13,14 +11,11 @@
 
 /*стили для нажатых комнат*/
 .active polygon{
-   fill: purple !important;
-}
-.active polygon:last-of-type {
-   fill: magenta !important;
+   filter: brightness(0.8) hue-rotate(90deg) !important;
 }
 
 /*стили для блока с информацией*/
-#discription {
+#description {
    background-color: #fff;
     box-shadow: 0 0 20px rgba(0,0,0,0.15);
     pointer-events: auto;
@@ -32,7 +27,7 @@
     align-items: flex-start;
     justify-content: flex-start;
 }
-#discription h4 {
+#description h4 {
    font-family: Roboto, Tahoma, Helvetica, sans-serif;
    font-size: 16px;
    margin: 0;
@@ -40,7 +35,7 @@
    font-weight: bold;
    margin-bottom: 15px;
 }
-#discription p {
+#description p {
    font-family: Roboto, Tahoma, Helvetica, sans-serif;
    font-size: 13px;
    margin: 0;

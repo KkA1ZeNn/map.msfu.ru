@@ -95,11 +95,12 @@
          "about": "Кафедра «Автоматизация технологических процессов, оборудование и&nbsp;безопасность производств»"
       }
    ],
-   "levels": [
+   "floors": [
       {
          "id": "floor-1",
          "title": "ГУК — 1 этаж",
          "map": "./map/main_floor-1.svg",
+         "status": ["ground floor", "main floor"],
          "locations": [
             {
                "id": "room-5_1_",
@@ -318,6 +319,7 @@
          "id": "floor-2",
          "title": "ГУК — 2 этаж",
          "map": "./map/main_floor-2.svg",
+         "status": [],
          "locations": [
             {
                "id": "room-205_2_",
@@ -512,6 +514,7 @@
          "id": "floor-3",
          "title": "ГУК — 3 этаж",
          "map": "./map/main_floor-3.svg",
+         "status": [],
          "locations": [
             {
                "id": "room-303_3_",
@@ -778,6 +781,7 @@
          "id": "floor-4",
          "title": "ГУК — 4 этаж",
          "map": "./map/main_floor-4.svg",
+         "status": [],
          "locations": [
             {
                "id": "room-404_4_",
@@ -1015,6 +1019,7 @@
          "id": "floor-5",
          "title": "ГУК — 5 этаж",
          "map": "./map/main_floor-5.svg",
+         "status": ["last floor"],
          "locations": [
             {
                "id": "room-505_5_",
