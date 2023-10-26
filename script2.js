@@ -3,7 +3,7 @@ let http = new XMLHttpRequest();
 let mapData;
 
 // переменная, которая хранит div блок с главным SVG
-const mapContainer = document.getElementById('floor-map');
+const svgContainer = document.getElementById('floor-map');
 
 // переменная плавающего окошка с описанием кабинетов
 const descriptionBlock  = document.getElementById('description');
@@ -42,7 +42,7 @@ http.onload = function () {
 };
 
 // Обработчик событий SVG файла для реагирования комнат на нажатие
-mapContainer.addEventListener('click', (event) => {
+svgContainer.addEventListener('click', (event) => {
    const roomElement = event.target.closest('[id^="room"]');
    selectRoom(roomElement);
 });
@@ -86,11 +86,22 @@ function selectRoom(currentRoom) {
             
             // функция для считывания размера элемента и перемещения окна, но пока работает КРИВО
             const roomRect = currentRoom.getBoundingClientRect();
-            const width = (roomRect.right - roomRect.left) / 2;
-            const height = (roomRect.bottom - roomRect.top) / 2;
+            const mapContainer = document.querySelector(".mapContainer");
+
+            if (roomRect.left - descriptionBlock.offsetWidth / 2 < 0){
+               descriptionBlock.style.left = `${roomRect.right + 20}px`;
+               descriptionBlock.style.top = `${roomRect.bottom + window.scrollY - descriptionBlock.offsetHeight / 2}px`;
+            }
+            else if (roomRect.right + descriptionBlock.offsetWidth / 2 > mapContainer.offsetWidth) {
+               descriptionBlock.style.left = `${roomRect.left - descriptionBlock.offsetWidth - 20}px`;
+               descriptionBlock.style.top = `${roomRect.bottom + window.scrollY - descriptionBlock.offsetHeight / 2}px`;
+            }
+            else {
+               descriptionBlock.style.left = `${roomRect.left - descriptionBlock.offsetWidth / 2 + roomRect.width / 2}px`;
+               descriptionBlock.style.top = `${roomRect.top + window.scrollY - descriptionBlock.offsetHeight - 20}px`;
+            }
+
             descriptionBlock.style.position = 'absolute';
-            descriptionBlock.style.top = `${roomRect.top - descriptionBlock.offsetHeight - height}px`;
-            descriptionBlock.style.left = `${roomRect.left - descriptionBlock.offsetWidth / 2 + width}px`;
          }
       });
 
@@ -212,7 +223,7 @@ function drawFloor(floor) {
    fetch(mapData.floors[currentFloor].map)
    .then(response => response.text())
    .then(svg => {
-      mapContainer.innerHTML = svg;
+      svgContainer.innerHTML = svg;
    });
 
    allRooms = mapData.floors[currentFloor].locations;

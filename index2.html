@@ -9,18 +9,20 @@
 </head>
 
 <body>
-   <div class="svgconteiner" id = "floor-map"></div>
+   <div class="mapContainer">
+      <div class="svgconteiner" id = "floor-map"></div>
 
+      <div id = "description">
+         <h4></h4>
+         <p></p>
+      </div>
+   </div>
+   
    <input type="text" id="roomSearchInput" placeholder="Enter room number">
 
    <div id="current-floor"></div>
    <button id = "floorReduce">-</button>
    <button id = "floorIncrease">+</button>
-
-   <div id = "description">
-      <h4></h4>
-      <p></p>
-   </div>
 
    <div id="searchResultBlock"></div>
    <script src="script2.js"></script>
