@@ -53,7 +53,7 @@
 
 /*-----------------временная свалка-----------------*/
 /*стили для контейнера с самой картой*/
-.svgconteiner {
+.svgConteiner {
    width: 100%;
    height: auto;
    position: absolute;

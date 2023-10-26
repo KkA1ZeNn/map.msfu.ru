@@ -3,7 +3,7 @@ let http = new XMLHttpRequest();
 let mapData;
 
 // переменная, которая хранит div блок с главным SVG
-const svgContainer = document.getElementById('floor-map');
+const svgContainer = document.getElementById('mapSvg');
 
 // переменная плавающего окошка с описанием кабинетов
 const descriptionBlock  = document.getElementById('description');
@@ -13,7 +13,7 @@ const searchInput = document.getElementById('roomSearchInput');
 const searchResultBlock = document.getElementById('searchResultBlock');
 
 // переменная блока с текущим номером этажа
-const currentFloorBlock = document.getElementById('current-floor')
+const currentFloorBlock = document.getElementById('currentFloor')
 
 // переменные увеличения и уменьшения этажа
 const floorIncrease = document.getElementById('floorIncrease');
@@ -173,11 +173,7 @@ function findRoomAfterClick(event) {
             console.log(roomElement);
             selectRoom(roomElement);
          });
-
-
          
-         
-
          //console.log('СОРИ Я ПОКА НЕ ПОНЯЛ, КАК МЕНЯТЬ ЭТАЖ, НО ЭТО ДОЛЖНО БЫТЬ ТУТ');
       }
    }
