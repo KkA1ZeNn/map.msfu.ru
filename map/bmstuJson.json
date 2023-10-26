@@ -103,6 +103,16 @@
          "status": ["ground floor", "main floor"],
          "locations": [
             {
+               "id": "room-3_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-4_1_",
+               "title": "",
+               "about": ""
+            },
+            {
                "id": "room-5_1_",
                "title": "Зам. главного бухгалтера",
                "about": "каб. 5"
@@ -141,6 +151,11 @@
                "description": "9:00&ndash;12:00 и&nbsp;14:00&ndash;18:00."
             },
             {
+               "id": "room-13_1_",
+               "title": "",
+               "about": ""
+            },
+            {
                "id": "room-14_1_",
                "title": "Отдел кадров студентов",
                "about": "каб. 14",
@@ -151,6 +166,26 @@
                "title": "Отдел «Центр обработки данных» МФ",
                "about": "каб. 15",
                "description": "Начальник отдела Ремизов Александр Викторович"
+            },
+            {
+               "id": "room-16_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-17_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-18_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-19_1_",
+               "title": "",
+               "about": ""
             },
             {
                "id": "room-30_1_",
@@ -174,6 +209,11 @@
                "description": "Зарубина Анжелла Николаевна"
             },
             {
+               "id": "room-34_1_",
+               "title": "",
+               "about": ""
+            },
+            {
                "id": "room-35_1_",
                "category": "dep-LT9",
                "title": "Заведующий лабораторией (ЛТ9)",
@@ -185,6 +225,11 @@
                "category": "dep-LT9",
                "title": "Лаборатория общей и неорганической химии (ЛТ9)",
                "about": "каб. 36"
+            },
+            {
+               "id": "room-37_1_",
+               "title": "",
+               "about": ""
             },
             {
                "id": "room-38_1_",
@@ -223,10 +268,35 @@
                "about": "каб. 43"
             },
             {
+               "id": "room-44_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-45_1_",
+               "title": "",
+               "about": ""
+            },
+            {
                "id": "room-49_1_",
                "title": "Учебная аудитория (поточная)",
                "about": "каб. 49",
                "description": "80 мест"
+            },
+            {
+               "id": "room-59_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-60_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-61_1_",
+               "title": "",
+               "about": ""
             },
             {
                "id": "room-62_1_",
@@ -250,6 +320,11 @@
                "category": "dep-K6",
                "title": "Лаборатория «Механика и молекулярная физика» (К6)",
                "about": "каб. 65"
+            },
+            {
+               "id": "room-66_1_",
+               "title": "",
+               "about": ""
             },
             {
                "id": "room-67_1_",
@@ -285,10 +360,20 @@
                "about": "каб. 89"
             },
             {
+               "id": "room-90_1_",
+               "title": "",
+               "about": ""
+            },
+            {
                "id": "room-91_1_",
                "category": "dep-K7",
                "title": "Кабинет психолога (К7)",
                "about": "каб. 91"
+            },
+            {
+               "id": "room-92_1_",
+               "title": "",
+               "about": ""
             },
             {
                "id": "room-93_1_",
@@ -297,9 +382,24 @@
                "about": "каб. 93"
             },
             {
+               "id": "room-95_1_",
+               "title": "",
+               "about": ""
+            },
+            {
                "id": "room-96_1_",
                "title": "Студенческий Совет",
                "about": "каб. 96"
+            },
+            {
+               "id": "room-96ж_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-99_1_",
+               "title": "",
+               "about": ""
             },
             {
                "id": "room-100_1_",
@@ -308,7 +408,97 @@
                "description": "Редакция журнала «Лесной вестник»"
             },
             {
-               "id": "room-132_1_",
+               "id": "room-101_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-102_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-103_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-105_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-110_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-111_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-112_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-113_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-116_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-117_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-118_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-119_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-135_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-136_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-137_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-138_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-139_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-140_1_",
+               "title": "",
+               "about": ""
+            },
+            {
+               "id": "room-acting-room_1_",
                "title": "Актовый зал",
                "about": "Актовый зал"
             }

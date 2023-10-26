@@ -59,7 +59,7 @@
 }
 
 /*стили блока с подсказками для поиска*/
-#searchVariants {
+#searchResultBlock {
    width: 60%;
    margin: auto;
    height: 200px;
@@ -71,7 +71,7 @@
    overflow-y: auto;
 }
 
-.searchVariants_variant {
+.searchResultBlock_item {
    width: 100%;
    min-height: 50px;
    display: flex;
