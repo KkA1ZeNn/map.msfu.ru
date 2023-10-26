@@ -86,9 +86,11 @@ function selectRoom(currentRoom) {
             
             // функция для считывания размера элемента и перемещения окна, но пока работает КРИВО
             const roomRect = currentRoom.getBoundingClientRect();
+            const width = (roomRect.right - roomRect.left) / 2;
+            const height = (roomRect.bottom - roomRect.top) / 2;
             descriptionBlock.style.position = 'absolute';
-            descriptionBlock.style.top = `${roomRect.top - 20}px`;
-            descriptionBlock.style.left = `${roomRect.left - 120}px`;
+            descriptionBlock.style.top = `${roomRect.top - descriptionBlock.offsetHeight - height}px`;
+            descriptionBlock.style.left = `${roomRect.left - descriptionBlock.offsetWidth / 2 + width}px`;
          }
       });
 
