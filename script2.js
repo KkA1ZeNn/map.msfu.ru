@@ -1,5 +1,4 @@
-//переменная, которая хранит JSON
-let http = new XMLHttpRequest();
+//переменная, которая хранит объект на основе JSON
 let mapData;
 
 // переменная, которая хранит div блок с главным SVG
@@ -16,30 +15,27 @@ const searchResultBlock = document.getElementById('searchResultBlock');
 const currentFloorBlock = document.getElementById('currentFloor')
 
 // переменные увеличения и уменьшения этажа
-const floorIncrease = document.getElementById('floorIncrease');
-const floorReduce = document.getElementById('floorReduce');
+const floorIncreaseBtn = document.getElementById('floorIncrease');
+const floorReduceBtn = document.getElementById('floorReduce');
 
-// allRooms-массив из всех комнат этажа, json; currentFloor - текущий этаж, чтобы в дальнейшем его менять и делать проверку этажа
-// searchResult - массив объектов [строка с id этажа; объект комнаты со всеми полями из json]
-let allRooms = [];
+//currentFloor - текущий этаж, чтобы в дальнейшем его менять и делать проверку этажа
 let currentFloor;
-let searchResult = [];
 
 //----------------------------------------------------------------------------------------------------------------------
 
-//парсим JSON; устанавливаем текущий этаж на тот, у которого  статус главного этажа; формируем массив из комнат всего этажа
-http.open('get', './map/bmstuJson.json', true);
-http.send();
-http.onload = function () {
-   if (this.readyState === 4 && this.status === 200) {
-      mapData = JSON.parse(this.responseText);  
+//парсим JSON; устанавливаем текущий этаж на тот, у которого  статус главного этажа
+fetch('./map/bmstuJson.json')
+   .then(response => response.json())
+   .then(json => {
+      mapData = json;
       mapData.floors.forEach(floor => {
          if (floor.status.includes('main floor')) {
-            drawFloor(mapData.floors.indexOf(floor));
+            let startFloor = mapData.floors.indexOf(floor);
+            changeFloor(startFloor);
          }
       });
-   }
-};
+   });
+   
 
 // Обработчик событий SVG файла для реагирования комнат на нажатие
 svgContainer.addEventListener('click', (event) => {
@@ -48,11 +44,11 @@ svgContainer.addEventListener('click', (event) => {
 });
 
 // Обработчик событий для тех комнат, которые появились в списке поиска
-searchResultBlock.addEventListener('click', (event) => findRoomAfterClick(event));
+searchResultBlock.addEventListener('click', (event) => searchResultsClickHandler(event));
 
 // Обработчики событий для смены этажа
-floorIncrease.addEventListener('click', () => {changeFloor(1)});
-floorReduce.addEventListener('click', () => {changeFloor(-1)});
+floorIncreaseBtn.addEventListener('click', () => {changeFloorButtonHandler(1)});
+floorReduceBtn.addEventListener('click', () => {changeFloorButtonHandler(-1)});
 
 // обработчик событий для поиска комнат по описанию
 searchInput.addEventListener('input', searchRoom);
@@ -63,11 +59,11 @@ searchInput.addEventListener('input', searchRoom);
 // Функция, которая отвечает за реакцию комнаты на выбор этой комнаты (нажатие или поиск). Проверяем, что искомая комната есть, если есть, то проверка, что это она уже не включена, заполняем 
 // блок описания данными из json, смещаем блок описания
 function selectRoom(currentRoom) {
-   console.log("Select room start");
    const activeRoom = document.querySelector('[id^="room"].active');
    if (currentRoom) {
       const roomId = currentRoom.getAttribute('id');
       let roomHasInfo = false;
+      let currentFLoorRooms =  mapData.floors[currentFloor].locations;
 
       if (activeRoom && activeRoom !== currentRoom) {
          activeRoom.classList.remove('active');
@@ -77,7 +73,7 @@ function selectRoom(currentRoom) {
       currentRoom.classList.add('active');
       show(descriptionBlock);
 
-      allRooms.forEach(room => {
+      currentFLoorRooms.forEach(room => {
          if (room.id === roomId) {
             roomHasInfo = true;
             descriptionBlock.innerHTML =
@@ -115,13 +111,13 @@ function selectRoom(currentRoom) {
          hide(descriptionBlock);
       }
    }
-   console.log("Select room end");
 };
 
 // Функция, которая отвечает за поиск комнаты через поле ввода. Здесь фформируется глобальный массив реультатов поиска
+// searchResult - массив объектов [строка с id этажа; объект комнаты со всеми полями из json]
 function searchRoom() {
    const currentInput = searchInput.value;
-   searchResult = [];
+   let searchResult = [];
 
    mapData.floors.forEach(floor => {
       floor.locations.forEach(room => {
@@ -130,11 +126,12 @@ function searchRoom() {
          }
       });
    });
-   showSearchResult();
+
+   showSearchResult(searchResult);
 }
 
 // функция отрисовки результатов поиска. Здесь создаются и заполняются содержимым кнопки с комнатами
-function showSearchResult(){
+function showSearchResult(searchResult){
    searchResultBlock.innerHTML = '';
 
    searchResult.forEach(element => {
@@ -152,10 +149,11 @@ function showSearchResult(){
 }
 
 // функция поиска комнаты после клика по кнопке комнаты в списке. Если комната на текущем этаже, то сразу ищем, если нет, то надо отрисовать нужный этаж и найти там
-function findRoomAfterClick(event) {
-   let elementsFloor;
+function searchResultsClickHandler(event) {
 
    if (event.target.tagName === 'BUTTON') {
+      let elementsFloor;
+      
       mapData.floors.forEach(floor => {
          if (floor.id.includes(event.target.dataset.floor))
          {
@@ -166,13 +164,10 @@ function findRoomAfterClick(event) {
       if (currentFloor === elementsFloor) {
          const roomElement = document.getElementById(event.target.dataset.room);
          selectRoom(roomElement);
+         console.log(currentFloor, elementsFloor);
       }
       else{
-         drawFloor(elementsFloor, function(){
-            const roomElement = document.getElementById(event.target.dataset.room);
-            console.log(roomElement);
-            selectRoom(roomElement);
-         });
+         changeFloor(elementsFloor, event.target.dataset.room);
          
          //console.log('СОРИ Я ПОКА НЕ ПОНЯЛ, КАК МЕНЯТЬ ЭТАЖ, НО ЭТО ДОЛЖНО БЫТЬ ТУТ');
       }
@@ -180,62 +175,62 @@ function findRoomAfterClick(event) {
 }
 
 // функция смены этажа, принимает в себя направление движения (вверх или вниз) (1 или -1). Делаем проверку на допустимость переключения и отрисовывем нужный этаж
-function changeFloor(direction) {
+function changeFloorButtonHandler(direction) {
    const floorStatus = mapData.floors[currentFloor].status;
 
    if ((!floorStatus.includes('ground floor') && direction < 0) || (!floorStatus.includes('last floor') && direction > 0)) {
-      currentFloor += direction;
       hide(descriptionBlock);
-      drawFloor(currentFloor);
+      changeFloor(currentFloor += direction);
    }
    else {
       console.log('такого этажа нет');
    }
 
-   checkFloor();
+   checkFloorToToggleButton(currentFloor);
 }
 
 // функция проверки этажа, на то, что нельзя опуститься ниже или подняться выше
-function checkFloor() {
-   const floorStatus = mapData.floors[currentFloor].status; 
+function checkFloorToToggleButton(floor) {
+   const floorStatus = mapData.floors[floor].status; 
 
    if(floorStatus.includes("ground floor")) {
-      floorReduce.classList.add('disabled');
+      floorReduceBtn.classList.add('disabled');
    }
    else if (floorStatus.includes("last floor")) {
-      floorIncrease.classList.add('disabled');
+      floorIncreaseBtn.classList.add('disabled');
    }
    else {
-      floorReduce.classList.remove('disabled');
-      floorIncrease.classList.remove('disabled');
+      floorReduceBtn.classList.remove('disabled');
+      floorIncreaseBtn.classList.remove('disabled');
    }
 }
 
 // Функция отрисовки этажа (основывается на currentFloor)
-function drawFloor(floor) {
-   console.log("-----------------------------------------------------------------------------\nDraw floor start");
-   currentFloor = floor;
-
-   fetch(mapData.floors[currentFloor].map)
+function drawFloor(floor, room) {
+   fetch(mapData.floors[floor].map)
    .then(response => response.text())
    .then(svg => {
       svgContainer.innerHTML = svg;
-   });
 
-   allRooms = mapData.floors[currentFloor].locations;
-   changeCurrentFloorBlock();
-   checkFloor();
-   console.log("Draw floor end");
+      setTimeout(() => {
+         const myRoom = document.getElementById(room);
+         console.log(myRoom);
+         selectRoom(myRoom);
+      }, 0);
+   })
+}
 
-   if (arguments.length === 2) {
-      let tempFun = arguments[1];
-      tempFun();
-   }
+function changeFloor(floor, room){
+   currentFloor = floor;
+
+   drawFloor(floor, room);
+   changeCurrentFloorBlock(floor);
+   checkFloorToToggleButton(floor);
 }
 
 // Функция смены текста текущего этажа
-function changeCurrentFloorBlock() {
-   currentFloorBlock.textContent = mapData.floors[currentFloor].title;
+function changeCurrentFloorBlock(floor) {
+   currentFloorBlock.textContent = mapData.floors[floor].title;
 }
 
 // фнкции скрытия и показывания элемента
