@@ -177,11 +177,10 @@ async function changeFloor(floor) {
       
    } else {
 
-      await fetch(floorsList[floor].map)
-         .then(response => response.text())
-         .then(svg => {
-            svgContainer.innerHTML = svg;
-         });
+      let response = await fetch(floorsList[floor].map);
+      let svg = await response.text();
+
+      svgContainer.innerHTML = svg;
 
       currentFloor = floor;
       currentFloorBlock.textContent = floorsList[floor].title;
@@ -196,6 +195,7 @@ async function changeFloor(floor) {
       } else if (floor === floorsList.length - 1) {
          floorIncreaseBtn.classList.add('disabled');
       }
+      
    }
 }
 
