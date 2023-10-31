@@ -53,6 +53,28 @@ floorReduceBtn.addEventListener('click', () => {changeFloorButtonHandler(-1)});
 // обработчик событий для поиска комнат по описанию
 searchInput.addEventListener('input', searchRoom);
 
+svgContainer.addEventListener('wheel', (event) => {
+   event.preventDefault();
+
+   const direction = event.deltaY < 0 ? 1 : -1;
+   const zoomAmount = direction * 0.3;
+   const minScale = 1;
+   const maxScale = 3;
+ 
+   const mouseX = event.clientX / 2;
+   const mouseY = event.clientY / 2;
+
+   const rect = svgContainer.getBoundingClientRect();
+   const oldX = rect.x;
+   console.log(mouseX, oldX);
+   const currentScale = rect.height / svgContainer.offsetHeight;
+ 
+   svgContainer.style.transformOrigin = `${mouseX}px ${mouseY}px`;
+   if ((currentScale >= minScale && direction === -1) || (currentScale <= maxScale && direction === 1)) {
+      svgContainer.style.transform = `scale(${currentScale + zoomAmount})`;
+   }
+ });
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -72,6 +94,8 @@ function selectRoom(currentRoom) {
 
       currentRoom.classList.add('active');
       show(descriptionBlock);
+
+      svgContainer.style.transform = `scale(${3})`;
 
       currentFLoorRooms.forEach(room => {
          if (room.id === roomId) {
@@ -96,8 +120,6 @@ function selectRoom(currentRoom) {
                descriptionBlock.style.left = `${roomRect.left - descriptionBlock.offsetWidth / 2 + roomRect.width / 2}px`;
                descriptionBlock.style.top = `${roomRect.top + window.scrollY - descriptionBlock.offsetHeight - 20}px`;
             }
-
-            descriptionBlock.style.position = 'absolute';
          }
       });
 
@@ -111,6 +133,7 @@ function selectRoom(currentRoom) {
          hide(descriptionBlock);
       }
    }
+
 };
 
 // Функция, которая отвечает за поиск комнаты через поле ввода. Здесь фформируется глобальный массив реультатов поиска
@@ -240,5 +263,9 @@ function hide(element) {
 function show(element) {
    element.style.display = "flex";
 }
+
+
+
+
 
 

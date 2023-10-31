@@ -26,6 +26,7 @@
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
+    position: absolute;
 }
 #description h4 {
    font-family: Roboto, Tahoma, Helvetica, sans-serif;
@@ -56,9 +57,11 @@
 .svgConteiner {
    width: 100%;
    height: 100%;
-   max-height: 100%;
+   max-height: 500px;
    display: flex;
    justify-content: center;
+   transition: 0.1s;
+   overflow: hidden;
 }
 
 .mapContainer {
@@ -68,7 +71,7 @@
 }
 
 .mapContainer svg {
-   max-height: 100%;
+   max-height: 700px;
 }
 
 
