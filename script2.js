@@ -181,21 +181,21 @@ async function changeFloor(floor) {
          .then(response => response.text())
          .then(svg => {
             svgContainer.innerHTML = svg;
-
-            currentFloor = floor;
-            currentFloorBlock.textContent = floorsList[floor].title;
-
-            hide(descriptionBlock);
-
-            if (floor === 0) {
-               floorReduceBtn.classList.add('disabled');
-            } else if (floor === floorsList.length - 1) {
-               floorIncreaseBtn.classList.add('disabled');
-            } else {
-               floorReduceBtn.classList.remove('disabled');
-               floorIncreaseBtn.classList.remove('disabled');
-            }
          });
+
+      currentFloor = floor;
+      currentFloorBlock.textContent = floorsList[floor].title;
+
+      hide(descriptionBlock);
+
+      floorReduceBtn.classList.remove('disabled');
+      floorIncreaseBtn.classList.remove('disabled');
+
+      if (floor === 0) {
+         floorReduceBtn.classList.add('disabled');
+      } else if (floor === floorsList.length - 1) {
+         floorIncreaseBtn.classList.add('disabled');
+      }
    }
 }
 
