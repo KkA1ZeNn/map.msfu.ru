@@ -130,7 +130,7 @@ function searchRoom() {
 }
 
 // функция отрисовки результатов поиска. Здесь создаются и заполняются содержимым кнопки с комнатами
-function showSearchResult(searchResult){
+function showSearchResult(searchResult) {
    searchResultBlock.innerHTML = '';
 
    searchResult.forEach(element => {
@@ -141,44 +141,34 @@ function showSearchResult(searchResult){
 
       variant.classList.add('searchResultBlock_item');
       variant.innerHTML =
-         `<h5>${element.room.id}</h5>
-         <p>${element.room.title}</p>`;
+         `<h5 style="pointer-events: none;">${element.room.id}</h5>
+         <p style="pointer-events: none;">${element.room.title}</p>`;
          searchResultBlock.appendChild(variant);
    });
 }
 
 // функция поиска комнаты после клика по кнопке комнаты в списке. Если комната на текущем этаже, то сразу ищем, если нет, то надо отрисовать нужный этаж и найти там
-function searchResultsClickHandler(event) {
+async function searchResultsClickHandler(event) {
 
    if (event.target.tagName === 'BUTTON') {
       let elementsFloor;
       
       mapData.floors.forEach(floor => {
-         if (floor.id.includes(event.target.dataset.floor))
-         {
+         if (floor.id.includes(event.target.dataset.floor)) {
             elementsFloor = mapData.floors.indexOf(floor);
          }
       });
 
-      if (currentFloor === elementsFloor) {
-         const roomElement = document.getElementById(event.target.dataset.room);
-         selectRoom(roomElement);
-         console.log(currentFloor, elementsFloor);
+      if (currentFloor !== elementsFloor) {
+         await changeFloor(elementsFloor);
       }
-      else{
-         changeFloor(elementsFloor);
       
-         // setTimeout(() => {
-            // const myRoom = document.getElementById(room);
-            // console.log(myRoom);
-            // selectRoom(myRoom);
-         // }, 0);
-         //console.log('СОРИ Я ПОКА НЕ ПОНЯЛ, КАК МЕНЯТЬ ЭТАЖ, НО ЭТО ДОЛЖНО БЫТЬ ТУТ');
-      }
+      const roomElement = document.getElementById(event.target.dataset.room);
+      selectRoom(roomElement);
    }
 }
 
-function changeFloor(floor) {
+async function changeFloor(floor) {
    let floorsList = mapData.floors;
    
    if ((floor < 0) || (floor >= floorsList.length)) {
@@ -187,7 +177,7 @@ function changeFloor(floor) {
       
    } else {
 
-      fetch(floorsList[floor].map)
+      await fetch(floorsList[floor].map)
          .then(response => response.text())
          .then(svg => {
             svgContainer.innerHTML = svg;
