@@ -205,3 +205,5 @@ function hide(element) {
 function show(element) {
    element.style.display = "flex";
 }
+
+panzoom(svgContainer)
