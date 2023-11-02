@@ -14,11 +14,11 @@ const searchResultBlock = document.getElementById('searchResultBlock');
 // переменная блока с текущим номером этажа
 const currentFloorBlock = document.getElementById('currentFloor')
 
-// переменные увеличения и уменьшения этажа
+// переменные кнопок увеличения и уменьшения этажа
 const floorIncreaseBtn = document.getElementById('floorIncrease');
 const floorReduceBtn = document.getElementById('floorReduce');
 
-//currentFloor - текущий этаж, чтобы в дальнейшем его менять и делать проверку этажа
+//текущий этаж, чтобы в дальнейшем его менять и делать проверку этажа
 let currentFloor;
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -33,8 +33,7 @@ fetch('./map/bmstuJson.json')
             changeFloor(i);
          }
       });
-   });
-   
+   });   
 
 // Обработчик событий SVG файла для реагирования комнат на нажатие
 svgContainer.addEventListener('click', (event) => {
@@ -46,8 +45,8 @@ svgContainer.addEventListener('click', (event) => {
 searchResultBlock.addEventListener('click', (event) => searchResultsClickHandler(event));
 
 // Обработчики событий для смены этажа
-floorIncreaseBtn.addEventListener('click', () => {changeFloor(currentFloor + 1)});
-floorReduceBtn.addEventListener('click', () => {changeFloor(currentFloor - 1)});
+floorIncreaseBtn.addEventListener('click', () => { changeFloor(currentFloor + 1) });
+floorReduceBtn.addEventListener('click', () => { changeFloor(currentFloor - 1) });
 
 // обработчик событий для поиска комнат по описанию
 searchInput.addEventListener('input', searchRoom);
@@ -55,8 +54,9 @@ searchInput.addEventListener('input', searchRoom);
 //--------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-// Функция, которая отвечает за реакцию комнаты на выбор этой комнаты (нажатие или поиск). Проверяем, что искомая комната есть, если есть, то проверка, что это она уже не включена, заполняем 
-// блок описания данными из json, смещаем блок описания
+// Функция, которая отвечает за реакцию комнаты на выбор этой комнаты (нажатие или поиск). 
+//Проверяем, что искомая комната есть, если есть, то проверка, что это она уже не включена,  
+// заполняем блок описания данными из json, смещаем блок описания
 function selectRoom(currentRoom) {
    const activeRoom = document.querySelector('[id^="room"].active');
    if (currentRoom) {
@@ -119,8 +119,12 @@ function searchRoom() {
 
    mapData.floors.forEach(floor => {
       floor.locations.forEach(room => {
-         if (room.title.includes(currentInput) || room.about.includes(currentInput) || room.id.includes(currentInput)) {
-            searchResult.push({floor: floor.id, room: room});
+         if (
+            room.title.includes(currentInput) ||
+            room.about.includes(currentInput) || 
+            room.id.includes(currentInput)
+         ) {
+            searchResult.push( {floor: floor.id, room: room} );
          }
       });
    });
@@ -170,12 +174,9 @@ async function searchResultsClickHandler(event) {
 async function changeFloor(floor) {
    let floorsList = mapData.floors;
    
-   if ((floor < 0) || (floor >= floorsList.length)) {
-
+   if (floor < 0 || floor >= floorsList.length) {
       console.log('такого этажа нет');
-      
    } else {
-
       let response = await fetch(floorsList[floor].map);
       let svg = await response.text();
 
@@ -194,7 +195,6 @@ async function changeFloor(floor) {
       } else if (floor === floorsList.length - 1) {
          floorIncreaseBtn.classList.add('disabled');
       }
-      
    }
 }
 
