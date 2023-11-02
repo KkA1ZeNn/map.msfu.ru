@@ -51,8 +51,12 @@ floorReduceBtn.addEventListener('click', () => { changeFloor(currentFloor - 1) }
 // обработчик событий для поиска комнат по описанию
 searchInput.addEventListener('input', searchRoom);
 
-//--------------------------------------------------------------------------------------------------------------------------------------------------------
+let instance = panzoom(svgContainer, {
+   maxZoom: 4,
+   minZoom: 1
+});
 
+//--------------------------------------------------------------------------------------------------------------------------------------------------------
 
 // Функция, которая отвечает за реакцию комнаты на выбор этой комнаты (нажатие или поиск). 
 //Проверяем, что искомая комната есть, если есть, то проверка, что это она уже не включена,  
@@ -70,8 +74,15 @@ function selectRoom(currentRoom) {
       }
 
       currentRoom.classList.add('active');
-      show(descriptionBlock);
+      //show(descriptionBlock);
 
+      const roomRect1 = currentRoom.getBoundingClientRect();
+      console.log(roomRect1.x, roomRect1.y);
+      instance.zoomTo(roomRect1.x - 200, roomRect1.y + 50, 4);
+
+
+
+      
       currentFLoorRooms.forEach(room => {
          if (room.id === roomId) {
             roomHasInfo = true;
@@ -108,7 +119,6 @@ function selectRoom(currentRoom) {
          hide(descriptionBlock);
       }
    }
-
 };
 
 // Функция, которая отвечает за поиск комнаты через поле ввода. Здесь фформируется глобальный массив реультатов поиска
