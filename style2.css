@@ -101,3 +101,7 @@
    background-color: lightblue;
    cursor: pointer;
 }
+
+.searchResultBlock_item h5, .searchResultBlock_item p {
+   pointer-events: none;
+}

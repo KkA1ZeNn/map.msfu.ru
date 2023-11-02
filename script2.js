@@ -29,7 +29,7 @@ fetch('./map/bmstuJson.json')
    .then(json => {
       mapData = json;
       mapData.floors.forEach((floor, i) => {
-         if (floor.status.includes('main floor')) {
+         if (floor.status === 'main floor') {
             changeFloor(i);
          }
       });
@@ -71,8 +71,6 @@ function selectRoom(currentRoom) {
 
       currentRoom.classList.add('active');
       show(descriptionBlock);
-
-      svgContainer.style.transform = `scale(${3})`;
 
       currentFLoorRooms.forEach(room => {
          if (room.id === roomId) {
@@ -142,8 +140,8 @@ function showSearchResult(searchResult) {
 
       variant.classList.add('searchResultBlock_item');
       variant.innerHTML =
-         `<h5 style="pointer-events: none;">${element.room.id}</h5>
-         <p style="pointer-events: none;">${element.room.title}</p>`;
+         `<h5>${element.room.id}</h5>
+         <p>${element.room.title}</p>`;
          searchResultBlock.appendChild(variant);
    });
 }
