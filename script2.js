@@ -76,12 +76,9 @@ function selectRoom(currentRoom) {
       currentRoom.classList.add('active');
       //show(descriptionBlock);
 
-      const roomRect1 = currentRoom.getBoundingClientRect();
-      console.log(roomRect1.x, roomRect1.y);
-      instance.zoomTo(roomRect1.x - 200, roomRect1.y + 50, 4);
-
-
-
+      //const roomRect1 = currentRoom.getBoundingClientRect();
+      //console.log(roomRect1.x, roomRect1.y);
+      //instance.zoomTo(roomRect1.x - 200, roomRect1.y + 50, 4);
       
       currentFLoorRooms.forEach(room => {
          if (room.id === roomId) {
