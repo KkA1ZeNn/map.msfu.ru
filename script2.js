@@ -28,10 +28,9 @@ fetch('./map/bmstuJson.json')
    .then(response => response.json())
    .then(json => {
       mapData = json;
-      mapData.floors.forEach(floor => {
+      mapData.floors.forEach((floor, i) => {
          if (floor.status.includes('main floor')) {
-            let startFloor = mapData.floors.indexOf(floor);
-            changeFloor(startFloor);
+            changeFloor(i);
          }
       });
    });
@@ -47,8 +46,8 @@ svgContainer.addEventListener('click', (event) => {
 searchResultBlock.addEventListener('click', (event) => searchResultsClickHandler(event));
 
 // Обработчики событий для смены этажа
-floorIncreaseBtn.addEventListener('click', () => {changeFloorButtonHandler(1)});
-floorReduceBtn.addEventListener('click', () => {changeFloorButtonHandler(-1)});
+floorIncreaseBtn.addEventListener('click', () => {changeFloor(currentFloor + 1)});
+floorReduceBtn.addEventListener('click', () => {changeFloor(currentFloor - 1)});
 
 // обработчик событий для поиска комнат по описанию
 searchInput.addEventListener('input', searchRoom);
@@ -132,7 +131,7 @@ function searchRoom() {
 }
 
 // функция отрисовки результатов поиска. Здесь создаются и заполняются содержимым кнопки с комнатами
-function showSearchResult(searchResult){
+function showSearchResult(searchResult) {
    searchResultBlock.innerHTML = '';
 
    searchResult.forEach(element => {
@@ -143,95 +142,62 @@ function showSearchResult(searchResult){
 
       variant.classList.add('searchResultBlock_item');
       variant.innerHTML =
-         `<h5>${element.room.id}</h5>
-         <p>${element.room.title}</p>`;
+         `<h5 style="pointer-events: none;">${element.room.id}</h5>
+         <p style="pointer-events: none;">${element.room.title}</p>`;
          searchResultBlock.appendChild(variant);
    });
 }
 
 // функция поиска комнаты после клика по кнопке комнаты в списке. Если комната на текущем этаже, то сразу ищем, если нет, то надо отрисовать нужный этаж и найти там
-function searchResultsClickHandler(event) {
+async function searchResultsClickHandler(event) {
 
    if (event.target.tagName === 'BUTTON') {
       let elementsFloor;
       
       mapData.floors.forEach(floor => {
-         if (floor.id.includes(event.target.dataset.floor))
-         {
+         if (floor.id.includes(event.target.dataset.floor)) {
             elementsFloor = mapData.floors.indexOf(floor);
          }
       });
 
-      if (currentFloor === elementsFloor) {
-         const roomElement = document.getElementById(event.target.dataset.room);
-         selectRoom(roomElement);
-         console.log(currentFloor, elementsFloor);
+      if (currentFloor !== elementsFloor) {
+         await changeFloor(elementsFloor);
       }
-      else{
-         changeFloor(elementsFloor, event.target.dataset.room);
-         
-         //console.log('СОРИ Я ПОКА НЕ ПОНЯЛ, КАК МЕНЯТЬ ЭТАЖ, НО ЭТО ДОЛЖНО БЫТЬ ТУТ');
-      }
+      
+      const roomElement = document.getElementById(event.target.dataset.room);
+      selectRoom(roomElement);
    }
 }
 
-// функция смены этажа, принимает в себя направление движения (вверх или вниз) (1 или -1). Делаем проверку на допустимость переключения и отрисовывем нужный этаж
-function changeFloorButtonHandler(direction) {
-   const floorStatus = mapData.floors[currentFloor].status;
+async function changeFloor(floor) {
+   let floorsList = mapData.floors;
+   
+   if ((floor < 0) || (floor >= floorsList.length)) {
 
-   if ((!floorStatus.includes('ground floor') && direction < 0) || (!floorStatus.includes('last floor') && direction > 0)) {
-      hide(descriptionBlock);
-      changeFloor(currentFloor += direction);
-   }
-   else {
       console.log('такого этажа нет');
-   }
+      
+   } else {
 
-   checkFloorToToggleButton(currentFloor);
-}
+      let response = await fetch(floorsList[floor].map);
+      let svg = await response.text();
 
-// функция проверки этажа, на то, что нельзя опуститься ниже или подняться выше
-function checkFloorToToggleButton(floor) {
-   const floorStatus = mapData.floors[floor].status; 
-
-   if(floorStatus.includes("ground floor")) {
-      floorReduceBtn.classList.add('disabled');
-   }
-   else if (floorStatus.includes("last floor")) {
-      floorIncreaseBtn.classList.add('disabled');
-   }
-   else {
-      floorReduceBtn.classList.remove('disabled');
-      floorIncreaseBtn.classList.remove('disabled');
-   }
-}
-
-// Функция отрисовки этажа (основывается на currentFloor)
-function drawFloor(floor, room) {
-   fetch(mapData.floors[floor].map)
-   .then(response => response.text())
-   .then(svg => {
       svgContainer.innerHTML = svg;
 
-      setTimeout(() => {
-         const myRoom = document.getElementById(room);
-         console.log(myRoom);
-         selectRoom(myRoom);
-      }, 0);
-   })
-}
+      currentFloor = floor;
+      currentFloorBlock.textContent = floorsList[floor].title;
 
-function changeFloor(floor, room){
-   currentFloor = floor;
+      hide(descriptionBlock);
 
-   drawFloor(floor, room);
-   changeCurrentFloorBlock(floor);
-   checkFloorToToggleButton(floor);
-}
+      floorReduceBtn.classList.remove('disabled');
+      floorIncreaseBtn.classList.remove('disabled');
 
-// Функция смены текста текущего этажа
-function changeCurrentFloorBlock(floor) {
-   currentFloorBlock.textContent = mapData.floors[floor].title;
+      if (floor === 0) {
+         floorReduceBtn.classList.add('disabled');
+      } else if (floor === floorsList.length - 1) {
+         floorIncreaseBtn.classList.add('disabled');
+      }
+      
+   }
 }
 
 // фнкции скрытия и показывания элемента
@@ -241,9 +207,3 @@ function hide(element) {
 function show(element) {
    element.style.display = "flex";
 }
-
-
-
-
-
-
