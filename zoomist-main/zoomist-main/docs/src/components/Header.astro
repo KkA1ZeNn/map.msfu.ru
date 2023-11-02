@@ -1,0 +1,115 @@
+---
+import { t } from 'i18next'
+import { Icon } from 'astro-icon'
+import { Image } from 'astro:assets'
+// components
+import Link from '@components/utils/Link.astro'
+import SearchBtn from '@components/btns/SearchBtn.astro'
+import LangBtn from '@components/btns/LangBtn.astro'
+import MenuBtn from '@components/btns/MenuBtn.astro'
+// image
+import LogoDark from '@images/z-dark.svg'
+import LogoLight from '@images/z-light.svg'
+
+type NavLinks = Array<{
+  name: string
+  href: string
+  target: '_self' | '_blank' | '_parent' | '_top' | null
+}>
+
+const navLinks: NavLinks = [
+  { name: t('navLinks.documentation'), href: '/', target: null },
+  {
+    name: t('navLinks.demos'),
+    href: 'https://codesandbox.io/s/intelligent-zeh-lgtttg?file=/src/index.ts',
+    target: '_blank'
+  }
+]
+---
+
+<header class="header px-lr">
+  <nav class="nav">
+    <Link class="nav-logo" href="/" transition:persist>
+      <Image src={LogoLight} class="dark:hidden" alt="logo light" />
+      <Image src={LogoDark} class="hidden dark:block" alt="logo dark" />
+    </Link>
+    <div class="nav-links">
+      {
+        navLinks.map((item) => (
+          <Link
+            class="nav-link"
+            href={item.href}
+            target={item.target}
+            outlink={item.target !== null}
+          >
+            {item.name}
+          </Link>
+        ))
+      }
+    </div>
+    <div class="nav-tools" transition:persist>
+      <SearchBtn />
+      <span class="split-line"></span>
+      <LangBtn />
+      <span class="split-line"></span>
+      <Link href="https://github.com/cotton123236/zoomist" class="nav-tool-link w-6">
+        <Icon name="mdi:github" />
+      </Link>
+      <MenuBtn />
+    </div>
+  </nav>
+</header>
+
+<style>
+  .header {
+    --header-bg-color: 255, 255, 255;
+    --header-border-color: #eee;
+
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    height: var(--header-height);
+    background-color: rgba(var(--header-bg-color), 0.85);
+    box-shadow: inset 0 -1px 0 0 var(--header-border-color);
+    backdrop-filter: saturate(180%) blur(5px);
+  }
+
+  .nav {
+    @apply mx-auto flex h-full w-full items-center gap-10;
+
+    max-width: var(--page-max-width);
+  }
+
+  .nav-logo {
+    height: 2.25rem;
+    aspect-ratio: 1;
+  }
+
+  .nav-links {
+    @apply hidden md:flex md:items-center md:gap-6;
+  }
+
+  .nav-link {
+    @apply text-sm leading-8;
+  }
+
+  .nav-tools {
+    @apply ml-auto flex items-center gap-4;
+  }
+
+  .nav-logo img {
+    @apply h-full w-full object-contain object-center;
+  }
+
+  [astro-icon^='searcher'] {
+    width: 1rem;
+    height: 1rem;
+  }
+</style>
+
+<style is:global>
+  .dark .header {
+    --header-bg-color: 0, 0, 0;
+    --header-border-color: #222;
+  }
+</style>

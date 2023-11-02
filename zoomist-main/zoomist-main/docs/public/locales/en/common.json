@@ -1,0 +1,23 @@
+{
+  "description": "A TypeScript library for zooming any element. Also supports mobile devices.",
+  "navLinks": {
+    "documentation": "Documentation",
+    "demos": "Demos"
+  },
+  "docNav": {
+    "getting-started": "Getting Started",
+    "installation": "Installation",
+    "basic-usage": "Basic usage",
+    "guides": "Guides",
+    "parameters-options": "Parameters & Options",
+    "methods-properties": "Methods & Properties",
+    "events": "Events",
+    "styles": "Styles",
+    "using-typescript": "Using Typescript"
+  },
+  "onThisPage": "On this page",
+  "navigator": {
+    "prev": "Previous",
+    "next": "Next"
+  }
+}

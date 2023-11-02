@@ -1,0 +1,147 @@
+---
+import astroI18nextConfig, { type I18nLocales } from 'astro-i18next.config'
+import i18next from 'i18next'
+import { Icon } from 'astro-icon'
+
+export interface Props {
+  class?: string
+}
+
+const { class: className } = Astro.props as Props
+const { meta, locales } = astroI18nextConfig
+const { language } = i18next
+---
+
+<div class="lang-select">
+  <button class:list={['lang-btn nav-tool-link', className]} type="button" tabindex="0">
+    <Icon name="lang" class="fill-[currentColor]" />
+  </button>
+  <div class="lang-dropwrap">
+    <div class="lang-droplist">
+      {
+        locales.map((item) => {
+          return (
+            <button
+              class:list={['lang-option nav-link', { 'is-active': item === language }]}
+              value={item}
+            >
+              {meta[item as I18nLocales].name}
+            </button>
+          )
+        })
+      }
+    </div>
+  </div>
+</div>
+
+<style>
+  .lang-select {
+    @apply relative -m-2 h-9 p-2;
+  }
+
+  .lang-btn {
+    @apply w-5;
+  }
+
+  .lang-dropwrap {
+    @apply absolute left-1/2 top-full -translate-x-1/2;
+  }
+
+  .lang-droplist {
+    @apply pointer-events-none absolute left-1/2 top-full w-32 -translate-x-1/2 -translate-y-2 rounded border border-solid border-[#eee] bg-white py-2 opacity-0 dark:border-gray-800 dark:bg-black;
+
+    transition:
+      opacity 200ms,
+      transform 200ms;
+  }
+
+  .lang-droplist.is-active {
+    @apply pointer-events-auto translate-y-0 opacity-100;
+  }
+
+  .lang-option {
+    @apply relative z-[1] block px-4 py-2 text-sm;
+  }
+
+  .lang-option.is-active {
+    @apply pointer-events-none text-black dark:text-white;
+  }
+</style>
+
+<script>
+  import { navigate } from 'astro:transitions/client'
+  import { createPopper } from '@popperjs/core'
+  import astroI18nextConfig from 'astro-i18next.config'
+
+  const { defaultLocale, locales } = astroI18nextConfig
+
+  const useLangSelect = (): void => {
+    const langSelect: HTMLElement | null = document.querySelector('.lang-select')
+    const langBtn: HTMLElement | null = document.querySelector('.lang-btn')
+    const tooltip: HTMLElement | null = document.querySelector('.lang-dropwrap')
+    const droplist: HTMLElement | null = document.querySelector('.lang-droplist')
+    const langOptions = [...document.querySelectorAll<HTMLButtonElement>('.lang-option')]
+
+    if (!langSelect || !langBtn || !tooltip) return
+
+    const setDroplistShow = (isShow: boolean): void => {
+      droplist!.classList[isShow ? 'add' : 'remove']('is-active')
+    }
+
+    const isMobile = typeof window !== 'undefined' && 'ontouchstart' in window
+
+    createPopper(langBtn, tooltip, {
+      placement: 'bottom',
+      modifiers: [
+        {
+          name: 'offset',
+          options: {
+            offset: [0, 8]
+          }
+        }
+      ]
+    })
+
+    if (!droplist) return
+
+    if (isMobile) {
+      langBtn.addEventListener('click', () => {
+        setDroplistShow(true)
+      })
+
+      document.addEventListener('click', (e: MouseEvent) => {
+        const { target } = e
+        const isInside =
+          (target as HTMLElement).classList.contains('.lang-select') ||
+          (target as HTMLElement).closest('.lang-select')
+        if (isInside) return
+        setDroplistShow(false)
+      })
+    } else {
+      langSelect.addEventListener('mouseenter', () => {
+        setDroplistShow(true)
+      })
+
+      langSelect.addEventListener('mouseleave', () => {
+        setDroplistShow(false)
+      })
+    }
+
+    langOptions.forEach((option) => {
+      option.addEventListener('click', () => {
+        const { pathname } = window.location
+        const [_leadingSlash, langOrGroup, ...rest] = pathname.split('/')
+        const { value } = option
+        const newLang = value === defaultLocale ? '' : `/${value}`
+        const slug = (locales.includes(langOrGroup) ? rest : [langOrGroup, ...rest]).join('/')
+        const href = `${newLang}/${slug}`
+        navigate(href)
+        langOptions.forEach((el) => {
+          el.classList[el === option ? 'add' : 'remove']('is-active')
+        })
+      })
+    })
+  }
+
+  document.addEventListener('astro:page-load', useLangSelect)
+</script>

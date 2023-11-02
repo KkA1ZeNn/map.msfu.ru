@@ -1,0 +1,64 @@
+---
+title: Installation
+description: Ways to import Zoomist into your project.
+---
+
+# Installation
+
+There are few ways to import Zoomist into your project:
+
+## Install from NPM
+
+You can easily install Zoomist from NPM.
+
+```bash title="Terminal" frame="code"
+npm i zoomist
+```
+
+```js title="main.js"
+// import Zoomist styles
+import 'zoomist/css'
+// import Zoomist
+import Zoomist from 'zoomist'
+
+// initialize
+const zoomist = new Zoomist(...)
+```
+
+## Use from CDN
+
+There are two ways to include Zoomist by using CDN.
+
+UMD:
+
+```html title="index.html"
+<!-- styles -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.css" />
+
+<!-- scripts -->
+<script src="https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.umd.js"></script>
+<script>
+  const zoomist = new Zoomist(...)
+</script>
+```
+
+ES modules in browser:
+
+```html title="index.html"
+<!-- styles -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.css" />
+
+<!-- scripts -->
+<script type="module">
+  import Zoomist from 'https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.js'
+
+  const zoomist = new Zoomist(...)
+</script>
+```
+
+## Download assets
+
+Or you can use Zoomist locally by [DOWNLOAD](https://github.com/cotton123236/zoomist/archive/refs/heads/main.zip) assets.
+
+
+---
