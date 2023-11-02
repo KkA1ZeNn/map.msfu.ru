@@ -72,6 +72,8 @@ function selectRoom(currentRoom) {
       currentRoom.classList.add('active');
       show(descriptionBlock);
 
+      svgContainer.style.transform = `scale(${3})`;
+
       currentFLoorRooms.forEach(room => {
          if (room.id === roomId) {
             roomHasInfo = true;
@@ -95,8 +97,6 @@ function selectRoom(currentRoom) {
                descriptionBlock.style.left = `${roomRect.left - descriptionBlock.offsetWidth / 2 + roomRect.width / 2}px`;
                descriptionBlock.style.top = `${roomRect.top + window.scrollY - descriptionBlock.offsetHeight - 20}px`;
             }
-
-            descriptionBlock.style.position = 'absolute';
          }
       });
 
@@ -110,6 +110,7 @@ function selectRoom(currentRoom) {
          hide(descriptionBlock);
       }
    }
+
 };
 
 // Функция, которая отвечает за поиск комнаты через поле ввода. Здесь фформируется глобальный массив реультатов поиска
