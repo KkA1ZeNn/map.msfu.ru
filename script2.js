@@ -79,11 +79,10 @@ function selectRoom(currentRoom) {
 
       const roomRect1 = currentRoom.getBoundingClientRect();
       const roomRect2 = svgContainer.getBoundingClientRect(); 
-      console.log('room = ', roomRect1.x, roomRect1.y);
-      console.log('svg = ', roomRect2.x - 403.5, roomRect2.y - 10, '\n', '---------------------------------------');
-      let info = instance.getTransform();
-      console.log(info);
-      //console.log(instance.getTransform());
+      console.log('room = ', roomRect1.x, roomRect1.y + window.scrollY);
+      console.log(instance.getTransform());
+      console.log('\n', '---------------------------------------');
+      
       //instance.zoomTo(roomRect1.x - 200, roomRect1.y + 50, 4); 900 250   860 170 при зуме -- room
       //instance.moveTo(900, 250)   -1145 -1470      центр в -1711 -933
       //console.log(roomRect1.right - roomRect1.x, roomRect1.bottom - roomRect1.y);
@@ -93,14 +92,16 @@ function selectRoom(currentRoom) {
 
       //0 0 1 -220 -306        
 
-      instance.moveTo(0, 0);
-      instance.zoomTo(0, 0, 1 / info.scale);
+      //instance.moveTo(0, 0);
+      //instance.zoomTo(0, 0, 1 / info.scale);
+      //console.log(instance.getTransform());
+      
+      //instance.moveTo(620 - roomRect1.x - (roomRect1.right - roomRect1.left) / 2, 130 - roomRect1.y - (roomRect1.bottom - roomRect1.top) / 2 - window.scrollY );
+      console.log(svgContainer.offsetWidth, svgContainer.offsetHeight);
+      instance.smoothZoom(svgContainer.offsetWidth / 2, svgContainer.offsetHeight / 2, 2.5);
       console.log(instance.getTransform());
-      
-      instance.moveTo(620 - roomRect1.x - (roomRect1.right - roomRect1.left) / 2, 130 - roomRect1.y - (roomRect1.bottom - roomRect1.top) / 2 - window.scrollY );
-      instance.smoothZoom(0, 0, 2.5);
-
-      
+      //instance.moveTo();
+   
       currentFLoorRooms.forEach(room => {
          if (room.id === roomId) {
             roomHasInfo = true;
@@ -135,8 +136,8 @@ function selectRoom(currentRoom) {
       if (activeRoom) {
          activeRoom.classList.remove('active');
          hide(descriptionBlock);
-         instance.moveTo(0, 0);
-         instance.zoomTo(0, 0, 0.4);
+         //instance.moveTo(0, 0);
+         //instance.zoomTo(0, 0, 0.4);
       }
    }
 };
