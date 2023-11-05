@@ -1,5 +1,7 @@
 //переменная, которая хранит объект на основе JSON
 let mapData;
+let svg;
+let instance;
 
 // переменная, которая хранит div блок с главным SVG
 const svgContainer = document.getElementById('mapSvg');
@@ -17,6 +19,8 @@ const currentFloorBlock = document.getElementById('currentFloor')
 // переменные кнопок увеличения и уменьшения этажа
 const floorIncreaseBtn = document.getElementById('floorIncrease');
 const floorReduceBtn = document.getElementById('floorReduce');
+
+const baseUrl = window.location.href.split('?')[0];
 
 //текущий этаж, чтобы в дальнейшем его менять и делать проверку этажа
 let currentFloor;
@@ -51,19 +55,26 @@ floorReduceBtn.addEventListener('click', () => { changeFloor(currentFloor - 1) }
 // обработчик событий для поиска комнат по описанию
 searchInput.addEventListener('input', searchRoom);
 
-let instance = panzoom(svgContainer, {
-   maxZoom: 2.5,
-   minZoom: 1,
-   zoomDoubleClickSpeed: 1, 
-});
-
 //--------------------------------------------------------------------------------------------------------------------------------------------------------
+
+function updateUrl(roomId) {
+   // Update the URL without reloading the page
+   const newUrl = baseUrl + '?location=' + roomId;
+   history.pushState({ roomId }, '', newUrl);
+}
+
+function resetUrl() {
+   // Reset the URL without reloading the page
+   history.pushState({ roomId: null }, '', baseUrl);
+}
+
 
 // Функция, которая отвечает за реакцию комнаты на выбор этой комнаты (нажатие или поиск). 
 //Проверяем, что искомая комната есть, если есть, то проверка, что это она уже не включена,  
 // заполняем блок описания данными из json, смещаем блок описания
 function selectRoom(currentRoom) {
    const activeRoom = document.querySelector('[id^="room"].active');
+
    if (currentRoom) {
       const roomId = currentRoom.getAttribute('id');
       let roomHasInfo = false;
@@ -75,13 +86,15 @@ function selectRoom(currentRoom) {
       }
 
       currentRoom.classList.add('active');
+      updateUrl(currentRoom.id);
       //show(descriptionBlock);
 
       const roomRect1 = currentRoom.getBoundingClientRect();
-      const roomRect2 = svgContainer.getBoundingClientRect(); 
+      const roomRect2 = svg.getBoundingClientRect(); 
+      console.log('svg = ', roomRect2.x, roomRect2.y + window.scrollY);
       console.log('room = ', roomRect1.x, roomRect1.y + window.scrollY);
       console.log(instance.getTransform());
-      console.log('\n', '---------------------------------------');
+      console.log('---------------------------------------');
       
       //instance.zoomTo(roomRect1.x - 200, roomRect1.y + 50, 4); 900 250   860 170 при зуме -- room
       //instance.moveTo(900, 250)   -1145 -1470      центр в -1711 -933
@@ -97,10 +110,7 @@ function selectRoom(currentRoom) {
       //console.log(instance.getTransform());
       
       //instance.moveTo(620 - roomRect1.x - (roomRect1.right - roomRect1.left) / 2, 130 - roomRect1.y - (roomRect1.bottom - roomRect1.top) / 2 - window.scrollY );
-      console.log(svgContainer.offsetWidth, svgContainer.offsetHeight);
-      instance.smoothZoom(svgContainer.offsetWidth / 2, svgContainer.offsetHeight / 2, 2.5);
-      console.log(instance.getTransform());
-      //instance.moveTo();
+      //instance.smoothZoom(0, 0, 2.5);
    
       currentFLoorRooms.forEach(room => {
          if (room.id === roomId) {
@@ -136,6 +146,7 @@ function selectRoom(currentRoom) {
       if (activeRoom) {
          activeRoom.classList.remove('active');
          hide(descriptionBlock);
+         resetUrl();
          //instance.moveTo(0, 0);
          //instance.zoomTo(0, 0, 0.4);
       }
@@ -225,6 +236,23 @@ async function changeFloor(floor) {
          floorReduceBtn.classList.add('disabled');
       } else if (floor === floorsList.length - 1) {
          floorIncreaseBtn.classList.add('disabled');
+      }
+   }
+
+   svg = document.getElementById('Слой_1');
+   instance = panzoom(svg, {
+      maxZoom: 2.5,
+      minZoom: 1,
+      zoomDoubleClickSpeed: 1, 
+   });
+
+   const urlParams = new URLSearchParams(window.location.search);
+   const roomId = urlParams.get('location');
+
+   if (roomId) {
+      const roomElement = document.getElementById(roomId);
+      if (roomElement) {
+            selectRoom(roomElement);
       }
    }
 }
