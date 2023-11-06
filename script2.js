@@ -28,6 +28,12 @@ const currentFloorBlock = document.getElementById('currentFloor')
 const floorIncreaseBtn = document.getElementById('floorIncrease');
 const floorReduceBtn = document.getElementById('floorReduce');
 
+const choosenCategoryBlock = document.getElementById('categoriesChoosen_item');
+const choosenCategoryTextBlock = document.getElementById('categoriesChoosen_item_text');
+const closeChoosenCategoryButton = document.getElementById('categoriesChoosen_item_button');
+
+let choosenCategory;
+
 //текущий этаж, чтобы в дальнейшем его менять и делать проверку этажа
 let currentFloor;
 
@@ -53,6 +59,8 @@ fetch('./map/bmstuJson.json')
             });
          });
       }
+
+      searchRoom();
    });   
 
 // Обработчик событий SVG файла для реагирования комнат на нажатие
@@ -70,6 +78,12 @@ floorReduceBtn.addEventListener('click', () => { changeFloor(currentFloor - 1) }
 
 // обработчик событий для поиска комнат по описанию
 searchInput.addEventListener('input', searchRoom);
+
+closeChoosenCategoryButton.addEventListener('click', () => {
+   disable(choosenCategoryBlock);
+   choosenCategory = "";
+   searchRoom();
+})
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -166,18 +180,45 @@ function selectRoom(currentRoom) {
 function searchRoom() {
    const currentInput = searchInput.value;
    let searchResult = [];
-
-   mapData.floors.forEach(floor => {
-      floor.locations.forEach(room => {
+   
+   if(!choosenCategory) {
+      mapData.categories.forEach(category => {
          if (
-            room.title.includes(currentInput) ||
-            room.about.includes(currentInput) || 
-            room.id.includes(currentInput)
+            category.title.includes(currentInput) ||
+            category.about.includes(currentInput) || 
+            category.id.includes(currentInput)
          ) {
-            searchResult.push( {floor: floor.id, room: room} );
+            searchResult.push( {category: category} );
          }
       });
-   });
+
+      mapData.floors.forEach(floor => {
+         floor.locations.forEach(room => {    
+            if (
+               room.title.includes(currentInput) ||
+               room.about.includes(currentInput) || 
+               room.id.includes(currentInput) 
+            ) {
+               searchResult.push( {floor: floor.id, room: room} );
+            }
+         });
+      });
+   } else {
+      mapData.floors.forEach(floor => {
+         floor.locations.forEach(room => {    
+            if (room.category) {
+               if (
+                  (room.category === choosenCategory) &&
+                  (room.title.includes(currentInput) ||
+                  room.about.includes(currentInput) || 
+                  room.id.includes(currentInput)) 
+               ) {
+                  searchResult.push( {floor: floor.id, room: room} );
+               }
+            }
+         });
+      });
+   }
 
    showSearchResult(searchResult);
 }
@@ -188,36 +229,55 @@ function showSearchResult(searchResult) {
 
    searchResult.forEach(element => {
       const variant = document.createElement('button');
-
-      variant.dataset.floor = element.floor;
-      variant.dataset.room = element.room.id;
-
       variant.classList.add('searchResultBlock_item');
-      variant.innerHTML =
-         `<h5>${element.room.id}</h5>
-         <p>${element.room.title}</p>`;
-         searchResultBlock.appendChild(variant);
+
+      if (element.category) {
+         variant.dataset.categoryId = element.category.id;
+         variant.dataset.title = element.category.title;
+         variant.dataset.about = element.category.about;
+         variant.innerHTML =
+            `<h5>${element.category.id}</h5>
+            <p>${element.category.title}</p>`;
+      } else {
+         variant.dataset.floor = element.floor;
+         variant.dataset.room = element.room.id;
+         variant.innerHTML =
+            `<h5>${element.room.id}</h5>
+            <p>${element.room.title}</p>`;
+      }
+
+      searchResultBlock.appendChild(variant);
    });
 }
 
 // функция поиска комнаты после клика по кнопке комнаты в списке. Если комната на текущем этаже, то сразу ищем, если нет, то надо отрисовать нужный этаж и найти там
 async function searchResultsClickHandler(event) {
-
    if (event.target.tagName === 'BUTTON') {
-      let elementsFloor;
-      
-      mapData.floors.forEach(floor => {
-         if (floor.id.includes(event.target.dataset.floor)) {
-            elementsFloor = mapData.floors.indexOf(floor);
-         }
-      });
+      if(event.target.dataset.categoryId) {
+         choosenCategory = event.target.dataset.categoryId;
+         searchInput.value = "";
+         searchRoom();
+         enable(choosenCategoryBlock);
 
-      if (currentFloor !== elementsFloor) {
-         await changeFloor(elementsFloor);
-      }
+         choosenCategoryTextBlock.innerHTML =
+               `<h5>${event.target.dataset.title}</h5>
+               <p>${event.target.dataset.about}</p>`;
+      } else {
+         let elementsFloor;
       
-      const roomElement = document.getElementById(event.target.dataset.room);
-      selectRoom(roomElement);
+         mapData.floors.forEach(floor => {
+            if (floor.id.includes(event.target.dataset.floor)) {
+               elementsFloor = mapData.floors.indexOf(floor);
+            }
+         });
+
+         if (currentFloor !== elementsFloor) {
+            await changeFloor(elementsFloor);
+         }
+         
+         const roomElement = document.getElementById(event.target.dataset.room);
+         selectRoom(roomElement);
+      }
    }
 }
 
@@ -246,25 +306,23 @@ async function changeFloor(floor) {
       } else if (floor === floorsList.length - 1) {
          disable(floorIncreaseBtn);
       }
-   }
 
-   //--------
-   newSvg = document.getElementById('Слой_1');
-   instance = panzoom(newSvg, {
-      maxZoom: 2.5,
-      minZoom: 1,
-      zoomDoubleClickSpeed: 1, 
-   });
-   //--------
+      //--------
+      newSvg = document.getElementById('Слой_1');
+      instance = panzoom(newSvg, {
+         maxZoom: 2.5,
+         minZoom: 1,
+         zoomDoubleClickSpeed: 1, 
+      });
+      //--------
 
-   if (roomFromUrl) {
-      const roomElement = document.getElementById(roomFromUrl);
-      if (roomElement) {
-         selectRoom(roomElement);
+      if (roomFromUrl) {
+         const roomElement = document.getElementById(roomFromUrl);
+         if (roomElement) {
+            selectRoom(roomElement);
+         }
       }
    }
-
-   //PS: почему не получается вставить эти функции в условие?
 }
 
 // фнкции скрытия и показывания элемента
