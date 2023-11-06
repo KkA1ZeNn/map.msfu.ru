@@ -9,10 +9,8 @@ let instance;
 // переменная, которая хранит div блок с главным SVG
 const svgContainer = document.getElementById('mapSvg');
 
-// базовый URL страницы, параметры URL и id комнаты из URL
+// базовый URL страницы
 const baseUrl = window.location.href.split('?')[0];
-const urlParams = new URLSearchParams(window.location.search);
-const roomFromUrl = urlParams.get('location');
 
 // переменная плавающего окошка с описанием кабинетов
 const descriptionBlock  = document.getElementById('description');
@@ -28,10 +26,10 @@ const currentFloorBlock = document.getElementById('currentFloor')
 const floorIncreaseBtn = document.getElementById('floorIncrease');
 const floorReduceBtn = document.getElementById('floorReduce');
 
+// переменные для выбора категории
 const choosenCategoryBlock = document.getElementById('categoriesChoosen_item');
 const choosenCategoryTextBlock = document.getElementById('categoriesChoosen_item_text');
 const closeChoosenCategoryButton = document.getElementById('categoriesChoosen_item_button');
-
 let choosenCategory;
 
 //текущий этаж, чтобы в дальнейшем его менять и делать проверку этажа
@@ -44,6 +42,8 @@ fetch('./map/bmstuJson.json')
    .then(response => response.json())
    .then(json => {
       mapData = json;
+      const urlParams = new URLSearchParams(window.location.search);
+      const roomFromUrl = urlParams.get('location');
       if (!roomFromUrl) {
          mapData.floors.forEach((floor, i) => {
             if (floor.status === 'main floor') {
@@ -283,6 +283,7 @@ async function searchResultsClickHandler(event) {
 
 // функция смены этажа, в ней происходиь проверка, загрузка нужной svg, отключение кнопок + и - ,а также выделение комнаты, если есть id в url
 async function changeFloor(floor) {
+   console.log('change floor');
    let floorsList = mapData.floors;
    
    if (floor < 0 || floor >= floorsList.length) {
@@ -316,7 +317,10 @@ async function changeFloor(floor) {
       });
       //--------
 
+      const urlParams = new URLSearchParams(window.location.search);
+      const roomFromUrl = urlParams.get('location');
       if (roomFromUrl) {
+         console.log(roomFromUrl);
          const roomElement = document.getElementById(roomFromUrl);
          if (roomElement) {
             selectRoom(roomElement);
