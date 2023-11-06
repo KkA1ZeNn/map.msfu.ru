@@ -22,11 +22,14 @@
     padding: 16px;
     width: 300px;
     height: 100px;
-    display: none;
+    display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
     position: absolute;
+}
+#description.disabled{
+   display: none !important;
 }
 #description h4 {
    font-family: Roboto, Tahoma, Helvetica, sans-serif;

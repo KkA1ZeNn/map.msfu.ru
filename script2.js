@@ -1,10 +1,18 @@
 //переменная, которая хранит объект на основе JSON
 let mapData;
+
+//-----------
 let svg;
 let instance;
+//-----------
 
 // переменная, которая хранит div блок с главным SVG
 const svgContainer = document.getElementById('mapSvg');
+
+// базовый URL страницы, параметры URL и id комнаты из URL
+const baseUrl = window.location.href.split('?')[0];
+const urlParams = new URLSearchParams(window.location.search);
+const roomFromUrl = urlParams.get('location');
 
 // переменная плавающего окошка с описанием кабинетов
 const descriptionBlock  = document.getElementById('description');
@@ -20,8 +28,6 @@ const currentFloorBlock = document.getElementById('currentFloor')
 const floorIncreaseBtn = document.getElementById('floorIncrease');
 const floorReduceBtn = document.getElementById('floorReduce');
 
-const baseUrl = window.location.href.split('?')[0];
-
 //текущий этаж, чтобы в дальнейшем его менять и делать проверку этажа
 let currentFloor;
 
@@ -32,11 +38,21 @@ fetch('./map/bmstuJson.json')
    .then(response => response.json())
    .then(json => {
       mapData = json;
-      mapData.floors.forEach((floor, i) => {
-         if (floor.status === 'main floor') {
-            changeFloor(i);
-         }
-      });
+      if (!roomFromUrl) {
+         mapData.floors.forEach((floor, i) => {
+            if (floor.status === 'main floor') {
+               changeFloor(i);
+            }
+         });
+      } else {
+         mapData.floors.forEach((floor, i) => {
+            floor.locations.forEach(room => {
+               if (room.id === roomFromUrl) {
+                  changeFloor(i);
+               }
+            });
+         });
+      }
    });   
 
 // Обработчик событий SVG файла для реагирования комнат на нажатие
@@ -57,18 +73,6 @@ searchInput.addEventListener('input', searchRoom);
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------
 
-function updateUrl(roomId) {
-   // Update the URL without reloading the page
-   const newUrl = baseUrl + '?location=' + roomId;
-   history.pushState({ roomId }, '', newUrl);
-}
-
-function resetUrl() {
-   // Reset the URL without reloading the page
-   history.pushState({ roomId: null }, '', baseUrl);
-}
-
-
 // Функция, которая отвечает за реакцию комнаты на выбор этой комнаты (нажатие или поиск). 
 //Проверяем, что искомая комната есть, если есть, то проверка, что это она уже не включена,  
 // заполняем блок описания данными из json, смещаем блок описания
@@ -82,15 +86,17 @@ function selectRoom(currentRoom) {
 
       if (activeRoom && activeRoom !== currentRoom) {
          activeRoom.classList.remove('active');
-         hide(descriptionBlock);
+         disable(descriptionBlock);
       }
 
       currentRoom.classList.add('active');
       updateUrl(currentRoom.id);
-      //show(descriptionBlock);
+      enable(descriptionBlock);
+
+      //--------------
 
       const roomRect1 = currentRoom.getBoundingClientRect();
-      const roomRect2 = svg.getBoundingClientRect(); 
+      const roomRect2 = newSvg.getBoundingClientRect(); 
       console.log('svg = ', roomRect2.x, roomRect2.y + window.scrollY);
       console.log('room = ', roomRect1.x, roomRect1.y + window.scrollY);
       console.log(instance.getTransform());
@@ -111,6 +117,8 @@ function selectRoom(currentRoom) {
       
       //instance.moveTo(620 - roomRect1.x - (roomRect1.right - roomRect1.left) / 2, 130 - roomRect1.y - (roomRect1.bottom - roomRect1.top) / 2 - window.scrollY );
       //instance.smoothZoom(0, 0, 2.5);
+
+      //-----------------
    
       currentFLoorRooms.forEach(room => {
          if (room.id === roomId) {
@@ -139,14 +147,14 @@ function selectRoom(currentRoom) {
       });
 
       if (!roomHasInfo) {
-         hide(descriptionBlock);
+         disable(descriptionBlock);
       }
-   }
-   else {
+   } else {
       if (activeRoom) {
          activeRoom.classList.remove('active');
-         hide(descriptionBlock);
+         disable(descriptionBlock);
          resetUrl();
+         //-------
          //instance.moveTo(0, 0);
          //instance.zoomTo(0, 0, 0.4);
       }
@@ -227,40 +235,50 @@ async function changeFloor(floor) {
       currentFloor = floor;
       currentFloorBlock.textContent = floorsList[floor].title;
 
-      hide(descriptionBlock);
+      disable(descriptionBlock);
 
-      floorReduceBtn.classList.remove('disabled');
-      floorIncreaseBtn.classList.remove('disabled');
+      enable(floorReduceBtn);
+      enable(floorIncreaseBtn);
 
       if (floor === 0) {
-         floorReduceBtn.classList.add('disabled');
+         disable(floorReduceBtn);
       } else if (floor === floorsList.length - 1) {
-         floorIncreaseBtn.classList.add('disabled');
+         disable(floorIncreaseBtn);
       }
    }
 
-   svg = document.getElementById('Слой_1');
-   instance = panzoom(svg, {
+   //--------
+   newSvg = document.getElementById('Слой_1');
+   instance = panzoom(newSvg, {
       maxZoom: 2.5,
       minZoom: 1,
       zoomDoubleClickSpeed: 1, 
    });
+   //--------
 
-   const urlParams = new URLSearchParams(window.location.search);
-   const roomId = urlParams.get('location');
-
-   if (roomId) {
-      const roomElement = document.getElementById(roomId);
+   if (roomFromUrl) {
+      const roomElement = document.getElementById(roomFromUrl);
       if (roomElement) {
-            selectRoom(roomElement);
+         selectRoom(roomElement);
       }
    }
+
+   //PS: почему не получается вставить эти функции в условие?
 }
 
 // фнкции скрытия и показывания элемента
-function hide(element) {
-   element.style.display = 'none'
+function disable(element) {
+   element.classList.add('disabled');
 }
-function show(element) {
-   element.style.display = "flex";
+function enable(element) {
+   element.classList.remove('disabled');
+}
+
+// Функции для обновления и сброса URL при поиске комнат
+function updateUrl(roomId) {
+   const newUrl = baseUrl + '?location=' + roomId;
+   history.pushState( { roomId } , '', newUrl);
+}
+function resetUrl() {
+   history.pushState( { roomId: null } , '', baseUrl);
 }
