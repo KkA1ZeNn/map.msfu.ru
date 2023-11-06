@@ -221,6 +221,7 @@ async function searchResultsClickHandler(event) {
    }
 }
 
+// функция смены этажа, в ней происходиь проверка, загрузка нужной svg, отключение кнопок + и - ,а также выделение комнаты, если есть id в url
 async function changeFloor(floor) {
    let floorsList = mapData.floors;
    
