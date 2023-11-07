@@ -93,8 +93,8 @@ floorReduceBtn.addEventListener('click', () => { changeFloor(currentFloor - 1) }
 searchInput.addEventListener('input', searchRoom);
 
 closeChoosenCategoryButton.addEventListener('click', () => {
-   disable(choosenCategoryBlock);
    choosenCategory = "";
+   disable(choosenCategoryBlock);
    searchRoom();
 })
 
@@ -187,7 +187,7 @@ function selectRoom(currentRoom) {
 };
 
 // Функция, которая отвечает за поиск комнаты через поле ввода. Здесь фформируется глобальный массив реультатов поиска
-// searchResult - массив объектов [строка с id этажа; объект комнаты со всеми полями из json]
+// searchResult - массив объектов [строка с id этажа; объект комнаты со всеми полями из json] или же там лежит объект категории для дальнейшей работы с ними
 function searchRoom() {
    const currentInput = searchInput.value;
    let searchResult = [];
@@ -218,11 +218,12 @@ function searchRoom() {
       mapData.floors.forEach(floor => {
          floor.locations.forEach(room => {    
             if (room.category) {
-               if (
-                  (room.category === choosenCategory) &&
-                  (room.title.includes(currentInput) ||
-                  room.about.includes(currentInput) || 
-                  room.id.includes(currentInput)) 
+               if ((room.category === choosenCategory) &&
+                   (
+                      room.title.includes(currentInput) ||
+                      room.about.includes(currentInput) || 
+                      room.id.includes(currentInput)
+                   ) 
                ) {
                   searchResult.push( {floor: floor.id, room: room} );
                }
@@ -267,8 +268,8 @@ async function searchResultsClickHandler(event) {
       if(event.target.dataset.categoryId) {
          choosenCategory = event.target.dataset.categoryId;
          searchInput.value = "";
-         searchRoom();
          enable(choosenCategoryBlock);
+         searchRoom();
 
          choosenCategoryTextBlock.innerHTML =
                `<h5>${event.target.dataset.title}</h5>
@@ -316,14 +317,12 @@ async function changeFloor(floor) {
             });
 
       let svg = await response.text();
-
       svgContainer.innerHTML = svg;
-
+      
       currentFloor = floor;
       currentFloorBlock.textContent = floorsList[floor].title;
 
       disable(descriptionBlock);
-
       enable(floorReduceBtn);
       enable(floorIncreaseBtn);
 
