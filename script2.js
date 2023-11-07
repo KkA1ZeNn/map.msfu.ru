@@ -39,6 +39,15 @@ let currentFloor;
 
 //парсим JSON; устанавливаем текущий этаж на тот, у которого  статус главного этажа
 fetch('./map/bmstuJson.json')
+   .then((response) => {
+      if (response.status >= 200 && response.status < 300) {
+         return response;
+      } else {
+         let error = new Error(response.statusText);
+         error.response = response;
+         throw error
+      }
+   })
    .then(response => response.json())
    .then(json => {
       mapData = json;
@@ -61,7 +70,11 @@ fetch('./map/bmstuJson.json')
       }
 
       searchRoom();
-   });   
+   })
+   .catch((e) => {
+      console.log('Error: ' + e.message);
+      console.log(e.response);
+   });  
 
 // Обработчик событий SVG файла для реагирования комнат на нажатие
 svgContainer.addEventListener('click', (event) => {
@@ -148,12 +161,10 @@ function selectRoom(currentRoom) {
             if (roomRect.left - descriptionBlock.offsetWidth / 2 < 0){
                descriptionBlock.style.left = `${roomRect.right + 20}px`;
                descriptionBlock.style.top = `${roomRect.bottom + window.scrollY - descriptionBlock.offsetHeight / 2}px`;
-            }
-            else if (roomRect.right + descriptionBlock.offsetWidth / 2 > mapContainer.offsetWidth) {
+            } else if (roomRect.right + descriptionBlock.offsetWidth / 2 > mapContainer.offsetWidth) {
                descriptionBlock.style.left = `${roomRect.left - descriptionBlock.offsetWidth - 20}px`;
                descriptionBlock.style.top = `${roomRect.bottom + window.scrollY - descriptionBlock.offsetHeight / 2}px`;
-            }
-            else {
+            } else {
                descriptionBlock.style.left = `${roomRect.left - descriptionBlock.offsetWidth / 2 + roomRect.width / 2}px`;
                descriptionBlock.style.top = `${roomRect.top + window.scrollY - descriptionBlock.offsetHeight - 20}px`;
             }
@@ -283,13 +294,27 @@ async function searchResultsClickHandler(event) {
 
 // функция смены этажа, в ней происходиь проверка, загрузка нужной svg, отключение кнопок + и - ,а также выделение комнаты, если есть id в url
 async function changeFloor(floor) {
-   console.log('change floor');
    let floorsList = mapData.floors;
    
    if (floor < 0 || floor >= floorsList.length) {
       console.log('такого этажа нет');
    } else {
-      let response = await fetch(floorsList[floor].map);
+      let response = await
+         fetch(floorsList[floor].map)
+            .then((response) => {
+               if (response.status >= 200 && response.status < 300) {
+                  return response;
+               } else {
+                  let error = new Error(response.statusText);
+                  error.response = response;
+                  throw error
+               }
+            })
+            .catch((e) => {
+               console.log('Error: ' + e.message);
+               console.log(e.response);
+            });
+
       let svg = await response.text();
 
       svgContainer.innerHTML = svg;
@@ -320,7 +345,6 @@ async function changeFloor(floor) {
       const urlParams = new URLSearchParams(window.location.search);
       const roomFromUrl = urlParams.get('location');
       if (roomFromUrl) {
-         console.log(roomFromUrl);
          const roomElement = document.getElementById(roomFromUrl);
          if (roomElement) {
             selectRoom(roomElement);
