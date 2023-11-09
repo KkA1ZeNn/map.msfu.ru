@@ -186,6 +186,29 @@ function selectRoom(currentRoom) {
    }
 };
 
+//const searchInput = document.querySelector('#search-input');
+//const resultsList = document.querySelector('#results-list');
+//const json = [{...}, {...}, {...}]; // your JSON data
+
+//function search() {
+//  const query = searchInput.value.toLowerCase();
+//  const filteredJson = json.filter(item => {
+//    const department = item.department.toLowerCase();
+//    const rooms = item.floors.flatMap(floor => floor.rooms.map(room => room.id));
+//    return department.includes(query) || rooms.includes(query);
+//  });
+//  renderResults(filteredJson);
+//}
+
+//function renderResults(results) {
+//  resultsList.innerHTML = '';
+//  results.forEach(result => {
+//    // create HTML elements for each result and append to resultsList
+//  });
+//}
+
+//searchInput.addEventListener('input', debounce(search, 500));
+
 // Функция, которая отвечает за поиск комнаты через поле ввода. Здесь фформируется глобальный массив реультатов поиска
 // searchResult - массив объектов [строка с id этажа; объект комнаты со всеми полями из json] или же там лежит объект категории для дальнейшей работы с ними
 function searchRoom() {
@@ -235,6 +258,8 @@ function searchRoom() {
    showSearchResult(searchResult);
 }
 
+
+
 // функция отрисовки результатов поиска. Здесь создаются и заполняются содержимым кнопки с комнатами
 function showSearchResult(searchResult) {
    searchResultBlock.innerHTML = '';
@@ -277,9 +302,9 @@ async function searchResultsClickHandler(event) {
       } else {
          let elementsFloor;
       
-         mapData.floors.forEach(floor => {
+         mapData.floors.forEach((floor, i) => {
             if (floor.id.includes(event.target.dataset.floor)) {
-               elementsFloor = mapData.floors.indexOf(floor);
+               elementsFloor = i;
             }
          });
 
