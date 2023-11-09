@@ -40,7 +40,8 @@ let currentFloor;
 //----------------------------------------------------------------------------------------------------------------------
 
 //парсим JSON; устанавливаем текущий этаж на тот, у которого  статус главного этажа
-fetch('./map/bmstuJson.json')
+try {
+   fetch('./map/bmstuJson.json')
    .then((response) => {
       if (response.status >= 200 && response.status < 300) {
          return response;
@@ -71,23 +72,40 @@ fetch('./map/bmstuJson.json')
          });
       }
 
+      //Формируем масси из комнат и категорий, можно вынести в отдельную функцию
       categoriesAndRoomsList = mapData.categories.map(categories => ({category: categories})).concat(
          mapData.floors.flatMap(floor => floor.locations.map(locations => ({
             floor: floor.id,
             room: locations
       }))));
 
+      //--------
+      instance = panzoom(svgContainer, {
+         maxZoom: 2.5,
+         minZoom: 1,
+         zoomDoubleClickSpeed: 1, 
+      });
+      //--------
+
       formSearchResultList(searchParams);
-   })
-   .catch((e) => {
-      console.log('Error: ' + e.message);
-      console.log(e.response);
-   });  
+   });
+} catch(error) {
+   console.log('Error: ' + e.message);
+   console.log(e.response);
+}
 
 // Обработчик событий SVG файла для реагирования комнат на нажатие
 svgContainer.addEventListener('click', (event) => {
    const roomElement = event.target.closest('[id^="room"]');
-   selectRoom(roomElement);
+   if (roomElement) {
+      selectRoom(roomElement);
+   } else {
+      const activeRoom = document.querySelector('[id^="room"].active');
+      if (activeRoom) {
+         removeSelectRoom(activeRoom);
+      }
+   }
+
 });
 
 // Обработчик событий для тех комнат, которые появились в списке поиска
@@ -113,86 +131,82 @@ closeChoosenCategoryButton.addEventListener('click', () => {
 // заполняем блок описания данными из json, смещаем блок описания
 function selectRoom(currentRoom) {
    const activeRoom = document.querySelector('[id^="room"].active');
+   const roomId = currentRoom.getAttribute('id');
+   let roomHasInfo = false;
+   let currentFLoorRooms =  mapData.floors[currentFloor].locations;
 
-   if (currentRoom) {
-      const roomId = currentRoom.getAttribute('id');
-      let roomHasInfo = false;
-      let currentFLoorRooms =  mapData.floors[currentFloor].locations;
+   if (activeRoom && activeRoom !== currentRoom) {
+      removeSelectRoom(activeRoom);
+   }
 
-      if (activeRoom && activeRoom !== currentRoom) {
-         activeRoom.classList.remove('active');
-         disable(descriptionBlock);
-      }
+   currentRoom.classList.add('active');
+   updateUrl(currentRoom.id);
+   enable(descriptionBlock);
 
-      currentRoom.classList.add('active');
-      updateUrl(currentRoom.id);
-      enable(descriptionBlock);
+   //--------------
 
-      //--------------
-
-      const roomRect1 = currentRoom.getBoundingClientRect();
-      const roomRect2 = newSvg.getBoundingClientRect(); 
-      console.log('svg = ', roomRect2.x, roomRect2.y + window.scrollY);
-      console.log('room = ', roomRect1.x, roomRect1.y + window.scrollY);
-      console.log(instance.getTransform());
-      console.log('---------------------------------------');
-      
-      //instance.zoomTo(roomRect1.x - 200, roomRect1.y + 50, 4); 900 250   860 170 при зуме -- room
-      //instance.moveTo(900, 250)   -1145 -1470      центр в -1711 -933
-      //console.log(roomRect1.right - roomRect1.x, roomRect1.bottom - roomRect1.y);
-      //804 417      750 417        1318 206
-      //500 80       500 80         500  80
-      //-304 -338    -250 -337      -818 -126
-
-      //0 0 1 -220 -306        
-
-      //instance.moveTo(0, 0);
-      //instance.zoomTo(0, 0, 1 / info.scale);
-      //console.log(instance.getTransform());
-      
-      //instance.moveTo(620 - roomRect1.x - (roomRect1.right - roomRect1.left) / 2, 130 - roomRect1.y - (roomRect1.bottom - roomRect1.top) / 2 - window.scrollY );
-      //instance.smoothZoom(0, 0, 2.5);
-
-      //-----------------
+   const roomRect1 = currentRoom.getBoundingClientRect();
+   const roomRect2 = svgContainer.getBoundingClientRect(); 
+   console.log('svg = ', roomRect2.x, roomRect2.y + window.scrollY);
+   console.log('room = ', roomRect1.x, roomRect1.y + window.scrollY);
+   console.log(instance.getTransform());
+   console.log('---------------------------------------');
    
-      currentFLoorRooms.forEach(room => {
-         if (room.id === roomId) {
-            roomHasInfo = true;
-            descriptionBlock.innerHTML =
-               `<h4>${room.title}</h4>
-               <p>${room.about}</p>`;
-            
-            // функция для считывания размера элемента и перемещения окна, но пока работает КРИВО
-            const roomRect = currentRoom.getBoundingClientRect();
-            const mapContainer = document.querySelector(".mapContainer");
+   //instance.zoomTo(roomRect1.x - 200, roomRect1.y + 50, 4); 900 250   860 170 при зуме -- room
+   //instance.moveTo(900, 250)   -1145 -1470      центр в -1711 -933
+   //console.log(roomRect1.right - roomRect1.x, roomRect1.bottom - roomRect1.y);
+   //804 417      750 417        1318 206
+   //500 80       500 80         500  80
+   //-304 -338    -250 -337      -818 -126
 
-            if (roomRect.left - descriptionBlock.offsetWidth / 2 < 0){
-               descriptionBlock.style.left = `${roomRect.right + 20}px`;
-               descriptionBlock.style.top = `${roomRect.bottom + window.scrollY - descriptionBlock.offsetHeight / 2}px`;
-            } else if (roomRect.right + descriptionBlock.offsetWidth / 2 > mapContainer.offsetWidth) {
-               descriptionBlock.style.left = `${roomRect.left - descriptionBlock.offsetWidth - 20}px`;
-               descriptionBlock.style.top = `${roomRect.bottom + window.scrollY - descriptionBlock.offsetHeight / 2}px`;
-            } else {
-               descriptionBlock.style.left = `${roomRect.left - descriptionBlock.offsetWidth / 2 + roomRect.width / 2}px`;
-               descriptionBlock.style.top = `${roomRect.top + window.scrollY - descriptionBlock.offsetHeight - 20}px`;
-            }
+   //0 0 1 -220 -306        
+
+   //instance.moveTo(0, 0);
+   //instance.zoomTo(0, 0, 1 / info.scale);
+   //console.log(instance.getTransform());
+   
+   //instance.moveTo(620 - roomRect1.x - (roomRect1.right - roomRect1.left) / 2, 130 - roomRect1.y - (roomRect1.bottom - roomRect1.top) / 2 - window.scrollY );
+   //instance.smoothZoom(0, 0, 2.5);
+
+   //-----------------
+
+   currentFLoorRooms.forEach(room => {
+      if (room.id === roomId) {
+         roomHasInfo = true;
+         descriptionBlock.innerHTML =
+            `<h4>${room.title}</h4>
+            <p>${room.about}</p>`;
+         
+         // функция для считывания размера элемента и перемещения окна, но пока работает КРИВО
+         const roomRect = currentRoom.getBoundingClientRect();
+         const mapContainer = document.querySelector(".mapContainer");
+
+         if (roomRect.left - descriptionBlock.offsetWidth / 2 < 0){
+            descriptionBlock.style.left = `${roomRect.right + 20}px`;
+            descriptionBlock.style.top = `${roomRect.bottom + window.scrollY - descriptionBlock.offsetHeight / 2}px`;
+         } else if (roomRect.right + descriptionBlock.offsetWidth / 2 > mapContainer.offsetWidth) {
+            descriptionBlock.style.left = `${roomRect.left - descriptionBlock.offsetWidth - 20}px`;
+            descriptionBlock.style.top = `${roomRect.bottom + window.scrollY - descriptionBlock.offsetHeight / 2}px`;
+         } else {
+            descriptionBlock.style.left = `${roomRect.left - descriptionBlock.offsetWidth / 2 + roomRect.width / 2}px`;
+            descriptionBlock.style.top = `${roomRect.top + window.scrollY - descriptionBlock.offsetHeight - 20}px`;
          }
-      });
+      }
+   });
 
-      if (!roomHasInfo) {
-         disable(descriptionBlock);
-      }
-   } else {
-      if (activeRoom) {
-         activeRoom.classList.remove('active');
-         disable(descriptionBlock);
-         resetUrl();
-         //-------
-         //instance.moveTo(0, 0);
-         //instance.zoomTo(0, 0, 0.4);
-      }
+   if (!roomHasInfo) {
+      disable(descriptionBlock);
    }
 };
+
+function removeSelectRoom(activeRoom) {
+   activeRoom.classList.remove('active');
+   disable(descriptionBlock);
+   resetUrl();
+   //-------
+   //instance.moveTo(0, 0);
+   //instance.zoomTo(0, 0, 0.4);
+}
 
 //Убейте меня, памагити
 function formSearchResultList(parameters) {
@@ -312,7 +326,8 @@ async function changeFloor(floor) {
    if (floor < 0 || floor >= floorsList.length) {
       console.log('такого этажа нет');
    } else {
-      let response = await
+      try {
+         let response = await
          fetch(floorsList[floor].map)
             .then((response) => {
                if (response.status >= 200 && response.status < 300) {
@@ -322,14 +337,14 @@ async function changeFloor(floor) {
                   error.response = response;
                   throw error
                }
-            })
-            .catch((e) => {
-               console.log('Error: ' + e.message);
-               console.log(e.response);
             });
 
-      let svg = await response.text();
-      svgContainer.innerHTML = svg;
+         let svg = await response.text();
+         svgContainer.innerHTML = svg;
+      } catch(error) {
+         console.log('Error: ' + e.message);
+         console.log(e.response);
+      }
       
       currentFloor = floor;
       currentFloorBlock.textContent = floorsList[floor].title;
@@ -343,15 +358,6 @@ async function changeFloor(floor) {
       } else if (floor === floorsList.length - 1) {
          disable(floorIncreaseBtn);
       }
-
-      //--------
-      newSvg = document.getElementById('Слой_1');
-      instance = panzoom(newSvg, {
-         maxZoom: 2.5,
-         minZoom: 1,
-         zoomDoubleClickSpeed: 1, 
-      });
-      //--------
 
       const urlParams = new URLSearchParams(window.location.search);
       const roomFromUrl = urlParams.get('location');
