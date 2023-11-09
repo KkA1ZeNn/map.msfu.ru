@@ -144,13 +144,46 @@ function selectRoom(currentRoom) {
    enable(descriptionBlock);
 
    //--------------
+   currentRoom.addEventListener('click', (event) => {
+      // Get the bounding box of the clicked room
+      const bbox = event.target.getBBox();
+  
+      // Calculate the center point of the room
+      const centerX = bbox.x + bbox.width / 2;
+      const centerY = bbox.y + bbox.height / 2;
+  
+      // Call the ZoomTo function with the center point coordinates
+      instance.zoomTo(centerX, centerY, 2.5);
+    });
 
-   const roomRect1 = currentRoom.getBoundingClientRect();
-   const roomRect2 = svgContainer.getBoundingClientRect(); 
-   console.log('svg = ', roomRect2.x, roomRect2.y + window.scrollY);
-   console.log('room = ', roomRect1.x, roomRect1.y + window.scrollY);
-   console.log(instance.getTransform());
-   console.log('---------------------------------------');
+
+
+
+
+//   const roomMatrix = currentRoom.getScreenCTM();
+//   const roomRect3 = currentRoom.getBoundingClientRect();
+//   const roomX = roomRect3.left + roomRect3.width / 2;
+//   const roomY = roomRect3.top + roomRect3.height / 2;
+//   const svgPoint = currentRoom.ownerSVGElement.createSVGPoint();
+//   svgPoint.x = roomX;
+//   svgPoint.y = roomY;
+//   // Transform the point using the room's transformation matrix
+//  const transformedPoint = svgPoint.matrixTransform(roomMatrix);
+
+//  console.log(transformedPoint.x, transformedPoint.y);
+
+//  // Call the ZoomTo function with the transformed point coordinates
+//  instance.zoomTo(transformedPoint.x, transformedPoint.y, 2.5);
+//  console.log(transformedPoint.x, transformedPoint.y);
+
+
+
+//   const roomRect1 = currentRoom.getBoundingClientRect();
+//   const roomRect2 = svgContainer.getBoundingClientRect(); 
+//   console.log('svg = ', roomRect2.x, roomRect2.y + window.scrollY);
+//   console.log('room = ', roomRect1.x, roomRect1.y + window.scrollY);
+//   console.log(instance.getTransform());
+//   console.log('---------------------------------------');
    
    //instance.zoomTo(roomRect1.x - 200, roomRect1.y + 50, 4); 900 250   860 170 при зуме -- room
    //instance.moveTo(900, 250)   -1145 -1470      центр в -1711 -933
