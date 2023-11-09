@@ -18,6 +18,8 @@ const descriptionBlock  = document.getElementById('description');
 // переменная с сылкой на поле поиска и переменная с ссылкой на поле с результатами поиска
 const searchInput = document.getElementById('roomSearchInput');
 const searchResultBlock = document.getElementById('searchResultBlock');
+const searchParams = ['id', 'title', 'about'];
+let categoriesAndRoomsList;
 
 // переменная блока с текущим номером этажа
 const currentFloorBlock = document.getElementById('currentFloor')
@@ -69,7 +71,13 @@ fetch('./map/bmstuJson.json')
          });
       }
 
-      searchRoom();
+      categoriesAndRoomsList = mapData.categories.map(categories => ({category: categories})).concat(
+         mapData.floors.flatMap(floor => floor.locations.map(locations => ({
+            floor: floor.id,
+            room: locations
+      }))));
+
+      formSearchResultList(searchParams);
    })
    .catch((e) => {
       console.log('Error: ' + e.message);
@@ -186,34 +194,66 @@ function selectRoom(currentRoom) {
    }
 };
 
-//const searchInput = document.querySelector('#search-input');
-//const resultsList = document.querySelector('#results-list');
-//const json = [{...}, {...}, {...}]; // your JSON data
+//Убейте меня, памагити
+function formSearchResultList(parameters, myCategory) {
+   const textInput = searchInput.value.toLowerCase();
+   let SearchResultList;
 
-//function search() {
-//  const query = searchInput.value.toLowerCase();
-//  const filteredJson = json.filter(item => {
-//    const department = item.department.toLowerCase();
-//    const rooms = item.floors.flatMap(floor => floor.rooms.map(room => room.id));
-//    return department.includes(query) || rooms.includes(query);
-//  });
-//  renderResults(filteredJson);
-//}
+   if (myCategory) {
+      if (textInput === "") {
+         SearchResultList = categoriesAndRoomsList.filter(item => {
+            if (item.room && item.room.category) {
+               return item.room.category === myCategory;
+            }
+         });
+      } else {
+         SearchResultList = categoriesAndRoomsList.filter(item => {
+            if (item.room && item.room.category && item.room.category === myCategory) {
+               for (let i = 0; i < parameters.length; ++i) {
+                  if (item.room[parameters[i]] && item.room[parameters[i]].toLowerCase().includes(textInput)) {
+                     return true;
+                  }
+               }
+            }
+         });
+      }
+   } else {
+      if (textInput === "") {
+         SearchResultList = categoriesAndRoomsList.filter(item => {
+            return item.category;
+         });
+      }
+      else {
+         SearchResultList = categoriesAndRoomsList.filter(item => {
+            if(item.category) {
+               for (let i = 0; i < parameters.length; ++i) {
+                  if (item.category[parameters[i]] && item.category[parameters[i]].toLowerCase().includes(textInput)) {
+                     return true;
+                  }
+               }
+               return false;
+            } else {
+               for (let i = 0; i < parameters.length; ++i) {
+                  if (item.room[parameters[i]] && item.room[parameters[i]].toLowerCase().includes(textInput)) {
+                     return true;
+                  }
+               }
+               return false;
+            }
+         });
+      }
+   }
 
-//function renderResults(results) {
-//  resultsList.innerHTML = '';
-//  results.forEach(result => {
-//    // create HTML elements for each result and append to resultsList
-//  });
-//}
+   console.log(SearchResultList);
+}
 
-//searchInput.addEventListener('input', debounce(search, 500));
 
 // Функция, которая отвечает за поиск комнаты через поле ввода. Здесь фформируется глобальный массив реультатов поиска
 // searchResult - массив объектов [строка с id этажа; объект комнаты со всеми полями из json] или же там лежит объект категории для дальнейшей работы с ними
 function searchRoom() {
    const currentInput = searchInput.value;
    let searchResult = [];
+   formSearchResultList(['id', 'title', 'about']);
    
    if(!choosenCategory) {
       mapData.categories.forEach(category => {
