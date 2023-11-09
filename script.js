@@ -98,12 +98,12 @@ floorIncreaseBtn.addEventListener('click', () => { changeFloor(currentFloor + 1)
 floorReduceBtn.addEventListener('click', () => { changeFloor(currentFloor - 1) });
 
 // обработчик событий для поиска комнат по описанию
-searchInput.addEventListener('input', searchRoom);
+searchInput.addEventListener('input', debounce(() => { formSearchResultList(searchParams) }, 700));
 
 closeChoosenCategoryButton.addEventListener('click', () => {
    choosenCategory = "";
    disable(choosenCategoryBlock);
-   searchRoom();
+   formSearchResultList(searchParams);
 })
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -195,20 +195,20 @@ function selectRoom(currentRoom) {
 };
 
 //Убейте меня, памагити
-function formSearchResultList(parameters, myCategory) {
+function formSearchResultList(parameters) {
    const textInput = searchInput.value.toLowerCase();
    let SearchResultList;
 
-   if (myCategory) {
+   if (choosenCategory) {
       if (textInput === "") {
          SearchResultList = categoriesAndRoomsList.filter(item => {
             if (item.room && item.room.category) {
-               return item.room.category === myCategory;
+               return item.room.category === choosenCategory;
             }
          });
       } else {
          SearchResultList = categoriesAndRoomsList.filter(item => {
-            if (item.room && item.room.category && item.room.category === myCategory) {
+            if (item.room && item.room.category && item.room.category === choosenCategory) {
                for (let i = 0; i < parameters.length; ++i) {
                   if (item.room[parameters[i]] && item.room[parameters[i]].toLowerCase().includes(textInput)) {
                      return true;
@@ -244,61 +244,8 @@ function formSearchResultList(parameters, myCategory) {
       }
    }
 
-   console.log(SearchResultList);
+   showSearchResult(SearchResultList);
 }
-
-
-// Функция, которая отвечает за поиск комнаты через поле ввода. Здесь фформируется глобальный массив реультатов поиска
-// searchResult - массив объектов [строка с id этажа; объект комнаты со всеми полями из json] или же там лежит объект категории для дальнейшей работы с ними
-function searchRoom() {
-   const currentInput = searchInput.value;
-   let searchResult = [];
-   formSearchResultList(['id', 'title', 'about']);
-   
-   if(!choosenCategory) {
-      mapData.categories.forEach(category => {
-         if (
-            category.title.includes(currentInput) ||
-            category.about.includes(currentInput) || 
-            category.id.includes(currentInput)
-         ) {
-            searchResult.push( {category: category} );
-         }
-      });
-
-      mapData.floors.forEach(floor => {
-         floor.locations.forEach(room => {    
-            if (
-               room.title.includes(currentInput) ||
-               room.about.includes(currentInput) || 
-               room.id.includes(currentInput) 
-            ) {
-               searchResult.push( {floor: floor.id, room: room} );
-            }
-         });
-      });
-   } else {
-      mapData.floors.forEach(floor => {
-         floor.locations.forEach(room => {    
-            if (room.category) {
-               if ((room.category === choosenCategory) &&
-                   (
-                      room.title.includes(currentInput) ||
-                      room.about.includes(currentInput) || 
-                      room.id.includes(currentInput)
-                   ) 
-               ) {
-                  searchResult.push( {floor: floor.id, room: room} );
-               }
-            }
-         });
-      });
-   }
-
-   showSearchResult(searchResult);
-}
-
-
 
 // функция отрисовки результатов поиска. Здесь создаются и заполняются содержимым кнопки с комнатами
 function showSearchResult(searchResult) {
@@ -334,7 +281,7 @@ async function searchResultsClickHandler(event) {
          choosenCategory = event.target.dataset.categoryId;
          searchInput.value = "";
          enable(choosenCategoryBlock);
-         searchRoom();
+         formSearchResultList(searchParams);
 
          choosenCategoryTextBlock.innerHTML =
                `<h5>${event.target.dataset.title}</h5>
@@ -433,3 +380,11 @@ function updateUrl(roomId) {
 function resetUrl() {
    history.pushState( { roomId: null } , '', baseUrl);
 }
+
+function debounce(func, ms) {
+   let timeout;
+   return function() {
+     clearTimeout(timeout);
+     timeout = setTimeout(() => func.apply(this, arguments), ms);
+   };
+ }
