@@ -58,14 +58,14 @@ fetch('./map/bmstuJson.json')
       if (!roomFromUrl) {
          mapData.floors.forEach((floor, i) => {
             if (floor.status === 'main floor') {
-               changeFloor(i);
+               setFloor(i);
             }
          });
       } else {
          mapData.floors.forEach((floor, i) => {
             floor.locations.forEach(room => {
                if (room.id === roomFromUrl) {
-                  changeFloor(i);
+                  setFloor(i);
                }
             });
          });
@@ -96,7 +96,7 @@ fetch('./map/bmstuJson.json')
 svgContainer.addEventListener('click', (event) => {
    const roomElement = event.target.closest('[id^="room"]');
    if (roomElement) {
-      selectRoom(roomElement);
+      selectRoom(roomElement.getAttribute('id'));
    } else {
       const activeRoom = document.querySelector('[id^="room"].active');
       if (activeRoom) {
@@ -109,8 +109,8 @@ svgContainer.addEventListener('click', (event) => {
 searchResultBlock.addEventListener('click', (event) => searchResultsClickHandler(event));
 
 // Обработчики событий для смены этажа
-floorIncreaseBtn.addEventListener('click', () => { changeFloor(currentFloor + 1) });
-floorReduceBtn.addEventListener('click', () => { changeFloor(currentFloor - 1) });
+floorIncreaseBtn.addEventListener('click', () => { setFloor(currentFloor + 1) });
+floorReduceBtn.addEventListener('click', () => { setFloor(currentFloor - 1) });
 
 // обработчик событий для поиска комнат по описанию
 searchInput.addEventListener('input', debounce(() => { formSearchResultList(searchParams) }, 700));
@@ -126,23 +126,25 @@ closeChoosenCategoryButton.addEventListener('click', () => {
 // Функция, которая отвечает за реакцию комнаты на выбор этой комнаты (нажатие или поиск). 
 //Проверяем, что искомая комната есть, если есть, то проверка, что это она уже не включена,  
 // заполняем блок описания данными из json, смещаем блок описания
-function selectRoom(currentRoom) {
+function selectRoom(roomID) {
+   const roomElement = document.getElementById(roomID);
+   
    const activeRoom = document.querySelector('[id^="room"].active');
-   const roomId = currentRoom.getAttribute('id');
+   const roomId = roomElement.getAttribute('id');
    
    let currentFLoorRooms =  mapData.floors[currentFloor].locations;
 
-   if (activeRoom && activeRoom !== currentRoom) {
+   if (activeRoom && activeRoom !== roomElement) {
       removeSelectRoom(activeRoom);
    }
 
-   currentRoom.classList.add('active');
-   updateUrl(currentRoom.id);
-   zoomRoom(currentRoom);
+   roomElement.classList.add('active');
+   updateUrl(roomElement.id);
+   zoomRoom(roomElement);
 
    currentFLoorRooms.forEach(room => {
       if (room.id === roomId) {
-         showDescriptionBlock(currentRoom, room.title, room.about);
+         showDescriptionBlock(roomElement, room.title, room.about);
       }
    });
 };
@@ -341,17 +343,16 @@ async function searchResultsClickHandler(event) {
          });
 
          if (currentFloor !== elementsFloor) {
-            await changeFloor(elementsFloor);
+            await setFloor(elementsFloor);
          }
          
-         const roomElement = document.getElementById(event.target.dataset.room);
-         selectRoom(roomElement);
+         selectRoom(event.target.dataset.room);
       }
    }
 }
 
 // функция смены этажа, в ней происходиь проверка, загрузка нужной svg, отключение кнопок + и - ,а также выделение комнаты, если есть id в url
-async function changeFloor(floor) {
+async function setFloor(floor) {
    let floorsList = mapData.floors;
    
    if (floor < 0 || floor >= floorsList.length) {
@@ -389,10 +390,10 @@ async function changeFloor(floor) {
       const urlParams = new URLSearchParams(window.location.search);
       const roomFromUrl = urlParams.get('location');
       if (roomFromUrl) {
-         const roomElement = document.getElementById(roomFromUrl);
-         if (roomElement) {
-            selectRoom(roomElement);
-         }
+         // const roomElement = document.getElementById();
+         // if (roomElement) {
+            selectRoom(roomFromUrl);
+         // }
       }
    }
 }
