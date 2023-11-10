@@ -40,10 +40,9 @@ let currentFloor;
 //----------------------------------------------------------------------------------------------------------------------
 
 //парсим JSON; устанавливаем текущий этаж на тот, у которого  статус главного этажа
-try {
-   fetch('./map/bmstuJson.json')
+fetch('./map/bmstuJson.json')
    .then((response) => {
-      if (response.status >= 200 && response.status < 300) {
+      if (response.ok) {
          return response;
       } else {
          let error = new Error(response.statusText);
@@ -88,11 +87,10 @@ try {
       //--------
 
       formSearchResultList(searchParams);
+   })
+   .catch(e => {
+      console.log('Error: ' + e.message);
    });
-} catch(error) {
-   console.log('Error: ' + e.message);
-   console.log(e.response);
-}
 
 // Обработчик событий SVG файла для реагирования комнат на нажатие
 svgContainer.addEventListener('click', (event) => {
@@ -360,23 +358,19 @@ async function changeFloor(floor) {
       console.log('такого этажа нет');
    } else {
       try {
-         let response = await
-         fetch(floorsList[floor].map)
-            .then((response) => {
-               if (response.status >= 200 && response.status < 300) {
-                  return response;
-               } else {
-                  let error = new Error(response.statusText);
-                  error.response = response;
-                  throw error
-               }
-            });
+         let response = await fetch(floorsList[floor].map);
+
+         if (!response.ok) {
+            let error = new Error(response.statusText);
+            error.response = response;
+            throw error;
+         }
 
          let svg = await response.text();
          svgContainer.innerHTML = svg;
-      } catch(error) {
+
+      } catch(e) {
          console.log('Error: ' + e.message);
-         console.log(e.response);
       }
       
       currentFloor = floor;
