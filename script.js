@@ -277,8 +277,8 @@ function formSearchResultList(parameters) {
       }
    } else {
       if (textInput === "") {
-         SearchResultList = categoriesAndRoomsList.filter(item => {
-            return item.category;
+         SearchResultList = mapData.categories.map(item => {
+            return {category: item};
          });
       }
       else {
