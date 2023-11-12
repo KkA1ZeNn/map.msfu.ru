@@ -148,7 +148,6 @@ async function selectRoom(roomID) {
       removeSelectRoom(activeRoom);
    }
 
-   console.log(roomElement);
    roomElement.classList.add('active');
    updateUrl(roomElement.id);
    zoomRoom(roomElement);
