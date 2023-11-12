@@ -130,14 +130,16 @@ closeChoosenCategoryButton.addEventListener('click', () => {
 async function selectRoom(roomID) {
    let roomElement = document.getElementById(roomID);
    if (!roomElement) {
-     await mapData.floors.forEach(async (floor, i) => {
-       floor.locations.forEach(async (location) => {
-         if (location.id.includes(roomID)) {
-           await setFloor(i);
-           roomElement = document.getElementById(roomID);
+      for (const floor of mapData.floors) {
+         for (const location of floor.locations) {
+            if (location.id.includes(roomID)) {
+               await setFloor(mapData.floors.indexOf(floor));
+            }
          }
-      });
-   })};
+      }
+
+      roomElement = document.getElementById(roomID);
+   };
    
    const activeRoom = document.querySelector('[id^="room"].active');   
    let currentFLoorRooms =  mapData.floors[currentFloor].locations;
