@@ -127,24 +127,34 @@ closeChoosenCategoryButton.addEventListener('click', () => {
 // Функция, которая отвечает за реакцию комнаты на выбор этой комнаты (нажатие или поиск). 
 //Проверяем, что искомая комната есть, если есть, то проверка, что это она уже не включена,  
 // заполняем блок описания данными из json, смещаем блок описания
-function selectRoom(roomID) {
-   const roomElement = document.getElementById(roomID);
+async function selectRoom(roomID) {
+   let roomElement = document.getElementById(roomID);
+   if (!roomElement) {
+      for (const floor of mapData.floors) {
+         for (const location of floor.locations) {
+            if (location.id.includes(roomID)) {
+               await setFloor(mapData.floors.indexOf(floor));
+            }
+         }
+      }
+
+      roomElement = document.getElementById(roomID);
+   };
    
-   const activeRoom = document.querySelector('[id^="room"].active');
-   const roomId = roomElement.getAttribute('id');
-   
+   const activeRoom = document.querySelector('[id^="room"].active');   
    let currentFLoorRooms =  mapData.floors[currentFloor].locations;
 
    if (activeRoom && activeRoom !== roomElement) {
       removeSelectRoom(activeRoom);
    }
 
+   console.log(roomElement);
    roomElement.classList.add('active');
    updateUrl(roomElement.id);
    zoomRoom(roomElement);
 
    currentFLoorRooms.forEach(room => {
-      if (room.id === roomId) {
+      if (room.id === roomID) {
          showDescriptionBlock(roomElement, room.title, room.about);
       }
    });
@@ -333,7 +343,7 @@ function showSearchResult(searchResult) {
 }
 
 // функция поиска комнаты после клика по кнопке комнаты в списке. Если комната на текущем этаже, то сразу ищем, если нет, то надо отрисовать нужный этаж и найти там
-async function searchResultsClickHandler(event) {
+function searchResultsClickHandler(event) {
    if (event.target.tagName === 'BUTTON') {
       if(event.target.dataset.categoryId) {
          choosenCategory = event.target.dataset.categoryId;
@@ -345,18 +355,6 @@ async function searchResultsClickHandler(event) {
                `<h5>${event.target.dataset.title}</h5>
                <p>${event.target.dataset.about}</p>`;
       } else {
-         let elementsFloor;
-      
-         mapData.floors.forEach((floor, i) => {
-            if (floor.id.includes(event.target.dataset.floor)) {
-               elementsFloor = i;
-            }
-         });
-
-         if (currentFloor !== elementsFloor) {
-            await setFloor(elementsFloor);
-         }
-         
          selectRoom(event.target.dataset.room);
       }
    }
@@ -403,7 +401,7 @@ async function setFloor(floor) {
       if (roomFromUrl) {
          // const roomElement = document.getElementById();
          // if (roomElement) {
-            selectRoom(roomFromUrl);
+         // selectRoom(roomFromUrl);
          // }
       }
    }
