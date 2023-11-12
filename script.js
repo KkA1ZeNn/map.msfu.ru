@@ -118,7 +118,7 @@ searchInput.addEventListener('input', debounce(() => { formSearchResultList(sear
 
 closeChoosenCategoryButton.addEventListener('click', () => {
    choosenCategory = "";
-   disable(choosenCategoryBlock);
+   hide(choosenCategoryBlock);
    formSearchResultList(searchParams);
 })
 
@@ -221,7 +221,7 @@ function zoomRoom(currentRoom) {
 }
 
 function showDescriptionBlock(currentRoom, title, about) {
-   enable(descriptionBlock);
+   show(descriptionBlock);
 
    descriptionBlock.innerHTML =
       `<h4>${title}</h4>
@@ -245,7 +245,7 @@ function showDescriptionBlock(currentRoom, title, about) {
 
 function removeSelectRoom(activeRoom) {
    activeRoom.classList.remove('active');
-   disable(descriptionBlock);
+   hide(descriptionBlock);
    resetUrl();
    //-------
    //instance.moveTo(0, 0);
@@ -338,7 +338,7 @@ async function searchResultsClickHandler(event) {
       if(event.target.dataset.categoryId) {
          choosenCategory = event.target.dataset.categoryId;
          searchInput.value = "";
-         enable(choosenCategoryBlock);
+         show(choosenCategoryBlock);
          formSearchResultList(searchParams);
 
          choosenCategoryTextBlock.innerHTML =
@@ -388,7 +388,7 @@ async function setFloor(floor) {
       currentFloor = floor;
       currentFloorBlock.textContent = floorsList[floor].title;
 
-      disable(descriptionBlock);
+      hide(descriptionBlock);
       enable(floorReduceBtn);
       enable(floorIncreaseBtn);
 
@@ -411,10 +411,17 @@ async function setFloor(floor) {
 
 // фнкции скрытия и показывания элемента
 function disable(element) {
-   element.classList.add('disabled');
+   element.disabled = true;
 }
 function enable(element) {
-   element.classList.remove('disabled');
+   element.disabled = false;
+}
+
+function hide(element) {
+   element.classList.add('hidden');
+}
+function show(element) {
+   element.classList.remove('hidden');
 }
 
 // Функции для обновления и сброса URL при поиске комнат

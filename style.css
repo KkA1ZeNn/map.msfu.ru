@@ -51,7 +51,7 @@
     justify-content: flex-start;
     position: absolute;
 }
-#description.disabled{
+#description.hidden{
    display: none !important;
 }
 #description h4 {
@@ -72,10 +72,6 @@
 /*стили для кнопок + и -, включенных и отключенных*/
 #floorIncrease, #floorReduce {
    cursor: pointer;
-}
-#floorIncrease.disabled, #floorReduce.disabled {
-   pointer-events: none;
-   opacity: 0.5;
 }
 
 /*стили блока с подсказками для поиска*/
@@ -148,7 +144,7 @@
    justify-content: space-between;
 }
 
-#categoriesChoosen_item.disabled {
+#categoriesChoosen_item.hidden {
    display: none;
 }
 
