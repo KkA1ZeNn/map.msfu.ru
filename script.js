@@ -54,21 +54,15 @@ fetch('./map/bmstuJson.json')
    .then(response => response.json())
    .then(json => {
       mapData = json;
-      const urlParams = new URLSearchParams(window.location.search);
-      const roomFromUrl = urlParams.get('location');
-      if (!roomFromUrl) {
+
+      const roomIdFromUrl = checkURL();
+      if (roomIdFromUrl) {
+         selectRoom(roomIdFromUrl);
+      } else {
          mapData.floors.forEach((floor, i) => {
             if (floor.status === 'main floor') {
                setFloor(i);
             }
-         });
-      } else {
-         mapData.floors.forEach((floor, i) => {
-            floor.locations.forEach(room => {
-               if (room.id === roomFromUrl) {
-                  setFloor(i);
-               }
-            });
          });
       }
 
@@ -110,8 +104,20 @@ svgContainer.addEventListener('click', (event) => {
 searchResultBlock.addEventListener('click', (event) => searchResultsClickHandler(event));
 
 // Обработчики событий для смены этажа
-floorIncreaseBtn.addEventListener('click', () => { setFloor(currentFloor + 1) });
-floorReduceBtn.addEventListener('click', () => { setFloor(currentFloor - 1) });
+floorIncreaseBtn.addEventListener('click', async () => { 
+   await setFloor(currentFloor + 1);
+   const roomFromUrl = document.getElementById( checkURL() );
+   if(roomFromUrl) {
+      selectRoom(roomFromUrl.getAttribute('id'));
+   }
+});
+floorReduceBtn.addEventListener('click', async () => { 
+   await setFloor(currentFloor - 1);
+   const roomFromUrl = document.getElementById( checkURL() );
+   if(roomFromUrl) {
+      selectRoom(roomFromUrl.getAttribute('id'));
+   }
+});
 
 // обработчик событий для поиска комнат по описанию
 searchInput.addEventListener('input', debounce(() => { formSearchResultList(searchParams) }, 700));
@@ -142,7 +148,7 @@ async function selectRoom(roomID) {
    };
    
    const activeRoom = document.querySelector('[id^="room"].active');   
-   let currentFLoorRooms =  mapData.floors[currentFloor].locations;
+   const currentFLoorRooms =  mapData.floors[currentFloor].locations;
 
    if (activeRoom && activeRoom !== roomElement) {
       removeSelectRoom(activeRoom);
@@ -393,15 +399,6 @@ async function setFloor(floor) {
       } else if (floor === floorsList.length - 1) {
          disable(floorIncreaseBtn);
       }
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const roomFromUrl = urlParams.get('location');
-      if (roomFromUrl) {
-         // const roomElement = document.getElementById();
-         // if (roomElement) {
-         // selectRoom(roomFromUrl);
-         // }
-      }
    }
 }
 
@@ -435,4 +432,14 @@ function debounce(func, ms) {
      clearTimeout(timeout);
      timeout = setTimeout(() => func.apply(this, arguments), ms);
    };
- }
+}
+
+function checkURL() {
+   const urlParams = new URLSearchParams(window.location.search);
+   const roomIdFromUrl = urlParams.get('location');
+   if (roomIdFromUrl) {
+      return roomIdFromUrl;
+   } else {
+      return null;
+   }
+}
