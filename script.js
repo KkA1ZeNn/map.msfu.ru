@@ -437,7 +437,6 @@ function debounce(func, ms) {
 function checkURL() {
    const urlParams = new URLSearchParams(window.location.search);
    const roomIdFromUrl = urlParams.get('location');
-   console.log(roomIdFromUrl);
    if (roomIdFromUrl) {
       categoriesAndRoomsList.forEach(element => {
          if (element.room) {
