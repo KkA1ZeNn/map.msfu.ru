@@ -93,6 +93,7 @@ svgContainer.addEventListener('click', (event) => {
    if (roomElement) {
       selectRoom(roomElement.getAttribute('id'));
    } else {
+      resetUrl();
       const activeRoom = document.querySelector('[id^="room"].active');
       if (activeRoom) {
          removeSelectRoom(activeRoom);
@@ -127,10 +128,6 @@ closeChoosenCategoryButton.addEventListener('click', () => {
    hide(choosenCategoryBlock);
    formSearchResultList(searchParams);
 });
-
-window.addEventListener('popstate', function() {
-   history.replaceState(null, '', location.href);
- });
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -265,7 +262,6 @@ function showDescriptionBlock(currentRoom, title, about) {
 function removeSelectRoom(activeRoom) {
    activeRoom.classList.remove('active');
    hide(descriptionBlock);
-   resetUrl();
    //-------
    //instance.moveTo(0, 0);
    //instance.zoomTo(0, 0, 0.4);
@@ -441,6 +437,7 @@ function debounce(func, ms) {
 function checkURL() {
    const urlParams = new URLSearchParams(window.location.search);
    const roomIdFromUrl = urlParams.get('location');
+   console.log(roomIdFromUrl);
    if (roomIdFromUrl) {
       categoriesAndRoomsList.forEach(element => {
          if (element.room) {
