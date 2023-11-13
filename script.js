@@ -126,7 +126,11 @@ closeChoosenCategoryButton.addEventListener('click', () => {
    choosenCategory = "";
    hide(choosenCategoryBlock);
    formSearchResultList(searchParams);
-})
+});
+
+window.addEventListener('popstate', function() {
+   history.replaceState(null, '', location.href);
+ });
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------
 
