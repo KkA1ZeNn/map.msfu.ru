@@ -261,7 +261,6 @@ function removeSelectRoom(activeRoom) {
    //instance.zoomTo(0, 0, 0.4);
 }
 
-//Убейте меня, памагити
 function formSearchResultList(parameters) {
    const textInput = searchInput.value.toLowerCase();
    let SearchResultList;
