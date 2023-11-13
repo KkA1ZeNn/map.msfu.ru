@@ -55,6 +55,13 @@ fetch('./map/bmstuJson.json')
    .then(json => {
       mapData = json;
 
+      //Формируем масси из комнат и категорий, можно вынести в отдельную функцию
+      categoriesAndRoomsList = mapData.categories.map(categories => ({category: categories})).concat(
+         mapData.floors.flatMap(floor => floor.locations.map(locations => ({
+            floor: floor.id,
+            room: locations
+      }))));
+
       const roomIdFromUrl = checkURL();
       if (roomIdFromUrl) {
          selectRoom(roomIdFromUrl);
@@ -65,13 +72,6 @@ fetch('./map/bmstuJson.json')
             }
          });
       }
-
-      //Формируем масси из комнат и категорий, можно вынести в отдельную функцию
-      categoriesAndRoomsList = mapData.categories.map(categories => ({category: categories})).concat(
-         mapData.floors.flatMap(floor => floor.locations.map(locations => ({
-            floor: floor.id,
-            room: locations
-      }))));
 
       //--------
       instance = panzoom(svgContainer, {
@@ -438,8 +438,16 @@ function checkURL() {
    const urlParams = new URLSearchParams(window.location.search);
    const roomIdFromUrl = urlParams.get('location');
    if (roomIdFromUrl) {
-      return roomIdFromUrl;
-   } else {
-      return null;
-   }
+      categoriesAndRoomsList.forEach(element => {
+         if (element.room) {
+            if (element.room.id === roomIdFromUrl) {
+               return roomIdFromUrl;
+            }
+         }
+      });
+
+      console.log('Такой комнаты нет');
+   } 
+
+   return null;
 }
