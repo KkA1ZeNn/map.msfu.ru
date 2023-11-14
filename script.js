@@ -181,7 +181,6 @@ function zoomRoom(currentRoom) {
 
    //{
 
-   
    //   const roomMatrix = currentRoom.getScreenCTM();
    //   const roomRect3 = currentRoom.getBoundingClientRect();
    //   const roomX = roomRect3.left + roomRect3.width / 2;
