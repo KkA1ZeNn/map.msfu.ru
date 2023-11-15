@@ -129,12 +129,26 @@ closeChoosenCategoryButton.addEventListener('click', () => {
    formSearchResultList(searchParams);
 });
 
+window.addEventListener ("popstate", () => { 
+   const locationFromUrl = window.location.href.split('?')[1];
+
+   if (locationFromUrl) {
+      selectRoom(locationFromUrl.replace('location=', ''), true);
+   } else {
+      const activeRoom = document.querySelector('[id^="room"].active');
+
+      if (activeRoom) {
+         removeSelectRoom(activeRoom);
+      }
+   }
+});
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------------
 
 // Функция, которая отвечает за реакцию комнаты на выбор этой комнаты (нажатие или поиск). 
 //Проверяем, что искомая комната есть, если есть, то проверка, что это она уже не включена,  
 // заполняем блок описания данными из json, смещаем блок описания
-async function selectRoom(roomID) {
+async function selectRoom(roomID, flagOfUrl) {
    let roomElement = document.getElementById(roomID);
    if (!roomElement) {
       for (const floor of mapData.floors) {
@@ -156,8 +170,11 @@ async function selectRoom(roomID) {
    }
 
    roomElement.classList.add('active');
-   updateUrl(roomElement.id);
    zoomRoom(roomElement);
+
+   if (!flagOfUrl) {
+      updateUrl(roomID);
+   }
 
    currentFLoorRooms.forEach(room => {
       if (room.id === roomID) {
