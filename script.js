@@ -213,44 +213,46 @@ function zoomRoom(currentRoom) {
    //  // Call the ZoomTo function with the transformed point coordinates
    //  instance.zoomTo(transformedPoint.x, transformedPoint.y, 2.5);
    //  console.log(transformedPoint.x, transformedPoint.y);
+   instance.moveTo(0, 0);
 
-      const roomRect = currentRoom.getBoundingClientRect();//комната
-      const containerRect = mapBlock.getBoundingClientRect(); //контейнер
-      const svgRect = svgContainer.getBoundingClientRect(); //свг
-      const containerCenterX = containerRect.left + (containerRect.right - containerRect.left) / 2;
-      const containerCenterY = containerRect.top + (containerRect.bottom - containerRect.top) / 2 + window.scrollY;
-      const raznicaX = roomRect.x - svgRect.x;
-      const raznicaY = roomRect.y - svgRect.y;
+   const roomRect = currentRoom.getBoundingClientRect();//комната
+   const containerRect = mapBlock.getBoundingClientRect(); //контейнер
+   const svgRect = svgContainer.getBoundingClientRect(); //свг
+   const containerCenterX = containerRect.left + (containerRect.right - containerRect.left) / 2;
+   const containerCenterY = containerRect.top + (containerRect.bottom - containerRect.top) / 2 + window.scrollY;
+   const roomCenterX = (roomRect.right - roomRect.left) / 2;
+   const roomCenterY = (roomRect.bottom - roomRect.top) / 2;
+   const raznicaX = roomRect.x - svgRect.x;
+   const raznicaY = roomRect.y - svgRect.y;
 
-      console.log('container = ', containerCenterX, containerCenterY);
-      console.log('room = ', roomRect.x, roomRect.y + window.scrollY);
-      console.log('svg =', svgRect.x, svgRect.y + window.scrollY)
-      console.log('raznicaX =', raznicaX);
-      console.log('raznicaY =', raznicaY + window.scrollY);
-      console.log(instance.getTransform());
-      console.log('---------------------------------------');
+   console.log('container = ', containerCenterX, containerCenterY);
+   console.log('room = ', roomRect.x, roomRect.y + window.scrollY);
+   console.log('svg =', svgRect.x, svgRect.y + window.scrollY)
+   console.log('raznicaX =', raznicaX);
+   console.log('raznicaY =', raznicaY + window.scrollY);
+   console.log(instance.getTransform());
+   console.log('---------------------------------------');
 
-      instance.moveTo(containerCenterX - svgRect.x - raznicaX, containerCenterY - svgRect.y - raznicaY - window.scrollY); 
-      //430 184
-      //446 191
-      
-      //instance.zoomTo(roomRect1.x - 200, roomRect1.y + 50, 4); //900 250   860 170 при зуме -- room
-      //instance.moveTo(900, 250)   -1145 -1470      центр в -1711 -933
-      //console.log(roomRect1.right - roomRect1.x, roomRect1.bottom - roomRect1.y);
-      //804 417      750 417        1318 206
-      //500 80       500 80         500  80
-      //-304 -338    -250 -337      -818 -126
-
-      //0 0 1 -220 -306        
-
-      //instance.zoomTo(0, 0, 1 / 2.5);
-      console.log(instance.getTransform());
-      
-      //instance.moveTo(620 - roomRect1.x - (roomRect1.right - roomRect1.left) / 2, 130 - roomRect1.y - (roomRect1.bottom - roomRect1.top) / 2 - window.scrollY );
-      //instance.smoothZoom(0, 0, 2.5);
-
-      //-----------------
+   instance.moveTo(containerCenterX - svgRect.x - raznicaX - roomCenterX, containerCenterY - svgRect.y - raznicaY - window.scrollY - roomCenterY); 
+   //430 184
+   //446 191
    
+   //instance.zoomTo(roomRect1.x - 200, roomRect1.y + 50, 4); //900 250   860 170 при зуме -- room
+   //instance.moveTo(900, 250)   -1145 -1470      центр в -1711 -933
+   //console.log(roomRect1.right - roomRect1.x, roomRect1.bottom - roomRect1.y);
+   //804 417      750 417        1318 206
+   //500 80       500 80         500  80
+   //-304 -338    -250 -337      -818 -126
+
+   //0 0 1 -220 -306        
+
+   //instance.zoomTo(0, 0, 1 / 2.5);
+   console.log(instance.getTransform());
+   
+   //instance.moveTo(620 - roomRect1.x - (roomRect1.right - roomRect1.left) / 2, 130 - roomRect1.y - (roomRect1.bottom - roomRect1.top) / 2 - window.scrollY );
+   //instance.smoothZoom(0, 0, 2.5);
+
+   //-----------------
 }
 
 function showDescriptionBlock(currentRoom, title, about) {
@@ -280,7 +282,7 @@ function removeSelectRoom(activeRoom) {
    activeRoom.classList.remove('active');
    hide(descriptionBlock);
    //-------
-   //instance.moveTo(0, 0);
+   instance.moveTo(0, 0);
    //instance.zoomTo(0, 0, 0.4);
 }
 
