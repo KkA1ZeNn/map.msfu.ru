@@ -54,7 +54,6 @@ fetch('./map/bmstuJson.json')
    .then(response => response.json())
    .then(json => {
       mapData = json;
-
       //Формируем масси из комнат и категорий, можно вынести в отдельную функцию
       categoriesAndRoomsList = mapData.categories.map(categories => ({category: categories})).concat(
          mapData.floors.flatMap(floor => floor.locations.map(locations => ({
@@ -108,6 +107,7 @@ searchResultBlock.addEventListener('click', (event) => searchResultsClickHandler
 floorIncreaseBtn.addEventListener('click', async () => { 
    await setFloor(currentFloor + 1);
    const roomFromUrl = document.getElementById( checkURL() );
+   console.log(roomFromUrl);
    if(roomFromUrl) {
       selectRoom(roomFromUrl.getAttribute('id'));
    }
@@ -115,6 +115,8 @@ floorIncreaseBtn.addEventListener('click', async () => {
 floorReduceBtn.addEventListener('click', async () => { 
    await setFloor(currentFloor - 1);
    const roomFromUrl = document.getElementById( checkURL() );
+   console.log(checkURL());
+   console.log(roomFromUrl);
    if(roomFromUrl) {
       selectRoom(roomFromUrl.getAttribute('id'));
    }
@@ -161,7 +163,6 @@ async function selectRoom(roomID, flagOfUrl) {
 
       roomElement = document.getElementById(roomID);
    };
-   
    const activeRoom = document.querySelector('[id^="room"].active');   
    const currentFLoorRooms =  mapData.floors[currentFloor].locations;
 
@@ -170,7 +171,7 @@ async function selectRoom(roomID, flagOfUrl) {
    }
 
    roomElement.classList.add('active');
-   zoomRoom(roomElement);
+   zoomRoom(roomElement, true);
 
    if (!flagOfUrl) {
       updateUrl(roomID);
@@ -183,38 +184,8 @@ async function selectRoom(roomID, flagOfUrl) {
    });
 };
 
-function zoomRoom(currentRoom) {
-   //currentRoom.addEventListener('click', (event) => {
-   //   // Get the bounding box of the clicked room
-   //   const bbox = event.target.getBBox();
-  
-   //   // Calculate the center point of the room
-   //   const centerX = bbox.x + bbox.width / 2;
-   //   const centerY = bbox.y + bbox.height / 2;
-  
-   //   // Call the ZoomTo function with the center point coordinates
-   //   instance.zoomTo(centerX, centerY, 2.5);
-   // });
-
-   //{
-
-   //   const roomMatrix = currentRoom.getScreenCTM();
-   //   const roomRect3 = currentRoom.getBoundingClientRect();
-   //   const roomX = roomRect3.left + roomRect3.width / 2;
-   //   const roomY = roomRect3.top + roomRect3.height / 2;
-   //   const svgPoint = currentRoom.ownerSVGElement.createSVGPoint();
-   //   svgPoint.x = roomX;
-   //   svgPoint.y = roomY;
-   //   // Transform the point using the room's transformation matrix
-   //  const transformedPoint = svgPoint.matrixTransform(roomMatrix);
-
-   //  console.log(transformedPoint.x, transformedPoint.y);
-
-   //  // Call the ZoomTo function with the transformed point coordinates
-   //  instance.zoomTo(transformedPoint.x, transformedPoint.y, 2.5);
-   //  console.log(transformedPoint.x, transformedPoint.y);
-   instance.moveTo(0, 0);
-
+async function zoomRoom(currentRoom) {
+   console.log(instance.getTransform());
    const roomRect = currentRoom.getBoundingClientRect();//комната
    const containerRect = mapBlock.getBoundingClientRect(); //контейнер
    const svgRect = svgContainer.getBoundingClientRect(); //свг
@@ -230,29 +201,11 @@ function zoomRoom(currentRoom) {
    console.log('svg =', svgRect.x, svgRect.y + window.scrollY)
    console.log('raznicaX =', raznicaX);
    console.log('raznicaY =', raznicaY + window.scrollY);
-   console.log(instance.getTransform());
    console.log('---------------------------------------');
 
    instance.moveTo(containerCenterX - svgRect.x - raznicaX - roomCenterX, containerCenterY - svgRect.y - raznicaY - window.scrollY - roomCenterY); 
-   //430 184
-   //446 191
-   
-   //instance.zoomTo(roomRect1.x - 200, roomRect1.y + 50, 4); //900 250   860 170 при зуме -- room
-   //instance.moveTo(900, 250)   -1145 -1470      центр в -1711 -933
-   //console.log(roomRect1.right - roomRect1.x, roomRect1.bottom - roomRect1.y);
-   //804 417      750 417        1318 206
-   //500 80       500 80         500  80
-   //-304 -338    -250 -337      -818 -126
 
-   //0 0 1 -220 -306        
-
-   //instance.zoomTo(0, 0, 1 / 2.5);
    console.log(instance.getTransform());
-   
-   //instance.moveTo(620 - roomRect1.x - (roomRect1.right - roomRect1.left) / 2, 130 - roomRect1.y - (roomRect1.bottom - roomRect1.top) / 2 - window.scrollY );
-   //instance.smoothZoom(0, 0, 2.5);
-
-   //-----------------
 }
 
 function showDescriptionBlock(currentRoom, title, about) {
@@ -456,17 +409,20 @@ function debounce(func, ms) {
 function checkURL() {
    const urlParams = new URLSearchParams(window.location.search);
    const roomIdFromUrl = urlParams.get('location');
+   let result;
    if (roomIdFromUrl) {
       categoriesAndRoomsList.forEach(element => {
          if (element.room) {
             if (element.room.id === roomIdFromUrl) {
-               return roomIdFromUrl;
+               result = roomIdFromUrl;
             }
          }
       });
 
-      console.log('Такой комнаты нет');
+      if (!result) {
+         console.log('Такой комнаты нет');
+      }
    } 
-
-   return null;
+   
+   return result;
 }
