@@ -205,6 +205,7 @@ async function zoomRoom(currentRoom) {
 
    instance.moveTo(containerCenterX - svgRect.x - raznicaX - roomCenterX, containerCenterY - svgRect.y - raznicaY - window.scrollY - roomCenterY); 
 
+   
    console.log(instance.getTransform());
 }
 
