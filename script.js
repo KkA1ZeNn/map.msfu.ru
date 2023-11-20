@@ -171,7 +171,7 @@ async function selectRoom(roomID, flagOfUrl) {
    }
 
    roomElement.classList.add('active');
-   zoomRoom(roomElement, true);
+   zoomRoom(roomElement);
 
    if (!flagOfUrl) {
       updateUrl(roomID);
@@ -185,28 +185,30 @@ async function selectRoom(roomID, flagOfUrl) {
 };
 
 async function zoomRoom(currentRoom) {
-   console.log(instance.getTransform());
    const roomRect = currentRoom.getBoundingClientRect();//комната
    const containerRect = mapBlock.getBoundingClientRect(); //контейнер
-   const svgRect = svgContainer.getBoundingClientRect(); //свг
+   //const svgRect = svgContainer.getBoundingClientRect(); //свг
    const containerCenterX = containerRect.left + (containerRect.right - containerRect.left) / 2;
    const containerCenterY = containerRect.top + (containerRect.bottom - containerRect.top) / 2 + window.scrollY;
-   const roomCenterX = (roomRect.right - roomRect.left) / 2;
-   const roomCenterY = (roomRect.bottom - roomRect.top) / 2;
-   const raznicaX = roomRect.x - svgRect.x;
-   const raznicaY = roomRect.y - svgRect.y;
+   const roomCenterX = roomRect.left + (roomRect.right - roomRect.left) / 2;
+   const roomCenterY = roomRect.top + (roomRect.bottom - roomRect.top) / 2 + window.scrollY;
+   const currentTransform = instance.getTransform();
+   //const raznicaX = roomRect.x - svgRect.x;
+   //const raznicaY = roomRect.y - svgRect.y;
 
-   console.log('container = ', containerCenterX, containerCenterY);
+   //console.log('container = ', containerCenterX, containerCenterY);
    console.log('room = ', roomRect.x, roomRect.y + window.scrollY);
-   console.log('svg =', svgRect.x, svgRect.y + window.scrollY)
-   console.log('raznicaX =', raznicaX);
-   console.log('raznicaY =', raznicaY + window.scrollY);
-   console.log('---------------------------------------');
+   //console.log('svg =', svgRect.x, svgRect.y + window.scrollY)
+   //console.log('raznicaX =', raznicaX);
+   //console.log('raznicaY =', raznicaY + window.scrollY);
+   //console.log('---------------------------------------');
 
-   instance.moveTo(containerCenterX - svgRect.x - raznicaX - roomCenterX, containerCenterY - svgRect.y - raznicaY - window.scrollY - roomCenterY); 
-
+   //instance.moveTo(containerCenterX - svgRect.x - raznicaX - roomCenterX, containerCenterY - svgRect.y - raznicaY - window.scrollY - roomCenterY); 
+   const moveToX = containerCenterX - roomCenterX;
+   const moveToY = containerCenterY - roomCenterY;
    
-   console.log(instance.getTransform());
+   console.log(currentTransform.x + moveToX, currentTransform.y + moveToY);
+   instance.zoomTo(currentTransform.x + moveToX, currentTransform.y + moveToY, 2.5);
 }
 
 function showDescriptionBlock(currentRoom, title, about) {
@@ -235,9 +237,6 @@ function showDescriptionBlock(currentRoom, title, about) {
 function removeSelectRoom(activeRoom) {
    activeRoom.classList.remove('active');
    hide(descriptionBlock);
-   //-------
-   instance.moveTo(0, 0);
-   //instance.zoomTo(0, 0, 0.4);
 }
 
 function formSearchResultList(parameters) {
