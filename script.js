@@ -7,32 +7,32 @@ let instance;
 //-----------
 
 // переменная, которая хранит div блок с главным SVG
-const svgContainer = document.getElementById('mapSvg');
-const mapBlock = document.getElementById('mapblock');
+const svgContainer = document.querySelector('#mapSvg');
+const mapBlock = document.querySelector('#mapblock');
 
 // базовый URL страницы
 const baseUrl = window.location.href.split('?')[0];
 
 // переменная плавающего окошка с описанием кабинетов
-const descriptionBlock  = document.getElementById('description');
+const descriptionBlock  = document.querySelector('#description');
 
 // переменная с сылкой на поле поиска и переменная с ссылкой на поле с результатами поиска
-const searchInput = document.getElementById('roomSearchInput');
-const searchResultBlock = document.getElementById('searchResultBlock');
+const searchInput = document.querySelector('#roomSearchInput');
+const searchResultBlock = document.querySelector('#searchResultBlock');
 const searchParams = ['id', 'title', 'about'];
 let categoriesAndRoomsList;
 
 // переменная блока с текущим номером этажа
-const currentFloorBlock = document.getElementById('currentFloor')
+const currentFloorBlock = document.querySelector('#currentFloor')
 
 // переменные кнопок увеличения и уменьшения этажа
-const floorIncreaseBtn = document.getElementById('floorIncrease');
-const floorReduceBtn = document.getElementById('floorReduce');
+const floorIncreaseBtn = document.querySelector('#floorIncrease');
+const floorReduceBtn = document.querySelector('#floorReduce');
 
 // переменные для выбора категории
-const choosenCategoryBlock = document.getElementById('categoriesChoosen_item');
-const choosenCategoryTextBlock = document.getElementById('categoriesChoosen_item_text');
-const closeChoosenCategoryButton = document.getElementById('categoriesChoosen_item_button');
+const choosenCategoryBlock = document.querySelector('#categoriesChoosen_item');
+const choosenCategoryTextBlock = document.querySelector('#categoriesChoosen_item_text');
+const closeChoosenCategoryButton = document.querySelector('#categoriesChoosen_item_button');
 let choosenCategory;
 
 //текущий этаж, чтобы в дальнейшем его менять и делать проверку этажа
@@ -106,7 +106,7 @@ searchResultBlock.addEventListener('click', (event) => searchResultsClickHandler
 // Обработчики событий для смены этажа
 floorIncreaseBtn.addEventListener('click', async () => { 
    await setFloor(currentFloor + 1);
-   const roomFromUrl = document.getElementById( checkURL() );
+   const roomFromUrl = document.querySelector( '#' + checkURL() );
    console.log(roomFromUrl);
    if(roomFromUrl) {
       selectRoom(roomFromUrl.getAttribute('id'));
@@ -114,7 +114,7 @@ floorIncreaseBtn.addEventListener('click', async () => {
 });
 floorReduceBtn.addEventListener('click', async () => { 
    await setFloor(currentFloor - 1);
-   const roomFromUrl = document.getElementById( checkURL() );
+   const roomFromUrl = document.querySelector( '#' + checkURL() );
    console.log(checkURL());
    console.log(roomFromUrl);
    if(roomFromUrl) {
@@ -151,7 +151,7 @@ window.addEventListener ("popstate", () => {
 //Проверяем, что искомая комната есть, если есть, то проверка, что это она уже не включена,  
 // заполняем блок описания данными из json, смещаем блок описания
 async function selectRoom(roomID, flagOfUrl) {
-   let roomElement = document.getElementById(roomID);
+   let roomElement = document.querySelector('#' + roomID);
    if (!roomElement) {
       for (const floor of mapData.floors) {
          for (const location of floor.locations) {
@@ -161,7 +161,7 @@ async function selectRoom(roomID, flagOfUrl) {
          }
       }
 
-      roomElement = document.getElementById(roomID);
+      roomElement = document.querySelector('#' + roomID);
    };
    const activeRoom = document.querySelector('[id^="room"].active');   
    const currentFLoorRooms =  mapData.floors[currentFloor].locations;
