@@ -160,9 +160,9 @@ async function selectRoom(roomID, flagOfUrl) {
             }
          }
       }
-
       roomElement = document.querySelector('#' + roomID);
    };
+   //instance.zoomTo(0, 0, 2.5);
    const activeRoom = document.querySelector('[id^="room"].active');   
    const currentFLoorRooms =  mapData.floors[currentFloor].locations;
 
@@ -184,31 +184,24 @@ async function selectRoom(roomID, flagOfUrl) {
    });
 };
 
-async function zoomRoom(currentRoom) {
+function zoomRoom(currentRoom) {
    const roomRect = currentRoom.getBoundingClientRect();//комната
    const containerRect = mapBlock.getBoundingClientRect(); //контейнер
-   //const svgRect = svgContainer.getBoundingClientRect(); //свг
+   const svgRect = svgContainer.getBoundingClientRect(); //свг
    const containerCenterX = containerRect.left + (containerRect.right - containerRect.left) / 2;
    const containerCenterY = containerRect.top + (containerRect.bottom - containerRect.top) / 2 + window.scrollY;
    const roomCenterX = roomRect.left + (roomRect.right - roomRect.left) / 2;
    const roomCenterY = roomRect.top + (roomRect.bottom - roomRect.top) / 2 + window.scrollY;
    const currentTransform = instance.getTransform();
-   //const raznicaX = roomRect.x - svgRect.x;
-   //const raznicaY = roomRect.y - svgRect.y;
-
-   //console.log('container = ', containerCenterX, containerCenterY);
-   console.log('room = ', roomRect.x, roomRect.y + window.scrollY);
-   //console.log('svg =', svgRect.x, svgRect.y + window.scrollY)
-   //console.log('raznicaX =', raznicaX);
-   //console.log('raznicaY =', raznicaY + window.scrollY);
-   //console.log('---------------------------------------');
-
-   //instance.moveTo(containerCenterX - svgRect.x - raznicaX - roomCenterX, containerCenterY - svgRect.y - raznicaY - window.scrollY - roomCenterY); 
+  
    const moveToX = containerCenterX - roomCenterX;
    const moveToY = containerCenterY - roomCenterY;
    
-   console.log(currentTransform.x + moveToX, currentTransform.y + moveToY);
-   instance.zoomTo(currentTransform.x + moveToX, currentTransform.y + moveToY, 2.5);
+   console.log("svg = ", svgRect.right - svgRect.left, svgRect.bottom - svgRect.top);
+   console.log("math = ", containerCenterX, roomRect.left);
+   //instance.moveTo(currentTransform.x + moveToX, currentTransform.y + moveToY); //Вот это стабильно работает на любом мастштабе, но если делать и ее и зум одновременно, то не работает, пока был максимальнро близкий вариант, когда я делал зум в 0, 0, 2.5, а потом через сет таймаут вызывал функцию, но это костыль
+   instance.zoomTo(367, 543, 2.5);
+   console.log(instance.getTransform());
 }
 
 function showDescriptionBlock(currentRoom, title, about) {
