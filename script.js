@@ -202,7 +202,6 @@ function zoomRoom(currentRoom) {
    //instance.moveTo(currentTransform.x + moveToX, currentTransform.y + moveToY); //Вот это стабильно работает на любом мастштабе, но если делать и ее и зум одновременно, то не работает, пока был максимальнро близкий вариант, когда я делал зум в 0, 0, 2.5, а потом через сет таймаут вызывал функцию, но это костыль
    instance.zoomTo(367, 543, 2.5);
    console.log(instance.getTransform());
-   
 }
 
 function showDescriptionBlock(currentRoom, title, about) {
