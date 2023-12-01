@@ -164,7 +164,7 @@ async function selectRoom(roomID, flagOfUrl) {
       }
       roomElement = document.querySelector('#' + roomID);
    };
-   //instance.zoomTo(0, 0, 2.5);
+
    const activeRoom = document.querySelector('[id^="room"].active');   
    const currentFLoorRooms =  mapData.floors[currentFloor].locations;
 
@@ -187,10 +187,10 @@ async function selectRoom(roomID, flagOfUrl) {
 };
 
 function zoomRoom(currentRoom) {
-   const roomRect = currentRoom.getBoundingClientRect();//комната
-   const containerRect = mapBlock.getBoundingClientRect(); //контейнер
-   const svgRect = svgContainer.getBoundingClientRect(); //свг
-   console.log(svgRect);
+   const roomRect = currentRoom.getBoundingClientRect();
+   const containerRect = mapBlock.getBoundingClientRect();
+   const svgRect = svgContainer.getBoundingClientRect(); 
+
    const containerCenterX = containerRect.left + (containerRect.right - containerRect.left) / 2;
    const containerCenterY = containerRect.top + (containerRect.bottom - containerRect.top) / 2 + window.scrollY;
    const roomCenterX = roomRect.left + (roomRect.right - roomRect.left) / 2;
@@ -200,10 +200,7 @@ function zoomRoom(currentRoom) {
    const moveToX = containerCenterX - roomCenterX;
    const moveToY = containerCenterY - roomCenterY;
    
-   console.log("svg = ", svgRect.right - svgRect.left, svgRect.bottom - svgRect.top);
-   console.log("math = ", containerCenterX, roomRect.left);
-   instance.moveTo(currentTransform.x + moveToX, currentTransform.y + moveToY); //Вот это стабильно работает на любом мастштабе, но если делать и ее и зум одновременно, то не работает, пока был максимальнро близкий вариант, когда я делал зум в 0, 0, 2.5, а потом через сет таймаут вызывал функцию, но это костыль
-   
+   instance.moveTo(currentTransform.x + moveToX, currentTransform.y + moveToY);
    instance.zoomTo(svgRect.width / 2, svgRect.height / 2, 2.5);
 }
 
@@ -233,6 +230,8 @@ function showDescriptionBlock(currentRoom, title, about) {
 function removeSelectRoom(activeRoom) {
    activeRoom.classList.remove('active');
    hide(descriptionBlock);
+   instance.zoomTo(0, 0, 0.4);
+   instance.moveTo(0, 0);
 }
 
 function formSearchResultList(parameters) {
