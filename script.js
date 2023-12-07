@@ -422,4 +422,3 @@ function checkURL() {
    
    return result;
 }
-
