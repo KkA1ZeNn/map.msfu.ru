@@ -423,4 +423,3 @@ function checkURL() {
    return result;
 }
 
-
