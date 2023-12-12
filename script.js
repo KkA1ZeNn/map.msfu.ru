@@ -95,6 +95,7 @@ svgContainer.addEventListener('click', (event) => {
       selectRoom(roomElement.getAttribute('id'));
    } else {
       resetUrl();
+      resetZoom();
       const activeRoom = document.querySelector('[id^="room"].active');
       if (activeRoom) {
          removeSelectRoom(activeRoom);
@@ -202,7 +203,7 @@ function zoomRoom(currentRoom) {
    const moveToY = containerCenterY - roomCenterY;
    
    instance.moveTo(currentTransform.x + moveToX, currentTransform.y + moveToY);
-   instance.zoomTo(svgRect.width / 2, svgRect.height / 2, 2.5);
+   instance.zoomTo(containerRect.width / 2, containerRect.height / 2, 2.5);
 }
 
 function showDescriptionBlock(currentRoom, title, about) {
@@ -231,6 +232,9 @@ function showDescriptionBlock(currentRoom, title, about) {
 function removeSelectRoom(activeRoom) {
    activeRoom.classList.remove('active');
    hide(descriptionBlock);
+}
+
+function resetZoom() {
    instance.zoomTo(0, 0, 0.4);
    instance.moveTo(0, 0);
 }
