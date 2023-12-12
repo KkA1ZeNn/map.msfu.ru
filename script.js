@@ -191,7 +191,6 @@ async function selectRoom(roomID, flagOfUrl) {
 function zoomRoom(currentRoom) {
    const roomRect = currentRoom.getBoundingClientRect();
    const containerRect = mapBlock.getBoundingClientRect();
-   const svgRect = svgContainer.getBoundingClientRect(); 
 
    const containerCenterX = containerRect.left + (containerRect.right - containerRect.left) / 2;
    const containerCenterY = containerRect.top + (containerRect.bottom - containerRect.top) / 2 + window.scrollY;
