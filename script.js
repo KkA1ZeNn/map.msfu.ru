@@ -188,6 +188,7 @@ async function selectRoom(roomID, flagOfUrl) {
    });
 };
 
+//Функция зумирования на комнату, вычисляет смещение свг, так чтобы комната оказалась в центре контейнера, учитывая уже сделанное смещение, плюс производит увеличение в центр этого контейнера
 function zoomRoom(currentRoom) {
    const roomRect = currentRoom.getBoundingClientRect();
    const containerRect = mapBlock.getBoundingClientRect();
