@@ -14,6 +14,7 @@ const mapBlock = document.querySelector('#mapblock');
 
 // базовый URL страницы
 const baseUrl = window.location.href.split('?')[0];
+let flagOfChanges = false;
 
 // переменная плавающего окошка с описанием кабинетов
 const descriptionBlock  = document.querySelector('#description');
@@ -145,6 +146,8 @@ window.addEventListener ("popstate", () => {
       if (activeRoom) {
          removeSelectRoom(activeRoom);
       }
+
+      resetZoom();
    }
 });
 
@@ -392,10 +395,20 @@ function show(element) {
 // Функции для обновления и сброса URL при поиске комнат
 function updateUrl(roomId) {
    const newUrl = baseUrl + '?location=' + roomId;
-   history.replaceState( { roomId } , '', newUrl);
+   if (!flagOfChanges) {
+      history.pushState( { roomId } , '', newUrl);
+      flagOfChanges = true;
+   } else {
+      history.replaceState( { roomId } , '', newUrl);
+   }
 }
 function resetUrl() {
-   history.replaceState( { roomId: null } , '', baseUrl);
+   if (!flagOfChanges) {
+      history.pushState( { roomId: null } , '', baseUrl);
+      flagOfChanges = true;
+   } else {
+      history.replaceState( { roomId: null } , '', baseUrl);
+   }
 }
 
 function debounce(func, ms) {
