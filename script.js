@@ -392,10 +392,10 @@ function show(element) {
 // Функции для обновления и сброса URL при поиске комнат
 function updateUrl(roomId) {
    const newUrl = baseUrl + '?location=' + roomId;
-   history.pushState( { roomId } , '', newUrl);
+   history.replaceState( { roomId } , '', newUrl);
 }
 function resetUrl() {
-   history.pushState( { roomId: null } , '', baseUrl);
+   history.replaceState( { roomId: null } , '', baseUrl);
 }
 
 function debounce(func, ms) {
