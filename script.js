@@ -14,7 +14,6 @@ const mapBlock = document.querySelector('#mapblock');
 
 // базовый URL страницы
 const baseUrl = window.location.href.split('?')[0];
-let flagOfChanges = false;
 
 // переменная плавающего окошка с описанием кабинетов
 const descriptionBlock  = document.querySelector('#description');
@@ -135,21 +134,21 @@ closeChoosenCategoryButton.addEventListener('click', () => {
    formSearchResultList(searchParams);
 });
 
-window.addEventListener ("popstate", () => { 
-   const locationFromUrl = window.location.href.split('?')[1];
+//window.addEventListener ("popstate", () => { 
+//   const locationFromUrl = window.location.href.split('?')[1];
 
-   if (locationFromUrl) {
-      selectRoom(locationFromUrl.replace('location=', ''), true);
-   } else {
-      const activeRoom = document.querySelector('[id^="room"].active');
+//   if (locationFromUrl) {
+//      selectRoom(locationFromUrl.replace('location=', ''), true);
+//   } else {
+//      const activeRoom = document.querySelector('[id^="room"].active');
 
-      if (activeRoom) {
-         removeSelectRoom(activeRoom);
-      }
+//      if (activeRoom) {
+//         removeSelectRoom(activeRoom);
+//      }
 
-      resetZoom();
-   }
-});
+//      resetZoom();
+//   }
+//});
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -377,7 +376,7 @@ async function setFloor(floor) {
    }
 }
 
-// фнкции скрытия и показывания элемента
+// функции скрытия и показывания элемента
 function disable(element) {
    element.disabled = true;
 }
@@ -395,20 +394,11 @@ function show(element) {
 // Функции для обновления и сброса URL при поиске комнат
 function updateUrl(roomId) {
    const newUrl = baseUrl + '?location=' + roomId;
-   if (!flagOfChanges) {
-      history.pushState( { roomId } , '', newUrl);
-      flagOfChanges = true;
-   } else {
-      history.replaceState( { roomId } , '', newUrl);
-   }
+   history.replaceState( { roomId } , '', newUrl);
 }
 function resetUrl() {
-   if (!flagOfChanges) {
-      history.pushState( { roomId: null } , '', baseUrl);
-      flagOfChanges = true;
-   } else {
-      history.replaceState( { roomId: null } , '', baseUrl);
-   }
+
+   history.replaceState( { roomId: null } , '', baseUrl);
 }
 
 function debounce(func, ms) {
