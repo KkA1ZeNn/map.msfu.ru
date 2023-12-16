@@ -86,7 +86,7 @@ fetch('./map/bmstuJson.json')
          }
       });
       //--------
-      alert('двойной клик для сброса карты');
+      console.log('двойной клик для сброса карты');
       formSearchResultList(searchParams);
    })
    .catch(e => {
