@@ -224,16 +224,8 @@ function showDescriptionBlock(currentRoom, title, about) {
    const roomRect = currentRoom.getBoundingClientRect();
    const mapContainer = document.querySelector(".mapContainer");
 
-   if (roomRect.left - descriptionBlock.offsetWidth / 2 < 0){
-      descriptionBlock.style.left = `${roomRect.right + 20}px`;
-      descriptionBlock.style.top = `${roomRect.bottom + window.scrollY - descriptionBlock.offsetHeight / 2}px`;
-   } else if (roomRect.right + descriptionBlock.offsetWidth / 2 > mapContainer.offsetWidth) {
-      descriptionBlock.style.left = `${roomRect.left - descriptionBlock.offsetWidth - 20}px`;
-      descriptionBlock.style.top = `${roomRect.bottom + window.scrollY - descriptionBlock.offsetHeight / 2}px`;
-   } else {
-      descriptionBlock.style.left = `${roomRect.left - descriptionBlock.offsetWidth / 2 + roomRect.width / 2}px`;
-      descriptionBlock.style.top = `${roomRect.top + window.scrollY - descriptionBlock.offsetHeight - 20}px`;
-   }
+   descriptionBlock.style.left = `${roomRect.left - descriptionBlock.offsetWidth / 2 + roomRect.width / 2}px`;
+   descriptionBlock.style.top = `${roomRect.top + window.scrollY - descriptionBlock.offsetHeight - 20}px`;
 }
 
 function removeSelectRoom(activeRoom) {
@@ -402,7 +394,6 @@ function updateUrl(roomId) {
    history.replaceState( { roomId } , '', newUrl);
 }
 function resetUrl() {
-
    history.replaceState( { roomId: null } , '', baseUrl);
 }
 
