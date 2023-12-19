@@ -222,7 +222,6 @@ function showDescriptionBlock(currentRoom, title, about) {
 
    // функция для считывания размера элемента и перемещения окна, но пока работает КРИВО
    const roomRect = currentRoom.getBoundingClientRect();
-   const mapContainer = document.querySelector(".mapContainer");
 
    descriptionBlock.style.left = `${roomRect.left - descriptionBlock.offsetWidth / 2 + roomRect.width / 2}px`;
    descriptionBlock.style.top = `${roomRect.top + window.scrollY - descriptionBlock.offsetHeight - 20}px`;
