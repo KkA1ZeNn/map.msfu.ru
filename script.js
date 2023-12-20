@@ -139,6 +139,8 @@ closeChoosenCategoryButton.addEventListener('click', () => {
    formSearchResultList(searchParams);
 });
 
+// Функция для перемещения по истории сессии
+//
 //window.addEventListener ("popstate", () => { 
 //   const locationFromUrl = window.location.href.split('?')[1];
 
