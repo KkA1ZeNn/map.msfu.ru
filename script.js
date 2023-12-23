@@ -398,8 +398,10 @@ function resetUrl() {
    history.replaceState( { roomId: null } , '', baseUrl);
 }
 
+//Функция для создания задержки вызова другой функции
 function debounce(func, ms) {
    let timeout;
+
    return function() {
      clearTimeout(timeout);
      timeout = setTimeout(() => func.apply(this, arguments), ms);
