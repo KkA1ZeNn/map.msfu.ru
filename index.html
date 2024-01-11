@@ -5,10 +5,21 @@
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <link rel="stylesheet" href="style.css">
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.css" />
    <title>NewTest</title>
 </head>
 
 <body>
+   <div class="zoomist-container">
+      <!-- zoomist-wrapper is required -->
+      <div class="zoomist-wrapper">
+        <!-- zoomist-image is required -->
+        <div class="zoomist-image">
+          <!-- you can add anything you want to zoom here. -->
+          <img src="..." />
+        </div>
+      </div>
+    </div>
    <div class="mapContainer" id = "mapblock">
       <div class="svgConteiner" id = "mapSvg"></div>
       <div id = "description" class = "hidden"></div>
@@ -32,6 +43,7 @@
    </div>
 
    <script src = "panzoom.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/zoomist@2/zoomist.umd.js"></script>
    <script src = "script.js"></script>
 </body>
 </html>

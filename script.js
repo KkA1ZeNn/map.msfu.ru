@@ -75,16 +75,23 @@ fetch('./map/bmstuJson.json')
       }
 
       //--------
-      instance = panzoom(svgContainer, {
-         maxZoom: 2.5,
-         minZoom: 1,
-         zoomDoubleClickSpeed: 1,
+      //instance = panzoom(svgContainer, {
+      //   maxZoom: 2.5,
+      //   minZoom: 1,
+      //   zoomDoubleClickSpeed: 1,
+      //   bounds: true,
+      //   boundsPadding: 0.1,
+      //   onDoubleClick: function() {
+      //      resetZoom();
+      //   }
+      //});
+      
+      const zoomist = new Zoomist("#mapSvg", {
+         maxScale: 5,
          bounds: true,
-         boundsPadding: 0.1,
-         onDoubleClick: function() {
-            resetZoom();
-         }
-      });
+         slider: true,
+         zoomer: true
+      })
       //--------
       console.log('двойной клик для сброса карты');
       formSearchResultList(searchParams);
@@ -211,8 +218,8 @@ function zoomRoom(currentRoom) {
    const moveToX = containerCenterX - roomCenterX;
    const moveToY = containerCenterY - roomCenterY;
    
-   instance.moveTo(currentTransform.x + moveToX, currentTransform.y + moveToY);
-   instance.smoothZoom(containerRect.width / 2, containerRect.height / 2, 2.5);
+   //instance.moveTo(currentTransform.x + moveToX, currentTransform.y + moveToY);
+   //instance.smoothZoom(containerRect.width / 2, containerRect.height / 2, 2.5);
 }
 
 function showDescriptionBlock(currentRoom, title, about) {
