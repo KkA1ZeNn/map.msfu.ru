@@ -86,7 +86,7 @@ fetch('./map/bmstuJson.json')
       //   }
       //});
       
-      const zoomist = new Zoomist("#mapSvg", {
+      const zoomist = new Zoomist(".zoomist-container", {
          maxScale: 5,
          bounds: true,
          slider: true,

@@ -12,17 +12,11 @@
 <body>
    <div class="zoomist-container">
       <!-- zoomist-wrapper is required -->
-      <div class="zoomist-wrapper">
+      <div class="zoomist-wrapper mapContainer" id = "mapblock">
         <!-- zoomist-image is required -->
-        <div class="zoomist-image">
-          <!-- you can add anything you want to zoom here. -->
-          <img src="..." />
-        </div>
+        <div class="zoomist-image svgConteiner" id = "mapSvg"></div>
+        <div id = "description" class = "hidden"></div>
       </div>
-    </div>
-   <div class="mapContainer" id = "mapblock">
-      <div class="svgConteiner" id = "mapSvg"></div>
-      <div id = "description" class = "hidden"></div>
    </div>
    
    <input type="text" id="roomSearchInput" placeholder="Enter room number">
