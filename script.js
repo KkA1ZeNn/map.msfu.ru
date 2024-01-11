@@ -80,7 +80,7 @@ fetch('./map/bmstuJson.json')
          minZoom: 1,
          zoomDoubleClickSpeed: 1,
          bounds: true,
-         boundsPadding: 0.4,
+         boundsPadding: 0.1,
          onDoubleClick: function() {
             resetZoom();
          }
@@ -216,7 +216,7 @@ function zoomRoom(currentRoom) {
 }
 
 function showDescriptionBlock(currentRoom, title, about) {
-   show(descriptionBlock);
+   //show(descriptionBlock);
 
    descriptionBlock.innerHTML =
       `<h4>${title}</h4>
