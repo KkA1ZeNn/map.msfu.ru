@@ -80,7 +80,8 @@ fetch('./map/bmstuJson.json')
          minZoom: 1,
          zoomDoubleClickSpeed: 1,
          bounds: true,
-         boundsPadding: 0.1,
+         boundsPadding: 0.2,
+         zoomSpeed: 0.07,
          onDoubleClick: function() {
             resetZoom();
          }
