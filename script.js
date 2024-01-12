@@ -6,6 +6,7 @@ let mapData;
 //-----------
 let svg;
 let instance;
+let zoomist;
 //-----------
 
 // переменная, которая хранит div блок с главным SVG
@@ -86,7 +87,7 @@ fetch('./map/bmstuJson.json')
       //   }
       //});
       
-      const zoomist = new Zoomist(".zoomist-container", {
+      zoomist = new Zoomist(".zoomist-container", {
          maxScale: 5,
          bounds: true,
          slider: true,
@@ -114,6 +115,7 @@ svgContainer.addEventListener('click', (event) => {
       }
    }
 });
+
 
 // Обработчик событий для тех комнат, которые появились в списке поиска
 searchResultBlock.addEventListener('click', (event) => searchResultsClickHandler(event));
@@ -213,13 +215,15 @@ function zoomRoom(currentRoom) {
    const containerCenterY = containerRect.top + (containerRect.bottom - containerRect.top) / 2 + window.scrollY;
    const roomCenterX = roomRect.left + (roomRect.right - roomRect.left) / 2;
    const roomCenterY = roomRect.top + (roomRect.bottom - roomRect.top) / 2 + window.scrollY;
-   const currentTransform = instance.getTransform();
+   //const currentTransform = instance.getTransform();
   
    const moveToX = containerCenterX - roomCenterX;
    const moveToY = containerCenterY - roomCenterY;
    
    //instance.moveTo(currentTransform.x + moveToX, currentTransform.y + moveToY);
    //instance.smoothZoom(containerRect.width / 2, containerRect.height / 2, 2.5);
+   zoomist.move(0, 5);
+   zoomist.zoomTo(2.5)
 }
 
 function showDescriptionBlock(currentRoom, title, about) {
