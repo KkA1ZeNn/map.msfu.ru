@@ -217,7 +217,7 @@ function zoomRoom(currentRoom) {
 }
 
 function showDescriptionBlock(currentRoom, title, about) {
-   //show(descriptionBlock);
+   show(descriptionBlock);
 
    descriptionBlock.innerHTML =
       `<h4>${title}</h4>
