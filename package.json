@@ -1,0 +1,33 @@
+{
+  "name": "interactive_map",
+  "version": "1.0.0",
+  "description": "the module for creating interactive plans of buildings, offices and other places",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KkA1ZeNn/map.msfu.ru.git"
+  },
+  "keywords": [
+    "interactive",
+    "map",
+    "map",
+    "interactive",
+    "zoom",
+    "plan"
+  ],
+  "author": "Daniil Manuilov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KkA1ZeNn/map.msfu.ru/issues"
+  },
+  "homepage": "https://github.com/KkA1ZeNn/map.msfu.ru#readme",
+  "devDependencies": {
+    "gulp": "^4.0.2"
+  },
+  "dependencies": {
+    "panzoom": "^9.4.3"
+  }
+}
