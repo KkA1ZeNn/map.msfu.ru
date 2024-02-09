@@ -1,4 +1,6 @@
-import { sum } from "./modules/sum.js"
+import InteractiveMap from "./modules/interactivemap.js";
 
-console.log(sum(2, 10));
-console.log(sum(5, 10));
+window.addEventListener('DOMContentLoaded', () => {
+   const map = new InteractiveMap();
+   map.render();
+});

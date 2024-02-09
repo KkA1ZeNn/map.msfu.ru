@@ -1,6 +1,0 @@
-/* TEAM */
-Developer: Andrew Piksaev 
-Location: Russia
-
-/* SITE */
-Last update: 2020/08/30
