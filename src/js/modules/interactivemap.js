@@ -1,5 +1,4 @@
 export default class InteractiveMap {
-   
    constructor() {
       this.mapData;
       this.svg;
