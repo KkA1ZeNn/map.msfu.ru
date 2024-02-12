@@ -10,6 +10,12 @@ const path = {
       watch: pathSrc + "/html/**/*.html",
       dest: pathDest
    },
+   
+   data: {
+      src: pathSrc + "/data/*.json",
+      watch: pathSrc + "/data/**/*.json",
+      dest: pathDest + "/data"
+   },
 
    css: {
       src: pathSrc + "/css/*.css",

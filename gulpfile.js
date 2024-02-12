@@ -20,6 +20,7 @@ import { js } from "./gulpSettings/task/js.js";
 import { img } from "./gulpSettings/task/img.js";
 import { font } from "./gulpSettings/task/font.js";
 import { server } from "./gulpSettings/task/server.js";
+import { data } from "./gulpSettings/task/data.js";
 
 // Live Server Watcher (add here all files where do you need to watch changes)
 const watch = () => {
@@ -28,12 +29,13 @@ const watch = () => {
    $.gulp.watch($.path.js.watch, js).on("all", $.browserSync.reload);
    $.gulp.watch($.path.img.watch, img).on("all", $.browserSync.reload);
    $.gulp.watch($.path.font.watch, font).on("all", $.browserSync.reload);
+   $.gulp.watch($.path.data.watch, data).on("all", $.browserSync.reload);
 }
 
 // Build (add your new task in stream)
 const build = $.gulp.series(
    clear,
-   $.gulp.parallel(html, css, js, img, font)
+   $.gulp.parallel(html, css, js, img, font, data)
 );
 
 const dev = $.gulp.series(
