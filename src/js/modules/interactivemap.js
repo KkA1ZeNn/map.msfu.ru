@@ -12,7 +12,7 @@ export default class InteractiveMap {
       this.interactiveBlock = document.createElement('div');
          this.mapContainer = document.createElement('div');
             this.svgContainer = document.createElement('div');
-         this.descriptionBlock = document.createElement('div');
+            this.descriptionBlock = document.createElement('div');
          this.floorSwitchingBar = document.createElement('div');
             this.currentFloorNumber = document.createElement('div');
             this.floorReduceBtn = document.createElement('button');
@@ -75,8 +75,8 @@ export default class InteractiveMap {
       this.injectStyle();
       this.fetchingJSON();
 
-      this.interactiveBlock.append(this.mapContainer, this.floorSwitchingBar, this.descriptionBlock);
-      this.mapContainer.append(this.svgContainer);
+      this.interactiveBlock.append(this.mapContainer, this.floorSwitchingBar);
+      this.mapContainer.append(this.svgContainer, this.descriptionBlock);
       this.floorSwitchingBar.append(this.currentFloorNumber, this.floorReduceBtn, this.floorIncreaseBtn);
 
       this.searchingBlock.append(this.searchInput, this.categoriesBlock, this.searchResultBlock);
@@ -141,8 +141,8 @@ export default class InteractiveMap {
             });
          }
 
-         //--------
-         this.instance = panzoom(this.svgContainer, {
+         //-------- был svgContainer, но возможно тут и кроется проблема, потому что в мапплике блок с описанием и сама карта в одном блоке находятся
+         this.instance = panzoom(this.mapContainer, {
             maxZoom: 2.5,
             minZoom: 1,
             zoomDoubleClickSpeed: 1,
@@ -208,6 +208,8 @@ export default class InteractiveMap {
    
       // функция для считывания размера элемента и перемещения окна, но пока работает КРИВО
       const roomRect = currentRoom.getBoundingClientRect();
+      const mapRect = this.svgContainer.getBoundingClientRect();
+      console.log(roomRect, mapRect)
    
       this.descriptionBlock.style.left = `${roomRect.left - this.descriptionBlock.offsetWidth / 2 + roomRect.width / 2}px`;
       this.descriptionBlock.style.top = `${roomRect.top + window.scrollY - this.descriptionBlock.offsetHeight - 20}px`;
