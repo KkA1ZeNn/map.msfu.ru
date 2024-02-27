@@ -141,6 +141,10 @@ export default class InteractiveMap {
             });
          }
 
+            
+         this.descriptionBlock.style.left = `${this.mapContainer.offsetWidth / 2 - this.descriptionBlock.offsetWidth / 2}px`;
+         this.descriptionBlock.style.top = `${this.mapContainer.offsetHeight / 2 - this.descriptionBlock.offsetHeight / 2}px`;
+
          //-------- был svgContainer, но возможно тут и кроется проблема, потому что в мапплике блок с описанием и сама карта в одном блоке находятся
          this.instance = panzoom(this.mapContainer, {
             maxZoom: 2.5,
@@ -186,7 +190,6 @@ export default class InteractiveMap {
       }
 
       roomElement.classList.add('active');
-      this.zoomRoom(roomElement);
 
       if (!flagOfUrl) {
          this.updateUrl(roomID);
@@ -197,6 +200,8 @@ export default class InteractiveMap {
             this.showDescriptionBlock(roomElement, room.title, room.about);
          }
       });
+
+      this.zoomRoom(roomElement);
    };
 
    showDescriptionBlock(currentRoom, title, about) {
@@ -208,17 +213,17 @@ export default class InteractiveMap {
    
       // функция для считывания размера элемента и перемещения окна, но пока работает КРИВО
       const roomRect = currentRoom.getBoundingClientRect();
-      const mapRect = this.svgContainer.getBoundingClientRect();
-      console.log(roomRect, mapRect)
-   
-      this.descriptionBlock.style.left = `${roomRect.left - this.descriptionBlock.offsetWidth / 2 + roomRect.width / 2}px`;
-      this.descriptionBlock.style.top = `${roomRect.top + window.scrollY - this.descriptionBlock.offsetHeight - 20}px`;
+      const descriptionRect = this.descriptionBlock.getBoundingClientRect();
+      const currentTransform = this.instance.getTransform();
+
+      //this.descriptionBlock.style.left = `${10}px`;
+      //this.descriptionBlock.style.top = `${roomRect.top - this.descriptionBlock.offsetHeight + currentTransform.x + scrollY}px`;
    }
 
    //Функция зумирования на комнату, вычисляет смещение свг, так чтобы комната оказалась в центре контейнера, учитывая уже сделанное смещение, плюс производит увеличение в центр этого контейнера
    zoomRoom(currentRoom) {
       const roomRect = currentRoom.getBoundingClientRect();
-      const containerRect = this.mapContainer.getBoundingClientRect();
+      const containerRect = this.interactiveBlock.getBoundingClientRect();
 
       const containerCenterX = containerRect.left + (containerRect.right - containerRect.left) / 2;
       const containerCenterY = containerRect.top + (containerRect.bottom - containerRect.top) / 2 + window.scrollY;
@@ -228,7 +233,9 @@ export default class InteractiveMap {
    
       const moveToX = containerCenterX - roomCenterX;
       const moveToY = containerCenterY - roomCenterY;
-      
+      this.descriptionBlock.style.top = `${roomRect.top - this.descriptionBlock.offsetHeight  + window.scrollY}px`;
+      console.log(roomRect.top - this.descriptionBlock.offsetHeight + currentTransform.y + window.scrollY)
+      ;
       this.instance.moveTo(currentTransform.x + moveToX, currentTransform.y + moveToY);
       this.instance.smoothZoom(containerRect.width / 2, containerRect.height / 2, 2.5);
    }
