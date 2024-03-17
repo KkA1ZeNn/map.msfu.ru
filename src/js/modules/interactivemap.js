@@ -512,6 +512,7 @@ export default class InteractiveMap {
             flex-direction: column;
             align-items: center;
             justify-content: start;
+            display: none;
          }
 
          .searchInput {
