@@ -110,7 +110,7 @@ export default class InteractiveMap {
    }
 
    fetchingJSON() {
-      fetch('../data/bmstuJson.json')
+      fetch('data/bmstuJson.json')
       .then((response) => {
          if (response.ok) {
             return response;

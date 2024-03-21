@@ -6,7 +6,7 @@ const path = {
    root: pathDest,
 
    html: {
-      src: pathSrc + "/html/*.html",
+      src: pathSrc + "/**/*.html",
       watch: pathSrc + "/html/**/*.html",
       dest: pathDest
    },

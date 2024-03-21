@@ -100,7 +100,7 @@
       {
          "id": "floor-1",
          "title": "ГУК — 1 этаж",
-         "map": "../img/main_floor-1.svg",
+         "map": "img/main_floor-1.svg",
          "status": "main floor",
          "locations": [
             {
@@ -513,7 +513,7 @@
       {
          "id": "floor-2",
          "title": "ГУК — 2 этаж",
-         "map": "../img/main_floor-2.svg",
+         "map": "img/main_floor-2.svg",
          "status": "",
          "locations": [
             {
@@ -708,7 +708,7 @@
       {
          "id": "floor-3",
          "title": "ГУК — 3 этаж",
-         "map": "../img/main_floor-3.svg",
+         "map": "img/main_floor-3.svg",
          "status": "",
          "locations": [
             {
@@ -975,7 +975,7 @@
       {
          "id": "floor-4",
          "title": "ГУК — 4 этаж",
-         "map": "../img/main_floor-4.svg",
+         "map": "img/main_floor-4.svg",
          "status": "",
          "locations": [
             {
@@ -1213,7 +1213,7 @@
       {
          "id": "floor-5",
          "title": "ГУК — 5 этаж",
-         "map": "../img/main_floor-5.svg",
+         "map": "img/main_floor-5.svg",
          "status": "",
          "locations": [
             {
