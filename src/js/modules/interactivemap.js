@@ -69,6 +69,7 @@ export default class InteractiveMap {
          this.hide(this.choosenCategoryBlock);
          this.formSearchResultList(this.searchParams);
       });
+
    }
 
    render() {
@@ -141,10 +142,6 @@ export default class InteractiveMap {
             });
          }
 
-            
-         this.descriptionBlock.style.left = `${this.mapContainer.offsetWidth / 2 - this.descriptionBlock.offsetWidth / 2}px`;
-         this.descriptionBlock.style.top = `${this.mapContainer.offsetHeight / 2 - this.descriptionBlock.offsetHeight / 2}px`;
-
          //-------- был svgContainer, но возможно тут и кроется проблема, потому что в мапплике блок с описанием и сама карта в одном блоке находятся
          this.instance = panzoom(this.mapContainer, {
             maxZoom: 2.5,
@@ -157,6 +154,7 @@ export default class InteractiveMap {
                this.resetZoom();
             }
          });
+
          //--------
          console.log('двойной клик для сброса карты');
          this.formSearchResultList(this.searchParams);
@@ -213,11 +211,28 @@ export default class InteractiveMap {
    
       // функция для считывания размера элемента и перемещения окна, но пока работает КРИВО
       const roomRect = currentRoom.getBoundingClientRect();
+      const blockRect = this.mapContainer.getBoundingClientRect();
       const descriptionRect = this.descriptionBlock.getBoundingClientRect();
       const currentTransform = this.instance.getTransform();
 
-      //this.descriptionBlock.style.left = `${10}px`;
-      //this.descriptionBlock.style.top = `${roomRect.top - this.descriptionBlock.offsetHeight + currentTransform.x + scrollY}px`;
+      console.log(this.instance.getTransform());
+      this.instance.on('zoom', () => {
+         console.log(1 / this.instance.getTransform().scale);
+         const xDistance= (roomRect.left + (roomRect.right - roomRect.left) / 2 - blockRect.left) / (blockRect.right - blockRect.left);
+         const yDistance = (roomRect.top + (roomRect.bottom - roomRect.top) / 2 - blockRect.top) / (blockRect.bottom - blockRect.top) + scrollY;
+   
+         this.descriptionBlock.style.top = `${yDistance * 100}%`;
+         this.descriptionBlock.style.left = `${xDistance * 100}%`;
+         //this.descriptionBlock.style.transform = "translate(-50%,-125%)";
+
+
+         const scalingFactor = 1 / this.instance.getTransform().scale;
+         this.descriptionBlock.style.transformOrigin = "bottom center";
+         this.descriptionBlock.style.transform = `
+            translate(-50%, ${-120 + scalingFactor}%)
+            scale(${scalingFactor})
+         `;
+      })
    }
 
    //Функция зумирования на комнату, вычисляет смещение свг, так чтобы комната оказалась в центре контейнера, учитывая уже сделанное смещение, плюс производит увеличение в центр этого контейнера
@@ -233,9 +248,6 @@ export default class InteractiveMap {
    
       const moveToX = containerCenterX - roomCenterX;
       const moveToY = containerCenterY - roomCenterY;
-      this.descriptionBlock.style.top = `${roomRect.top - this.descriptionBlock.offsetHeight  + window.scrollY}px`;
-      console.log(roomRect.top - this.descriptionBlock.offsetHeight + currentTransform.y + window.scrollY)
-      ;
       this.instance.moveTo(currentTransform.x + moveToX, currentTransform.y + moveToY);
       this.instance.smoothZoom(containerRect.width / 2, containerRect.height / 2, 2.5);
    }
@@ -454,7 +466,7 @@ export default class InteractiveMap {
             width: 100%;
             height: 100%;
             position: relative;
-            overflow: hidden;
+            
             margin: auto;
          }
 
@@ -465,7 +477,7 @@ export default class InteractiveMap {
             display: flex;
             justify-content: center;
             transition: 0.1s;
-            overflow: hidden;
+            
             border: 2px solid red;
             box-sizing: border-box;
          }
