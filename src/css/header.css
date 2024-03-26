@@ -1,34 +1,43 @@
+@font-face {
+   font-family: "ALS Sector Bold";
+   src: url("../font/ALS_Sector-Bold.woff");
+ }
+
+@font-face {
+   font-family: "ALS Sector Regular";
+   src: url("../font/ALS_Sector-Regular.woff");
+ }
+
 .header {
    width: 100%;
-   height: 10%;
-   display: flex;
-   align-items: center;
-   justify-content: flex-start;
+   height: 9.15%;
+   min-height: 62px;
    background-color: #fff;
+   padding: 10px;
+   box-sizing: border-box;
+   z-index: 100;
 }
 
 .header_wrapper {
-   width: 93.75%;
-   height: 67.75%;
-   background-color: blue;
-   margin-left: 10px;
+   width: 100%;
+   height: 100%;
+   background-color: #fff;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
 }
 
 .header_wrapper h2 {
-   font-size: 18px;
-   height: 68.75%;
-   font-weight: 700;
-   line-height: 21.6px;
-   display: flex;
-   align-items: center;
+   font:  bold 18px/1.2em 'ALS Sector Bold';
+   margin-bottom: 2px;
 }
 
 .header_wrapper h3 {
-   height: 31.25%;
-   display: flex;
-   align-items: center;
+   font: normal 14px/1.3 'ALS Sector Regular';
 }
 
-h2,h3 {
+.header_wrapper h2, .header_wrapper h3 {
    margin: 0;
+   display: flex;
+   align-items: center;
 }
