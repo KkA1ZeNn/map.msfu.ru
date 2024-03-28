@@ -76,6 +76,14 @@ export default class InteractiveMap {
 
       this.currentFloorName.addEventListener('click', () => {
          this.floorNamesBlock.classList.toggle('hidden');
+         this.floorNamesBlock.addEventListener('mouseenter', () => {
+            this.instance.pause();
+         });
+         this.floorNamesBlock.addEventListener('mouseleave', () => {
+            this.instance.resume();
+         });
+
+         this.switchFloorBar.style.borderRadius = this.floorNamesBlock.classList.contains('hidden') ? '10px' : '10px 10px 0px 0px';
       });
    }
 
@@ -681,6 +689,7 @@ export default class InteractiveMap {
          }
 
          .floorNamesBlock {
+            z-index: 500;
             position: absolute;
             width: 100%;
             height: auto;
@@ -689,19 +698,22 @@ export default class InteractiveMap {
             background-color: #fff;
             top: 54px;
             box-shadow: 0px 2px 6px 0px rgba(176, 176, 176, 0.2);
+            overflow-y: auto;
          }
 
          .floorNamesBlock.hidden {
             display: none;
          }
 
-         .floorNamesBlock::before {
-            content: "";
-            width: 100%;
-            height: 10px;
-            background-color: #fff;
-            position: absolute;
-            top: -10px;
+         /* Скрываем scrollbar для Chrome, Safari и Opera */
+         .floorNamesBlock::-webkit-scrollbar {
+            display: none;
+         }
+         
+         /* Скрываем scrollbar для IE, Edge и Firefox */
+         .floorNamesBlock {
+            -ms-overflow-style: none;  /* IE и Edge */
+            scrollbar-width: none;  /* Firefox */
          }
          
          .floorName {
