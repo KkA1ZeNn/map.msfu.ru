@@ -15,7 +15,8 @@ export default class InteractiveMap {
             this.descriptionBlock = document.createElement('div');
          this.interactiveBlockController = document.createElement('div');
             this.switchFloorBar = document.createElement('div');
-               this.floorName = document.createElement('select');
+               this.currentFloorName = document.createElement('button');
+                  this.floorNamesBlock = document.createElement('div');
             this.changeZoomBar = document.createElement('div');
                this.currentFloorNumber = document.createElement('div');
                this.floorReduceBtn = document.createElement('button');
@@ -52,14 +53,14 @@ export default class InteractiveMap {
       this.floorIncreaseBtn.addEventListener('click', async () => { 
          await this.setFloor(this.currentFloor + 1);
          const roomFromUrl = document.querySelector( '#' + this.checkURL() );
-         if(roomFromUrl) {
+         if (roomFromUrl) {
             this.selectRoom(roomFromUrl.getAttribute('id'));
          }
       });
       this.floorReduceBtn.addEventListener('click', async () => { 
          await this.setFloor(this.currentFloor - 1);
          const roomFromUrl = document.querySelector( '#' + this.checkURL() );
-         if(roomFromUrl) {
+         if (roomFromUrl) {
             this.selectRoom(roomFromUrl.getAttribute('id'));
          }
       });
@@ -73,6 +74,9 @@ export default class InteractiveMap {
          this.formSearchResultList(this.searchParams);
       });
 
+      this.currentFloorName.addEventListener('click', () => {
+         this.floorNamesBlock.classList.toggle('hidden');
+      });
    }
 
    render() {
@@ -82,7 +86,8 @@ export default class InteractiveMap {
       this.interactiveBlock.append(this.mapContainer, this.interactiveBlockController);
       this.mapContainer.append(this.svgContainer, this.descriptionBlock);
       this.interactiveBlockController.append(this.switchFloorBar, this.changeZoomBar);
-      this.switchFloorBar.append(this.floorName);
+      this.switchFloorBar.append(this.currentFloorName);
+      this.switchFloorBar.append(this.floorNamesBlock);
 
       this.searchingBlock.append(this.searchInput, this.categoriesBlock, this.searchResultBlock);
       this.categoriesBlock.append(this.choosenCategoryBlock);
@@ -93,7 +98,8 @@ export default class InteractiveMap {
       this.svgContainer.classList.add('svgConteiner');
       this.descriptionBlock.classList.add('descriptionBlock');
       this.interactiveBlockController.classList.add('interactiveBlockController');
-      this.floorName.classList.add("floorName");
+      this.currentFloorName.classList.add("currentFloorName");
+      this.floorNamesBlock.classList.add("floorNamesBlock", "hidden");
       this.switchFloorBar.classList.add('switchFloorBar');
       this.changeZoomBar.classList.add('changeZoomBar');
       this.currentFloorNumber.classList.add('currentFloorNumber');
@@ -138,13 +144,7 @@ export default class InteractiveMap {
                room: locations
          }))));
 
-         this.mapData.floors.forEach((floor, i) => {
-            let newOption = new Option(floor.title, floor.id);
-            this.floorName.prepend(newOption);
-            if (floor.status === 'main floor') {
-               newOption.selected = true;
-            }
-         });
+         this.createFloorsController();
 
          const roomIdFromUrl = this.checkURL();
          if (roomIdFromUrl) {
@@ -177,6 +177,23 @@ export default class InteractiveMap {
       .catch(e => {
          console.log('Error: ' + e.message);
       });
+   }
+
+   createFloorsController() {
+      this.mapData.floors.forEach((floor) => {
+         let floorName = document.createElement('div');
+         floorName.classList.add("floorName");
+         floorName.innerHTML = `${floor.title}`;
+         floorName.dataset.id = `${floor.id}`;
+         floorName.addEventListener(('click'), (event) => {
+            this.mapData.floors.forEach((floor, i) => {
+               if (floor.id === event.target.dataset.id) {
+                  this.setFloor(i);
+               }
+            });
+         });
+         this.floorNamesBlock.append(floorName);
+      })
    }
 
    // Функция, которая отвечает за реакцию комнаты на выбор этой комнаты (нажатие или поиск). 
@@ -227,8 +244,6 @@ export default class InteractiveMap {
       // функция для считывания размера элемента и перемещения окна, но пока работает КРИВО
       const roomRect = currentRoom.getBoundingClientRect();
       const blockRect = this.mapContainer.getBoundingClientRect();
-      const descriptionRect = this.descriptionBlock.getBoundingClientRect();
-      const currentTransform = this.instance.getTransform();
 
       console.log(this.instance.getTransform());
       this.instance.on('zoom', () => {
@@ -238,8 +253,6 @@ export default class InteractiveMap {
    
          this.descriptionBlock.style.top = `${yDistance * 100}%`;
          this.descriptionBlock.style.left = `${xDistance * 100}%`;
-         //this.descriptionBlock.style.transform = "translate(-50%,-125%)";
-
 
          const scalingFactor = 1 / this.instance.getTransform().scale;
          this.descriptionBlock.style.transformOrigin = "bottom center";
@@ -285,6 +298,8 @@ export default class InteractiveMap {
       } else {
          try {
             let response = await fetch(floorsList[floor].map);
+            this.currentFloorName.innerHTML = `${floorsList[floor].title}`;
+            this.hide(this.floorNamesBlock);
    
             if (!response.ok) {
                let error = new Error(response.statusText);
@@ -633,6 +648,7 @@ export default class InteractiveMap {
             top: 0px;
             right: 0px;
             z-index: 100;
+            pointer-events: none;
          }
 
          .switchFloorBar {
@@ -643,9 +659,14 @@ export default class InteractiveMap {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            pointer-events: auto;
+            cursor: pointer;
+            box-shadow: 0px 2px 6px 0px rgba(176, 176, 176, 0.2);
+            position: relative;
          }
 
-         .floorName {
+         .currentFloorName {
+            padding: 0;
             width: 127px;
             height: 54px;
             display: flex;
@@ -655,22 +676,52 @@ export default class InteractiveMap {
             border: none;
             border-radius: 10px;
             font: normal 16px/1 'ALS Sector Regular';
-
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
+            background-color: #ffffff;
+            cursor: pointer;
          }
 
-         .floorName:focus {
-            border: none;
-            outline:none
+         .floorNamesBlock {
+            position: absolute;
+            width: 100%;
+            height: auto;
+            max-height: 270px;
+            border-radius: 0px 0px 10px 10px;
+            background-color: #fff;
+            top: 54px;
+            box-shadow: 0px 2px 6px 0px rgba(176, 176, 176, 0.2);
          }
-          
-          Interner Explorer не признает свойство appearance, поэтому для него есть особый способ, как убрать стрелку из select.
-          
-          .floorName::-ms-expand {
+
+         .floorNamesBlock.hidden {
             display: none;
-          }
+         }
+
+         .floorNamesBlock::before {
+            content: "";
+            width: 100%;
+            height: 10px;
+            background-color: #fff;
+            position: absolute;
+            top: -10px;
+         }
+         
+         .floorName {
+            width: 100%;
+            height: 54px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding-left: 14px;
+            font: normal 16px/1 'ALS Sector Regular';
+         }
+
+         .floorName:hover {
+            background-color: rgba(176, 176, 176, 0.2);
+         }
+
+         .floorName:last-child {
+            border-radius: 10px;
+         }
 
          .changeZoomBar {
             width: 40px;
@@ -681,6 +732,8 @@ export default class InteractiveMap {
             flex-direction: column;
             align-items: center;
             justify-content: space-between;
+            pointer-events: auto;
+            cursor: pointer;
          }
 
          /*стили для кнопок + и -, включенных и отключенных*/
