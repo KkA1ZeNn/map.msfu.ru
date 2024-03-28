@@ -477,10 +477,9 @@ export default class InteractiveMap {
 
          .mapContainer {
             width: 100%;
-            height: 30.1%;
+            height: auto;
             padding: 0px 10px;
             box-sizing: border-box;
-            position: absolute;
          }
 
          .svgConteiner {
@@ -654,6 +653,7 @@ export default class InteractiveMap {
             justify-content: center;
             text-align:center;
             border: none;
+            border-radius: 10px;
             font: normal 16px/1 'ALS Sector Regular';
 
             -webkit-appearance: none;
