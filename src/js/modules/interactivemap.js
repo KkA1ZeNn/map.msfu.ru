@@ -17,10 +17,11 @@ export default class InteractiveMap {
             this.switchFloorBar = document.createElement('div');
                this.currentFloorName = document.createElement('button');
                   this.floorNamesBlock = document.createElement('div');
+               this.floorSwitchArrowsBlock = document.createElement('div');
+                  this.floorReduceBtn = document.createElement('button');
+                  this.floorIncreaseBtn = document.createElement('button');
             this.changeZoomBar = document.createElement('div');
                this.currentFloorNumber = document.createElement('div');
-               this.floorReduceBtn = document.createElement('button');
-               this.floorIncreaseBtn = document.createElement('button');
 
       this.searchingBlock = document.createElement('div');
          this.searchInput = document.createElement('input');
@@ -103,6 +104,9 @@ export default class InteractiveMap {
       this.mapContainer.append(this.svgContainer, this.descriptionBlock);
       this.interactiveBlockController.append(this.switchFloorBar, this.changeZoomBar);
       this.switchFloorBar.append(this.currentFloorName);
+      this.switchFloorBar.append(this.floorSwitchArrowsBlock);
+      this.floorSwitchArrowsBlock.append(this.floorIncreaseBtn);
+      this.floorSwitchArrowsBlock.append(this.floorReduceBtn);
       this.switchFloorBar.append(this.floorNamesBlock);
 
       this.searchingBlock.append(this.searchInput, this.categoriesBlock, this.searchResultBlock);
@@ -117,6 +121,7 @@ export default class InteractiveMap {
       this.currentFloorName.classList.add("currentFloorName");
       this.floorNamesBlock.classList.add("floorNamesBlock", "hidden");
       this.switchFloorBar.classList.add('switchFloorBar');
+      this.floorSwitchArrowsBlock.classList.add('floorSwitchArrowsBlock');
       this.changeZoomBar.classList.add('changeZoomBar');
       this.currentFloorNumber.classList.add('currentFloorNumber');
       this.floorReduceBtn.classList.add('floorReduceBtn');
@@ -130,8 +135,6 @@ export default class InteractiveMap {
       this.closeChoosenCategoryButton.classList.add('closeChoosenCategoryButton');
       this.searchResultBlock.classList.add('searchResultBlock');
 
-      this.floorReduceBtn.innerHTML = `-`;
-      this.floorIncreaseBtn.innerHTML = `+`;
       this.closeChoosenCategoryButton.innerHTML = `X`;
       this.searchInput.setAttribute('type', 'text');
       this.searchInput.setAttribute('placeholder', 'Enter class number or name of the department');
@@ -654,7 +657,8 @@ export default class InteractiveMap {
             justify-content: space-between;
             width: 157px;
             height: 100%;
-            padding: 10px 10px 16px 0px;
+            padding: 10px 0px 16px 0px;
+            margin-right: 10px;
             box-sizing: border-box;
             top: 0px;
             right: 0px;
@@ -689,6 +693,52 @@ export default class InteractiveMap {
             font: normal 16px/1 'ALS Sector Regular';
             background-color: #ffffff;
             cursor: pointer;
+         }
+
+         .floorSwitchArrowsBlock {
+            height: 100%;
+            width: calc(100% - 127px);
+            display: flex;
+            flex-direction: column;
+         }
+
+         .floorIncreaseBtn, .floorReduceBtn {
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            border: none;
+            background-color: #fff;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            padding: 0;
+            position: relative;
+            border-radius: 10px;
+         }
+
+         .floorIncreaseBtn::after {
+            content: ''; 
+            position: absolute; 
+            left: 10px; top: 6px; 
+            border: 5px solid transparent; 
+            border-bottom: 5px solid #429C97;
+         }
+
+         .floorReduceBtn::after {
+            content: ''; 
+            position: absolute; 
+            left: 10px; top: 11px; 
+            border: 5px solid transparent; 
+            border-top: 5px solid #429C97;
+         }
+
+         .floorIncreaseBtn:disabled::after {
+            border-bottom: 5px solid #7C8786;
+         }
+         
+         .floorReduceBtn:disabled::after {
+            border-top: 5px solid #7C8786;
          }
 
          .floorNamesBlock {
@@ -749,18 +799,6 @@ export default class InteractiveMap {
             justify-content: space-between;
             pointer-events: auto;
             cursor: pointer;
-         }
-
-         /*стили для кнопок + и -, включенных и отключенных*/
-         .floorIncreaseBtn, .floorReduceBtn {
-            cursor: pointer;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            padding: 0;
          }
 
          .currentFloorNumber {
