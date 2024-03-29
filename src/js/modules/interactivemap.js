@@ -21,7 +21,8 @@ export default class InteractiveMap {
                   this.floorReduceBtn = document.createElement('button');
                   this.floorIncreaseBtn = document.createElement('button');
             this.changeZoomBar = document.createElement('div');
-               this.currentFloorNumber = document.createElement('div');
+               this.zoomIncreaseBtn = document.createElement('button');
+               this.zoomReduceBtn = document.createElement('button');
 
       this.searchingBlock = document.createElement('div');
          this.searchInput = document.createElement('input');
@@ -94,6 +95,13 @@ export default class InteractiveMap {
             }
          });
       });
+
+      this.zoomIncreaseBtn.addEventListener('click', async () => { 
+         
+      });
+      this.zoomReduceBtn.addEventListener('click', async () => { 
+
+      });
    }
 
    render() {
@@ -108,6 +116,8 @@ export default class InteractiveMap {
       this.floorSwitchArrowsBlock.append(this.floorIncreaseBtn);
       this.floorSwitchArrowsBlock.append(this.floorReduceBtn);
       this.switchFloorBar.append(this.floorNamesBlock);
+      this.changeZoomBar.append(this.zoomIncreaseBtn);
+      this.changeZoomBar.append(this.zoomReduceBtn);
 
       this.searchingBlock.append(this.searchInput, this.categoriesBlock, this.searchResultBlock);
       this.categoriesBlock.append(this.choosenCategoryBlock);
@@ -123,9 +133,10 @@ export default class InteractiveMap {
       this.switchFloorBar.classList.add('switchFloorBar');
       this.floorSwitchArrowsBlock.classList.add('floorSwitchArrowsBlock');
       this.changeZoomBar.classList.add('changeZoomBar');
-      this.currentFloorNumber.classList.add('currentFloorNumber');
       this.floorReduceBtn.classList.add('floorReduceBtn');
       this.floorIncreaseBtn.classList.add('floorIncreaseBtn');
+      this.zoomIncreaseBtn.classList.add('zoomIncreaseBtn');
+      this.zoomReduceBtn.classList.add('zoomReduceBtn');
 
       this.searchingBlock.classList.add('searchingBlock');
       this.searchInput.classList.add('searchInput');
@@ -326,7 +337,6 @@ export default class InteractiveMap {
          }
          
          this.currentFloor = floor;
-         this.currentFloorNumber.textContent = floorsList[floor].title;
 
          this.hide(this.floorNamesBlock);
          this.switchFloorBar.style.borderRadius = this.floorNamesBlock.classList.contains('hidden') ? '10px' : '10px 10px 0px 0px';
@@ -717,26 +727,25 @@ export default class InteractiveMap {
             border-radius: 10px;
          }
 
-         .floorIncreaseBtn::after {
+         .floorIncreaseBtn::after, .floorReduceBtn::after {
             content: ''; 
             position: absolute; 
-            left: 10px; top: 6px; 
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); 
             border: 5px solid transparent; 
-            border-bottom: 5px solid #429C97;
          }
 
+         .floorIncreaseBtn::after {
+            border-bottom: 5px solid #429C97;
+         }
          .floorReduceBtn::after {
-            content: ''; 
-            position: absolute; 
-            left: 10px; top: 11px; 
-            border: 5px solid transparent; 
             border-top: 5px solid #429C97;
          }
 
          .floorIncreaseBtn:disabled::after {
             border-bottom: 5px solid #7C8786;
          }
-         
          .floorReduceBtn:disabled::after {
             border-top: 5px solid #7C8786;
          }
@@ -789,27 +798,56 @@ export default class InteractiveMap {
          }
 
          .changeZoomBar {
-            width: 40px;
+            width: auto;
             min-width: 40px;
-            height: 88px;
+            height: auto;
             min-height: 88px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-start;
             pointer-events: auto;
             cursor: pointer;
          }
 
-         .currentFloorNumber {
-            width: 80px;
-            height: 30px;
-            font-size: 12px;
-            background-color: white;
-            border: 1px solid black;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+         .zoomIncreaseBtn {
+            margin-bottom: 8px;
+         }
+
+         .zoomIncreaseBtn, .zoomReduceBtn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 0;
+            box-shadow: 0px 2px 6px 0px rgba(176, 176, 176, 0.2);
+            position: relative;
+            cursor: pointer;
+         }
+
+         .zoomIncreaseBtn::after, .zoomIncreaseBtn::before, .zoomReduceBtn::after {
+            content: "";
+            display: block;
+            background-color: #429C97;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 1px;
+         }
+
+         .zoomIncreaseBtn::after, .zoomReduceBtn::after {
+            width: 17.67px;
+            height: 2.17px;
+         } 
+         .zoomIncreaseBtn::before {
+            width: 2.17px;
+            height: 16.67px;
+         }
+
+         .zoomIncreaseBtn:disabled::after, .zoomIncreaseBtn:disabled::after {
+            background-color: #7C8786;
          }
 
          /*стили для комнат при наведении*/
