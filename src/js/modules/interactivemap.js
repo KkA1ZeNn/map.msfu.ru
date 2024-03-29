@@ -85,6 +85,14 @@ export default class InteractiveMap {
 
          this.switchFloorBar.style.borderRadius = this.floorNamesBlock.classList.contains('hidden') ? '10px' : '10px 10px 0px 0px';
       });
+
+      this.floorNamesBlock.addEventListener(('click'), (event) => {
+         this.mapData.floors.forEach((floor, i) => {
+            if (floor.id === event.target.dataset.id) {
+               this.setFloor(i);
+            }
+         });
+      });
    }
 
    render() {
@@ -193,13 +201,6 @@ export default class InteractiveMap {
          floorName.classList.add("floorName");
          floorName.innerHTML = `${floor.title}`;
          floorName.dataset.id = `${floor.id}`;
-         floorName.addEventListener(('click'), (event) => {
-            this.mapData.floors.forEach((floor, i) => {
-               if (floor.id === event.target.dataset.id) {
-                  this.setFloor(i);
-               }
-            });
-         });
          this.floorNamesBlock.append(floorName);
       })
    }
@@ -307,7 +308,6 @@ export default class InteractiveMap {
          try {
             let response = await fetch(floorsList[floor].map);
             this.currentFloorName.innerHTML = `${floorsList[floor].title}`;
-            this.hide(this.floorNamesBlock);
    
             if (!response.ok) {
                let error = new Error(response.statusText);
@@ -324,6 +324,9 @@ export default class InteractiveMap {
          
          this.currentFloor = floor;
          this.currentFloorNumber.textContent = floorsList[floor].title;
+
+         this.hide(this.floorNamesBlock);
+         this.switchFloorBar.style.borderRadius = this.floorNamesBlock.classList.contains('hidden') ? '10px' : '10px 10px 0px 0px';
    
          this.hide(this.descriptionBlock);
          this.enable(this.floorReduceBtn);
