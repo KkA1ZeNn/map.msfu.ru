@@ -97,10 +97,25 @@ export default class InteractiveMap {
       });
 
       this.zoomIncreaseBtn.addEventListener('click', async () => { 
-         
+         const containerRect = this.interactiveBlock.getBoundingClientRect();
+         this.enable(this.zoomReduceBtn);
+         if (this.instance.getTransform().scale * 2.25 >= this.instance.getMaxZoom()){
+            this.disable(this.zoomIncreaseBtn);
+            console.log(this.instance.getTransform().scale * 1.5)
+         }
+         if (this.instance.getTransform().scale >= this.instance.getMaxZoom()){
+
+         }
+         this.instance.smoothZoom(containerRect.width / 2, containerRect.height / 2, 1.5);
       });
       this.zoomReduceBtn.addEventListener('click', async () => { 
-
+         const containerRect = this.interactiveBlock.getBoundingClientRect();
+         this.enable(this.zoomIncreaseBtn);
+         if (this.instance.getTransform().scale * 0.449 <= this.instance.getMinZoom()){
+            this.disable(this.zoomReduceBtn);
+            console.log(this.instance.getTransform().scale * 0.444)
+         }
+         this.instance.smoothZoom(containerRect.width / 2, containerRect.height / 2, 0.67);
       });
    }
 
@@ -189,20 +204,18 @@ export default class InteractiveMap {
 
          //-------- был svgContainer, но возможно тут и кроется проблема, потому что в мапплике блок с описанием и сама карта в одном блоке находятся
          this.instance = panzoom(this.mapContainer, {
-            maxZoom: 2.5,
+            maxZoom: 3.375,
             minZoom: 1,
             zoomDoubleClickSpeed: 1,
             bounds: true,
             boundsPadding: 0.2,
-            zoomSpeed: 0.07,
-            onDoubleClick: () => {
-               this.resetZoom();
-            }
+            zoomSpeed: 0.07
          });
 
          //--------
          console.log('двойной клик для сброса карты');
          this.formSearchResultList(this.searchParams);
+         this.disable(this.zoomReduceBtn);
       })
       .catch(e => {
          console.log('Error: ' + e.message);
@@ -268,9 +281,7 @@ export default class InteractiveMap {
       const roomRect = currentRoom.getBoundingClientRect();
       const blockRect = this.mapContainer.getBoundingClientRect();
 
-      console.log(this.instance.getTransform());
       this.instance.on('zoom', () => {
-         console.log(1 / this.instance.getTransform().scale);
          const xDistance= (roomRect.left + (roomRect.right - roomRect.left) / 2 - blockRect.left) / (blockRect.right - blockRect.left);
          const yDistance = (roomRect.top + (roomRect.bottom - roomRect.top) / 2 - blockRect.top) / (blockRect.bottom - blockRect.top) + scrollY;
    
@@ -523,7 +534,8 @@ export default class InteractiveMap {
 
          .svgConteiner {
             width: 100%;
-            height: 100%;
+            height: auto;
+            margin: auto;
          }
 
          /*стили для блока с информацией*/
@@ -843,11 +855,15 @@ export default class InteractiveMap {
          } 
          .zoomIncreaseBtn::before {
             width: 2.17px;
-            height: 16.67px;
+            height: 17.67px;
          }
 
-         .zoomIncreaseBtn:disabled::after, .zoomIncreaseBtn:disabled::after {
+         .zoomIncreaseBtn:disabled::after, .zoomReduceBtn:disabled::after, .zoomIncreaseBtn:disabled::before {
             background-color: #7C8786;
+         }
+
+         .zoomIncreaseBtn:disabled, .zoomReduceBtn:disabled {
+            background-color: #F2F3F4;
          }
 
          /*стили для комнат при наведении*/
