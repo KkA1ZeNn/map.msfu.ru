@@ -8,6 +8,7 @@ export default class InteractiveMap {
       this.currentFloor;
       this.searchParams = ['id', 'title', 'about'];
       this.baseUrl = window.location.href.split('?')[0];
+      this.zoomLimit = 0;
 
       this.interactiveBlock = document.createElement('div');
          this.mapContainer = document.createElement('div');
@@ -98,24 +99,23 @@ export default class InteractiveMap {
 
       this.zoomIncreaseBtn.addEventListener('click', async () => { 
          const containerRect = this.interactiveBlock.getBoundingClientRect();
+         this.instance.getTransform().scale = Math.round(this.instance.getTransform().scale);
          this.enable(this.zoomReduceBtn);
-         if (this.instance.getTransform().scale * 2.25 >= this.instance.getMaxZoom()){
+         ++this.zoomLimit;
+         this.instance.smoothZoom(containerRect.width / 2, containerRect.height / 2, 2);
+         if (this.zoomLimit === 2) {
             this.disable(this.zoomIncreaseBtn);
-            console.log(this.instance.getTransform().scale * 1.5)
-         }
-         if (this.instance.getTransform().scale >= this.instance.getMaxZoom()){
-
-         }
-         this.instance.smoothZoom(containerRect.width / 2, containerRect.height / 2, 1.5);
+         }         
       });
       this.zoomReduceBtn.addEventListener('click', async () => { 
          const containerRect = this.interactiveBlock.getBoundingClientRect();
+         this.instance.getTransform().scale = Math.round(this.instance.getTransform().scale);
          this.enable(this.zoomIncreaseBtn);
-         if (this.instance.getTransform().scale * 0.449 <= this.instance.getMinZoom()){
+         --this.zoomLimit;
+         this.instance.smoothZoom(containerRect.width / 2, containerRect.height / 2, 1 / 2);
+         if (this.zoomLimit === 0) {
             this.disable(this.zoomReduceBtn);
-            console.log(this.instance.getTransform().scale * 0.444)
-         }
-         this.instance.smoothZoom(containerRect.width / 2, containerRect.height / 2, 0.67);
+         }  
       });
    }
 
@@ -204,7 +204,7 @@ export default class InteractiveMap {
 
          //-------- был svgContainer, но возможно тут и кроется проблема, потому что в мапплике блок с описанием и сама карта в одном блоке находятся
          this.instance = panzoom(this.mapContainer, {
-            maxZoom: 3.375,
+            maxZoom: 4,
             minZoom: 1,
             zoomDoubleClickSpeed: 1,
             bounds: true,
