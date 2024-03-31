@@ -14,6 +14,7 @@ export default class InteractiveMap {
          this.mapContainer = document.createElement('div');
             this.svgContainer = document.createElement('div');
             this.descriptionBlock = document.createElement('div');
+            this.mobileDescriptionBlock = document.createElement('div');
          this.interactiveBlockController = document.createElement('div');
             this.switchFloorBar = document.createElement('div');
                this.currentFloorName = document.createElement('button');
@@ -142,6 +143,7 @@ export default class InteractiveMap {
       this.mapContainer.classList.add('mapContainer');
       this.svgContainer.classList.add('svgConteiner');
       this.descriptionBlock.classList.add('descriptionBlock');
+      this.mobileDescriptionBlock.classList.add('mobileDescriptionBlock');
       this.interactiveBlockController.classList.add('interactiveBlockController');
       this.currentFloorName.classList.add("currentFloorName");
       this.floorNamesBlock.classList.add("floorNamesBlock", "hidden");
@@ -165,7 +167,7 @@ export default class InteractiveMap {
       this.searchInput.setAttribute('type', 'text');
       this.searchInput.setAttribute('placeholder', 'Enter class number or name of the department');
 
-      document.querySelector(".main").append(this.interactiveBlock, this.searchingBlock);
+      document.querySelector(".main").append(this.interactiveBlock, this.searchingBlock, this.mobileDescriptionBlock);
    }
 
    fetchingJSON() {
