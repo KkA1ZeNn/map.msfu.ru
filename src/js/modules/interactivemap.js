@@ -124,7 +124,7 @@ export default class InteractiveMap {
       this.injectStyle();
       this.fetchingJSON();
 
-      this.interactiveBlock.append(this.mapContainer, this.interactiveBlockController);
+      this.interactiveBlock.append(this.mapContainer);
       this.mapContainer.append(this.svgContainer, this.descriptionBlock);
       this.interactiveBlockController.append(this.switchFloorBar, this.changeZoomBar);
       this.switchFloorBar.append(this.currentFloorName);
@@ -167,7 +167,7 @@ export default class InteractiveMap {
       this.searchInput.setAttribute('type', 'text');
       this.searchInput.setAttribute('placeholder', 'Enter class number or name of the department');
 
-      document.querySelector(".main").append(this.interactiveBlock, this.searchingBlock, this.mobileDescriptionBlock);
+      document.querySelector(".main").append(this.interactiveBlock, this.interactiveBlockController, this.searchingBlock, this.mobileDescriptionBlock);
    }
 
    fetchingJSON() {
@@ -524,7 +524,6 @@ export default class InteractiveMap {
          .interactiveBlock {
             width: 100%;
             height: 100%;
-            position: relative;
          }
 
          .mapContainer {

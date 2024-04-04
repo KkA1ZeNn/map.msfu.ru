@@ -1,4 +1,4 @@
-.footer {
+.nav {
    width: 100%;
    height: 6.69%;
    min-height: 44px;
@@ -10,7 +10,7 @@
    box-shadow: 0px -2px 6px 0px rgba(176, 176, 176, 0.2);
 }
 
-.footer__button {
+.nav__button {
    height: 100%;
    background-color: #fff;
    border: none;
@@ -21,7 +21,7 @@
    justify-content: center;
 }
 
-.footer__button picture {
+.nav__button picture {
    height: 20px;
    width: 20px;
    display: flex;
@@ -29,7 +29,7 @@
    justify-content: center;
 }
 
-.footer__button picture img {
+.nav__button picture img {
    width: 100%;
 }
 
