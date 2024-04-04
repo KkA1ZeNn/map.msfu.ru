@@ -14,7 +14,7 @@ export default class InteractiveMap {
          this.mapContainer = document.createElement('div');
             this.svgContainer = document.createElement('div');
             this.descriptionBlock = document.createElement('div');
-            this.mobileDescriptionBlock = document.createElement('div');
+         this.mobileDescriptionBlock = document.createElement('div');
          this.interactiveBlockController = document.createElement('div');
             this.switchFloorBar = document.createElement('div');
                this.currNameArrowsWrapper = document.createElement('div');
@@ -140,8 +140,8 @@ export default class InteractiveMap {
       this.interactiveBlock.classList.add('interactiveBlock');
       this.mapContainer.classList.add('mapContainer');
       this.svgContainer.classList.add('svgConteiner');
-      this.descriptionBlock.classList.add('descriptionBlock');
-      this.mobileDescriptionBlock.classList.add('mobileDescriptionBlock');
+      this.descriptionBlock.classList.add('descriptionBlock', 'hidden');
+      this.mobileDescriptionBlock.classList.add('mobileDescriptionBlock', 'hidden');
       this.interactiveBlockController.classList.add('interactiveBlockController');
       this.currNameArrowsWrapper.classList.add("currNameArrowsWrapper");
       this.currentFloorName.classList.add("currentFloorName");
@@ -272,9 +272,14 @@ export default class InteractiveMap {
    };
 
    showDescriptionBlock(currentRoom, title, about) {
-      this.show(this.descriptionBlock);
+      window.innerWidth < 1024 ? this.show(this.mobileDescriptionBlock) : this.show(this.descriptionBlock);
+      this.interactiveBlock.style.marginBottom = 'auto';
    
       this.descriptionBlock.innerHTML =
+         `<h4>${title}</h4>
+         <p>${about}</p>`;
+
+      this.mobileDescriptionBlock.innerHTML =
          `<h4>${title}</h4>
          <p>${about}</p>`;
    
@@ -308,6 +313,7 @@ export default class InteractiveMap {
       const roomCenterX = roomRect.left + (roomRect.right - roomRect.left) / 2;
       const roomCenterY = roomRect.top + (roomRect.bottom - roomRect.top) / 2 + window.scrollY;
       const currentTransform = this.instance.getTransform();
+
    
       const moveToX = containerCenterX - roomCenterX;
       const moveToY = containerCenterY - roomCenterY;
@@ -318,6 +324,8 @@ export default class InteractiveMap {
    removeSelectRoom(activeRoom) {
       activeRoom.classList.remove('active');
       this.hide(this.descriptionBlock);
+      this.hide(this.mobileDescriptionBlock);
+      this.interactiveBlock.style.marginBottom = '0';
    }
    
    resetZoom() {
@@ -353,6 +361,7 @@ export default class InteractiveMap {
          this.hide(this.floorNamesBlock);
    
          this.hide(this.descriptionBlock);
+         this.hide(this.mobileDescriptionBlock);
          this.enable(this.floorReduceBtn);
          this.enable(this.floorIncreaseBtn);
    
@@ -521,7 +530,7 @@ export default class InteractiveMap {
          /*стили для контейнера с самой картой*/
          .interactiveBlock {
             width: 80%;
-            z-index: 0;
+            z-index: 999;
          }
 
          .mapContainer {
@@ -682,7 +691,7 @@ export default class InteractiveMap {
             box-sizing: border-box;
             top: 0px;
             right: 0px;
-            z-index: 9999;
+            z-index: 1000;
             pointer-events: none;
          }
 
@@ -860,6 +869,20 @@ export default class InteractiveMap {
 
          .zoomIncreaseBtn:disabled, .zoomReduceBtn:disabled {
             background-color: #F2F3F4;
+         }
+
+         .mobileDescriptionBlock {
+            width: 100%;
+            height: 39.2%;
+            position: absolute;
+            bottom: 0;
+            z-index: 1100;
+            background-color: #fff;
+            display: block;
+         }
+
+         .mobileDescriptionBlock.hidden{
+            display: none !important;
          }
 
          /*стили для комнат при наведении*/

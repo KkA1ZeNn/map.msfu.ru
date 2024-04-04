@@ -6,7 +6,7 @@
    display: flex;
    align-items: center;
    justify-content: space-between;
-   z-index: 100;
+   z-index: 1600;
    box-shadow: 0px -2px 6px 0px rgba(176, 176, 176, 0.2);
 }
 
