@@ -17,11 +17,12 @@ export default class InteractiveMap {
             this.mobileDescriptionBlock = document.createElement('div');
          this.interactiveBlockController = document.createElement('div');
             this.switchFloorBar = document.createElement('div');
-               this.currentFloorName = document.createElement('button');
-                  this.floorNamesBlock = document.createElement('div');
-               this.floorSwitchArrowsBlock = document.createElement('div');
-                  this.floorReduceBtn = document.createElement('button');
-                  this.floorIncreaseBtn = document.createElement('button');
+               this.currNameArrowsWrapper = document.createElement('div');
+                  this.currentFloorName = document.createElement('button');
+                     this.floorNamesBlock = document.createElement('div');
+                  this.floorSwitchArrowsBlock = document.createElement('div');
+                     this.floorReduceBtn = document.createElement('button');
+                     this.floorIncreaseBtn = document.createElement('button');
             this.changeZoomBar = document.createElement('div');
                this.zoomIncreaseBtn = document.createElement('button');
                this.zoomReduceBtn = document.createElement('button');
@@ -80,14 +81,12 @@ export default class InteractiveMap {
 
       this.currentFloorName.addEventListener('click', () => {
          this.floorNamesBlock.classList.toggle('hidden');
-         this.floorNamesBlock.addEventListener('mouseenter', () => {
+         this.switchFloorBar.addEventListener('mouseenter', () => {
             this.instance.pause();
          });
-         this.floorNamesBlock.addEventListener('mouseleave', () => {
+         this.switchFloorBar.addEventListener('mouseleave', () => {
             this.instance.resume();
          });
-
-         this.switchFloorBar.style.borderRadius = this.floorNamesBlock.classList.contains('hidden') ? '10px' : '10px 10px 0px 0px';
       });
 
       this.floorNamesBlock.addEventListener(('click'), (event) => {
@@ -127,13 +126,12 @@ export default class InteractiveMap {
       this.interactiveBlock.append(this.mapContainer);
       this.mapContainer.append(this.svgContainer, this.descriptionBlock);
       this.interactiveBlockController.append(this.switchFloorBar, this.changeZoomBar);
-      this.switchFloorBar.append(this.currentFloorName);
-      this.switchFloorBar.append(this.floorSwitchArrowsBlock);
-      this.floorSwitchArrowsBlock.append(this.floorIncreaseBtn);
-      this.floorSwitchArrowsBlock.append(this.floorReduceBtn);
+      this.switchFloorBar.append(this.currNameArrowsWrapper);
+      this.currNameArrowsWrapper.append(this.currentFloorName, this.floorSwitchArrowsBlock);
+      this.floorSwitchArrowsBlock.append(this.floorIncreaseBtn, this.floorReduceBtn);
       this.switchFloorBar.append(this.floorNamesBlock);
-      this.changeZoomBar.append(this.zoomIncreaseBtn);
-      this.changeZoomBar.append(this.zoomReduceBtn);
+      this.changeZoomBar.append(this.zoomIncreaseBtn, this.zoomReduceBtn);
+
 
       this.searchingBlock.append(this.searchInput, this.categoriesBlock, this.searchResultBlock);
       this.categoriesBlock.append(this.choosenCategoryBlock);
@@ -145,6 +143,7 @@ export default class InteractiveMap {
       this.descriptionBlock.classList.add('descriptionBlock');
       this.mobileDescriptionBlock.classList.add('mobileDescriptionBlock');
       this.interactiveBlockController.classList.add('interactiveBlockController');
+      this.currNameArrowsWrapper.classList.add("currNameArrowsWrapper");
       this.currentFloorName.classList.add("currentFloorName");
       this.floorNamesBlock.classList.add("floorNamesBlock", "hidden");
       this.switchFloorBar.classList.add('switchFloorBar');
@@ -352,7 +351,6 @@ export default class InteractiveMap {
          this.currentFloor = floor;
 
          this.hide(this.floorNamesBlock);
-         this.switchFloorBar.style.borderRadius = this.floorNamesBlock.classList.contains('hidden') ? '10px' : '10px 10px 0px 0px';
    
          this.hide(this.descriptionBlock);
          this.enable(this.floorReduceBtn);
@@ -522,8 +520,8 @@ export default class InteractiveMap {
       style.innerHTML = `
          /*стили для контейнера с самой картой*/
          .interactiveBlock {
-            width: 100%;
-            height: 100%;
+            width: 80%;
+            z-index: 0;
          }
 
          .mapContainer {
@@ -536,7 +534,6 @@ export default class InteractiveMap {
          .svgConteiner {
             width: 100%;
             height: auto;
-            margin: auto;
          }
 
          /*стили для блока с информацией*/
@@ -685,21 +682,44 @@ export default class InteractiveMap {
             box-sizing: border-box;
             top: 0px;
             right: 0px;
-            z-index: 100;
+            z-index: 9999;
             pointer-events: none;
          }
 
          .switchFloorBar {
             width: 100%;
-            height: 54px;
-            background-color: #fff;
+            min-height: 54px;
+            max-height: 324px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
             border-radius: 10px;
+            box-shadow: 0px 2px 6px 0px rgba(176, 176, 176, 0.2);
+            pointer-events: auto;
+         }
+
+         /* Скрываем scrollbar для Chrome, Safari и Opera */
+         .switchFloorBar::-webkit-scrollbar {
+            display: none;
+         }
+         
+         /* Скрываем scrollbar для IE, Edge и Firefox */
+         .switchFloorBar {
+            -ms-overflow-style: none;  /* IE и Edge */
+            scrollbar-width: none;  /* Firefox */
+         }
+
+         .currNameArrowsWrapper {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            width: 100%;
+            height: 54px;
+            background-color: #fff;
             pointer-events: auto;
             cursor: pointer;
-            box-shadow: 0px 2px 6px 0px rgba(176, 176, 176, 0.2);
             position: relative;
          }
 
@@ -719,7 +739,7 @@ export default class InteractiveMap {
          }
 
          .floorSwitchArrowsBlock {
-            height: 100%;
+            height: 54px;
             width: calc(100% - 127px);
             display: flex;
             flex-direction: column;
@@ -729,66 +749,44 @@ export default class InteractiveMap {
             cursor: pointer;
             width: 100%;
             height: 100%;
-            display: flex;
             border: none;
             background-color: #fff;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
             padding: 0;
             position: relative;
-            border-radius: 10px;
          }
 
          .floorIncreaseBtn::after, .floorReduceBtn::after {
             content: ''; 
             position: absolute; 
             top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%); 
+            left: 50%; 
             border: 5px solid transparent; 
          }
 
          .floorIncreaseBtn::after {
-            border-bottom: 5px solid #429C97;
+            transform: translate(-50%, -70%);
+            border-bottom: 6px solid #429C97;
          }
          .floorReduceBtn::after {
-            border-top: 5px solid #429C97;
+            transform: translate(-50%, -30%);
+            border-top: 6px solid #429C97;
          }
 
          .floorIncreaseBtn:disabled::after {
-            border-bottom: 5px solid #7C8786;
+            border-bottom: 6px solid #7C8786;
          }
          .floorReduceBtn:disabled::after {
-            border-top: 5px solid #7C8786;
+            border-top: 6px solid #7C8786;
          }
 
          .floorNamesBlock {
-            z-index: 500;
-            position: absolute;
             width: 100%;
             height: auto;
-            max-height: 270px;
-            border-radius: 0px 0px 10px 10px;
-            background-color: #fff;
-            top: 54px;
-            box-shadow: 0px 2px 6px 0px rgba(176, 176, 176, 0.2);
-            overflow-y: auto;
+            cursor: pointer;
          }
 
          .floorNamesBlock.hidden {
             display: none;
-         }
-
-         /* Скрываем scrollbar для Chrome, Safari и Opera */
-         .floorNamesBlock::-webkit-scrollbar {
-            display: none;
-         }
-         
-         /* Скрываем scrollbar для IE, Edge и Firefox */
-         .floorNamesBlock {
-            -ms-overflow-style: none;  /* IE и Edge */
-            scrollbar-width: none;  /* Firefox */
          }
          
          .floorName {
@@ -800,14 +798,11 @@ export default class InteractiveMap {
             justify-content: flex-start;
             padding-left: 14px;
             font: normal 16px/1 'ALS Sector Regular';
+            box-sizing: border-box;
          }
 
          .floorName:hover {
-            background-color: rgba(176, 176, 176, 0.2);
-         }
-
-         .floorName:last-child {
-            border-radius: 10px;
+            background-color: #F2F3F4;
          }
 
          .changeZoomBar {
