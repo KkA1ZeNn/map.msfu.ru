@@ -11,10 +11,10 @@ export default class InteractiveMap {
       this.zoomLimit = 0;
       this.lastEventListener = null;
       this.beforePan = function(oldPan, newPan){
-         var stopHorizontal = false
+         let stopHorizontal = false
            , stopVertical = false
-           , gutterWidth = 100
-           , gutterHeight = 100
+           , gutterWidth = 150
+           , gutterHeight = 150
              // Computed variables
            , sizes = this.getSizes()
            , leftLimit = -((sizes.viewBox.x + sizes.viewBox.width) * sizes.realZoom) + gutterWidth
