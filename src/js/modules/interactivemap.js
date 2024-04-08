@@ -9,6 +9,25 @@ export default class InteractiveMap {
       this.searchParams = ['id', 'title', 'about'];
       this.baseUrl = window.location.href.split('?')[0];
       this.zoomLimit = 0;
+      this.lastEventListener = null;
+      this.beforePan = function(oldPan, newPan){
+         let stopHorizontal = false
+           , stopVertical = false
+           , gutterWidth = 150
+           , gutterHeight = 150
+             // Computed variables
+           , sizes = this.getSizes()
+           , leftLimit = -((sizes.viewBox.x + sizes.viewBox.width) * sizes.realZoom) + gutterWidth
+           , rightLimit = sizes.width - gutterWidth - (sizes.viewBox.x * sizes.realZoom)
+           , topLimit = -((sizes.viewBox.y + sizes.viewBox.height) * sizes.realZoom) + gutterHeight
+           , bottomLimit = sizes.height - gutterHeight - (sizes.viewBox.y * sizes.realZoom)
+   
+         this.customPan = {}
+         this.customPan.x = Math.max(leftLimit, Math.min(rightLimit, newPan.x))
+         this.customPan.y = Math.max(topLimit, Math.min(bottomLimit, newPan.y))
+   
+         return this.customPan
+       }
 
       this.interactiveBlock = document.createElement('div');
          this.mapContainer = document.createElement('div');
@@ -34,7 +53,6 @@ export default class InteractiveMap {
             this.choosenCategoryTextBlock = document.createElement('div'),
             this.closeChoosenCategoryButton = document.createElement('button');
          this.searchResultBlock = document.createElement('div');
-
 
       // Обработчик событий SVG файла для реагирования комнат на нажатие
       this.svgContainer.addEventListener('click', (event) => {
@@ -98,24 +116,26 @@ export default class InteractiveMap {
       });
 
       this.zoomIncreaseBtn.addEventListener('click', async () => { 
-         const containerRect = this.interactiveBlock.getBoundingClientRect();
-         this.instance.getTransform().scale = Math.round(this.instance.getTransform().scale);
+         //const containerRect = this.interactiveBlock.getBoundingClientRect();
+         //this.instance.getTransform().scale = Math.round(this.instance.getTransform().scale);
          this.enable(this.zoomReduceBtn);
          ++this.zoomLimit;
-         this.instance.smoothZoom(containerRect.width / 2, containerRect.height / 2, 2);
-         if (this.zoomLimit === 2) {
+         //this.instance.smoothZoom(containerRect.width / 2, containerRect.height / 2, 2);
+         if (this.zoomLimit === 1) {
             this.disable(this.zoomIncreaseBtn);
-         }         
+         }     
+         svgPanZoom(this.lastEmbed).zoom(4);    
       });
       this.zoomReduceBtn.addEventListener('click', async () => { 
-         const containerRect = this.interactiveBlock.getBoundingClientRect();
-         this.instance.getTransform().scale = Math.round(this.instance.getTransform().scale);
+         //const containerRect = this.interactiveBlock.getBoundingClientRect();
+         //this.instance.getTransform().scale = Math.round(this.instance.getTransform().scale);
          this.enable(this.zoomIncreaseBtn);
          --this.zoomLimit;
-         this.instance.smoothZoom(containerRect.width / 2, containerRect.height / 2, 1 / 2);
+         //this.instance.smoothZoom(containerRect.width / 2, containerRect.height / 2, 1 / 2);
          if (this.zoomLimit === 0) {
             this.disable(this.zoomReduceBtn);
          }  
+         svgPanZoom(this.lastEmbed).zoom(1);  
       });
    }
 
@@ -204,14 +224,7 @@ export default class InteractiveMap {
          }
 
          //-------- был svgContainer, но возможно тут и кроется проблема, потому что в мапплике блок с описанием и сама карта в одном блоке находятся
-         this.instance = panzoom(this.mapContainer, {
-            maxZoom: 4,
-            minZoom: 1,
-            zoomDoubleClickSpeed: 1,
-            bounds: true,
-            boundsPadding: 0.2,
-            zoomSpeed: 0.07
-         });
+
 
          //--------
          console.log('двойной клик для сброса карты');
@@ -232,6 +245,45 @@ export default class InteractiveMap {
          this.floorNamesBlock.append(floorName);
       })
    }
+
+   createNewEmbed(src){
+      let embed = document.createElement('embed');
+      embed.setAttribute('style', 'width: 100%; height: 100%;');
+      embed.setAttribute('type', 'image/svg+xml');
+      embed.setAttribute('src', src);
+
+      this.svgContainer.appendChild(embed);
+
+      this.lastEventListener = () => {
+        svgPanZoom(embed, {
+         zoomEnabled: true,
+         dblClickZoomEnabled: true,
+         minZoom: 1,
+         maxZoom: 4,
+         zoomScaleSensitivity: 0.2,
+         beforePan: this.beforePan,
+         customEventsHandler: {
+            haltEventListeners: []
+         }
+        });
+      };
+      embed.addEventListener('load', this.lastEventListener)
+
+      return embed
+    }
+
+    removeEmbed(){
+      // Destroy svgpanzoom
+      svgPanZoom(this.lastEmbed).destroy()
+      // Remove event listener
+      this.lastEmbed.removeEventListener('load', this.lastEventListener)
+      // Null last event listener
+      this.lastEventListener = null
+      // Remove embed element
+      this.svgContainer.removeChild(this.lastEmbed)
+      // Null reference to embed
+      this.lastEmbed = null
+    }
 
    // Функция, которая отвечает за реакцию комнаты на выбор этой комнаты (нажатие или поиск). 
    //Проверяем, что искомая комната есть, если есть, то проверка, что это она уже не включена,  
@@ -340,6 +392,9 @@ export default class InteractiveMap {
          console.log('такого этажа нет');
       } else {
          try {
+            if (this.lastEmbed) {
+               this.removeEmbed()
+            }
             let response = await fetch(floorsList[floor].map);
             this.currentFloorName.innerHTML = `${floorsList[floor].title}`;
    
@@ -350,7 +405,9 @@ export default class InteractiveMap {
             }
    
             let svg = await response.text();
-            this.svgContainer.innerHTML = svg;
+            this.lastEmbedSrc = `${floorsList[floor].map}`
+            this.lastEmbed = this.createNewEmbed(this.lastEmbedSrc);
+            //this.svgContainer.innerHTML = svg;
    
          } catch(e) {
             console.log('Error: ' + e.message);
@@ -529,20 +586,23 @@ export default class InteractiveMap {
       style.innerHTML = `
          /*стили для контейнера с самой картой*/
          .interactiveBlock {
-            width: 80%;
+            width: 100%;
+            height: 100%;
             z-index: 999;
          }
 
          .mapContainer {
             width: 100%;
-            height: auto;
+            height: 100%;
             padding: 0px 10px;
             box-sizing: border-box;
          }
 
          .svgConteiner {
             width: 100%;
-            height: auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
          }
 
          /*стили для блока с информацией*/

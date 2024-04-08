@@ -4,7 +4,7 @@ import babel from "gulp-babel";
 import webpack from "webpack-stream";
 
 const scriptFiles = [
-   './src/js/modules/panzoom.min.js',
+   './src/js/modules/svg-pan-zoom.js',
    './src/js/main.js',
 ]
 
