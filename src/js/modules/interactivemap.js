@@ -118,23 +118,23 @@ export default class InteractiveMap {
       this.zoomIncreaseBtn.addEventListener('click', async () => { 
          //const containerRect = this.interactiveBlock.getBoundingClientRect();
          //this.instance.getTransform().scale = Math.round(this.instance.getTransform().scale);
-         //this.enable(this.zoomReduceBtn);
-         //++this.zoomLimit;
+         this.enable(this.zoomReduceBtn);
+         ++this.zoomLimit;
          //this.instance.smoothZoom(containerRect.width / 2, containerRect.height / 2, 2);
-         //if (this.zoomLimit === 2) {
-         //   this.disable(this.zoomIncreaseBtn);
-         //}     
+         if (this.zoomLimit === 1) {
+            this.disable(this.zoomIncreaseBtn);
+         }     
          svgPanZoom(this.lastEmbed).zoom(4);    
       });
       this.zoomReduceBtn.addEventListener('click', async () => { 
          //const containerRect = this.interactiveBlock.getBoundingClientRect();
          //this.instance.getTransform().scale = Math.round(this.instance.getTransform().scale);
-         //this.enable(this.zoomIncreaseBtn);
-         //--this.zoomLimit;
+         this.enable(this.zoomIncreaseBtn);
+         --this.zoomLimit;
          //this.instance.smoothZoom(containerRect.width / 2, containerRect.height / 2, 1 / 2);
-         //if (this.zoomLimit === 0) {
-         //   this.disable(this.zoomReduceBtn);
-         //}  
+         if (this.zoomLimit === 0) {
+            this.disable(this.zoomReduceBtn);
+         }  
          svgPanZoom(this.lastEmbed).zoom(1);  
       });
    }
@@ -261,7 +261,10 @@ export default class InteractiveMap {
          minZoom: 1,
          maxZoom: 4,
          zoomScaleSensitivity: 0.2,
-         beforePan: this.beforePan
+         beforePan: this.beforePan,
+         customEventsHandler: {
+            haltEventListeners: []
+         }
         });
       };
       embed.addEventListener('load', this.lastEventListener)
