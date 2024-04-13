@@ -80,6 +80,10 @@ export default class InteractiveMap {
       });
 
       this.currentFloorName.addEventListener('click', () => {
+         const activeRoom = document.querySelector('[id^="room"].active');
+         if (activeRoom) {
+            this.removeSelectRoom(activeRoom);
+         }
          this.floorNamesBlock.classList.toggle('hidden');
          this.switchFloorBar.addEventListener('mouseenter', () => {
             this.instance.pause();
@@ -154,7 +158,7 @@ export default class InteractiveMap {
       this.zoomIncreaseBtn.classList.add('zoomIncreaseBtn');
       this.zoomReduceBtn.classList.add('zoomReduceBtn');
 
-      this.searchingBlock.classList.add('searchingBlock');
+      this.searchingBlock.classList.add('searchingBlock', 'hidden');
       this.searchInput.classList.add('searchInput');
       this.categoriesBlock.classList.add('categoriesBlock');
       this.choosenCategoryBlock.classList.add('choosenCategoryBlock','hidden');
@@ -166,7 +170,12 @@ export default class InteractiveMap {
       this.searchInput.setAttribute('type', 'text');
       this.searchInput.setAttribute('placeholder', 'Enter class number or name of the department');
 
+      this.searchButton = document.querySelector("#nav__search__button");
       document.querySelector(".main").append(this.interactiveBlock, this.interactiveBlockController, this.searchingBlock, this.mobileDescriptionBlock);
+   
+      this.searchButton.addEventListener('click', () => {
+         this.searchingBlock.classList.toggle('hidden');
+      })
    }
 
    fetchingJSON() {
@@ -272,8 +281,14 @@ export default class InteractiveMap {
    };
 
    showDescriptionBlock(currentRoom, title, about) {
-      window.innerWidth < 1024 ? this.show(this.mobileDescriptionBlock) : this.show(this.descriptionBlock);
-      this.interactiveBlock.style.marginBottom = 'auto';
+      if (window.innerWidth < 1024) {
+         this.show(this.mobileDescriptionBlock);
+         this.interactiveBlock.style.marginBottom = 'auto';
+         this.interactiveBlock.style.height = '61%';
+         this.floorNamesBlock.classList.add('hidden');
+      } else {
+         this.show(this.descriptionBlock);
+      }      
    
       this.descriptionBlock.innerHTML =
          `<h4>${title}</h4>
@@ -326,8 +341,12 @@ export default class InteractiveMap {
       this.hide(this.descriptionBlock);
       this.hide(this.mobileDescriptionBlock);
       this.interactiveBlock.style.marginBottom = '0';
+      this.interactiveBlock.style.height = '80%';
+      this.resetZoom();
    }
    
+   
+   //АЛААААААРМ, короче если тут вот считать начальное смещение карты console.log(this.mapContainer.getAttribute("style")); и передать сюда, то можно так пофиксить
    resetZoom() {
       this.instance.zoomTo(0, 0, 0.4);
       this.instance.moveTo(0, 0);
@@ -529,8 +548,9 @@ export default class InteractiveMap {
       style.innerHTML = `
          /*стили для контейнера с самой картой*/
          .interactiveBlock {
-            width: 80%;
-            z-index: 999;
+            width: 100%;
+            z-index: 980;
+            height: 80%;
          }
 
          .mapContainer {
@@ -579,14 +599,17 @@ export default class InteractiveMap {
 
          .searchingBlock {
             position: absolute;
-            width: 450px;
-            height: 500px;
+            width: 100%;
+            height: 100%;
             border: 3px solid black;
-            left: 10px;
+            z-index: 999;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: start;
+         }
+
+         .searchingBlock.hidden {
             display: none;
          }
 
@@ -691,7 +714,7 @@ export default class InteractiveMap {
             box-sizing: border-box;
             top: 0px;
             right: 0px;
-            z-index: 1000;
+            z-index: 998;
             pointer-events: none;
          }
 
@@ -878,11 +901,29 @@ export default class InteractiveMap {
             bottom: 0;
             z-index: 1100;
             background-color: #fff;
-            display: block;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            border-radius: 10px 10px 0 0;
+            padding: 15px 20px 20px 20px;
+            box-sizing: border-box;
          }
 
          .mobileDescriptionBlock.hidden{
             display: none !important;
+         }
+
+         .mobileDescriptionBlock h4 {
+            width: 100%;
+            font: bold 16px/1 'ALS Sector Bold';
+            margin: 0 0 10px 0;
+         }
+
+         .mobileDescriptionBlock p {
+            font: normal 14px/1 'ALS Sector Regular';
+            width: 100%;
+            margin: 0;
          }
 
          /*стили для комнат при наведении*/
