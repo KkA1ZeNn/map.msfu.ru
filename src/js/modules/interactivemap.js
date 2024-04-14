@@ -137,7 +137,7 @@ export default class InteractiveMap {
       this.changeZoomBar.append(this.zoomIncreaseBtn, this.zoomReduceBtn);
 
 
-      this.searchingBlock.append(this.searchInput, this.categoriesBlock, this.searchResultBlock);
+      this.searchingBlock.append(this.searchInput, this.searchResultBlock);
       this.categoriesBlock.append(this.choosenCategoryBlock);
       this.choosenCategoryBlock.append(this.choosenCategoryTextBlock, this.closeChoosenCategoryButton);
 
@@ -601,12 +601,13 @@ export default class InteractiveMap {
             position: absolute;
             width: 100%;
             height: 100%;
-            border: 3px solid black;
             z-index: 999;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: start;
+            box-sizing: border-box;
+            background-color: #fff;
          }
 
          .searchingBlock.hidden {
@@ -615,9 +616,13 @@ export default class InteractiveMap {
 
          .searchInput {
             padding: 0;
-            box-sizing: border-box;
             width: 100%;
-            height: 30px;
+            min-height: 60px;
+            border: none;
+         }
+
+         .searchInput:focus {
+            border: none;
          }
 
          /*стили для блока с категориями и элементов списка*/
@@ -678,8 +683,8 @@ export default class InteractiveMap {
          /*стили блока с подсказками для поиска*/
          .searchResultBlock {
             width: 100%;
-            height: 420px;
-            background-color: yellow;
+            height: auto;
+            background-color: #fff;
             display: flex;
             flex-direction: column;
             align-items: flex-start;
@@ -689,16 +694,19 @@ export default class InteractiveMap {
 
          .searchResultBlock_item {
             width: 100%;
-            min-height: 50px;
+            min-height: 46px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 10px;
-            box-sizing: border-box;
-            color: black;
-            border: 3px solid green;
-            background-color: lightblue;
             cursor: pointer;
+            border: none !important;
+            background-color: #fff;
+            font: normal 16px/1 'ALS Sector Regular';
+         }
+
+         .searchResultBlock_item h5, .searchResultBlock_item p {
+            margin: 0;
          }
 
          .interactiveBlockController {
