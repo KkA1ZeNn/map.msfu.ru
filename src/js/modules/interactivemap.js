@@ -28,7 +28,8 @@ export default class InteractiveMap {
                this.zoomReduceBtn = document.createElement('button');
 
       this.searchingBlock = document.createElement('div');
-         this.searchInput = document.createElement('input');
+         this.searchInputWrapper = document.createElement('div');
+            this.searchInput = document.createElement('input');
          this.categoriesBlock = document.createElement('div');
             this.choosenCategoryBlock = document.createElement('div'),
             this.choosenCategoryTextBlock = document.createElement('div'),
@@ -137,7 +138,8 @@ export default class InteractiveMap {
       this.changeZoomBar.append(this.zoomIncreaseBtn, this.zoomReduceBtn);
 
 
-      this.searchingBlock.append(this.searchInput, this.searchResultBlock);
+      this.searchingBlock.append(this.searchInputWrapper, this.searchResultBlock);
+      this.searchInputWrapper.append(this.searchInput);
       this.categoriesBlock.append(this.choosenCategoryBlock);
       this.choosenCategoryBlock.append(this.choosenCategoryTextBlock, this.closeChoosenCategoryButton);
 
@@ -159,6 +161,7 @@ export default class InteractiveMap {
       this.zoomReduceBtn.classList.add('zoomReduceBtn');
 
       this.searchingBlock.classList.add('searchingBlock', 'hidden');
+      this.searchInputWrapper.classList.add('searchInputWrapper');
       this.searchInput.classList.add('searchInput');
       this.categoriesBlock.classList.add('categoriesBlock');
       this.choosenCategoryBlock.classList.add('choosenCategoryBlock','hidden');
@@ -168,7 +171,7 @@ export default class InteractiveMap {
 
       this.closeChoosenCategoryButton.innerHTML = `X`;
       this.searchInput.setAttribute('type', 'text');
-      this.searchInput.setAttribute('placeholder', 'Enter class number or name of the department');
+      this.searchInput.setAttribute('placeholder', 'Поиск');
 
       this.searchButton = document.querySelector("#nav__search__button");
       document.querySelector(".main").append(this.interactiveBlock, this.interactiveBlockController, this.searchingBlock, this.mobileDescriptionBlock);
@@ -192,7 +195,7 @@ export default class InteractiveMap {
       .then(response => response.json())
       .then(json => {
          this.mapData = json;
-         //Формируем масси из комнат и категорий, можно вынести в отдельную функцию
+         //Формируем массив из комнат и категорий, можно вынести в отдельную функцию
          this.categoriesAndRoomsList = this.mapData.categories.map(categories => ({category: categories})).concat(
             this.mapData.floors.flatMap(floor => floor.locations.map(locations => ({
                floor: floor.id,
@@ -378,7 +381,6 @@ export default class InteractiveMap {
          this.currentFloor = floor;
 
          this.hide(this.floorNamesBlock);
-   
          this.hide(this.descriptionBlock);
          this.hide(this.mobileDescriptionBlock);
          this.enable(this.floorReduceBtn);
@@ -614,15 +616,42 @@ export default class InteractiveMap {
             display: none;
          }
 
-         .searchInput {
-            padding: 0;
+         .searchInputWrapper {
             width: 100%;
             min-height: 60px;
-            border: none;
+            position: relative;
          }
 
-         .searchInput:focus {
+         .searchInput {
+            padding: 0;
+            padding-left: 40px;
+            box-sizing: border-box;
+            width: 100%;
+            min-height: 100%;
             border: none;
+            font: normal 16px/1 'ALS Sector Regular';
+         }
+
+         .searchInputWrapper::after {
+            position: absolute;
+            content: "";
+            background-image: url('./img/nav_search.svg');
+            width: 20px;
+            height: 20px;
+            z-index: 9900;
+            top: calc(50% - 10px);
+            left: 10px;
+            pointer-events: none;
+         }
+
+         .searchInput:focus-visible {
+            border: none;
+            outline: none;
+            caret-color: #7C8786;
+         }
+
+         .searchInput:focus::-webkit-input-placeholder, .searchInput:focus::-moz-placeholder, .searchInput:focus:-moz-placeholder, .searchInput:focus:-ms-input-placeholder {
+            color: transparent
          }
 
          /*стили для блока с категориями и элементов списка*/
@@ -635,49 +664,6 @@ export default class InteractiveMap {
             align-items: center;
             justify-content: center;
             box-sizing: border-box;
-         }
-
-         .choosenCategoryBlock{
-            height: 40px;
-            width: 250px;
-            background-color: #fff;
-            border-radius: 20px;
-            border: 2px solid black;
-            box-sizing: border-box;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-         }
-         
-         .choosenCategoryBlock.hidden {
-            display: none;
-         }
-         
-         .choosenCategoryTextBlock {
-            width: auto;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-         }
-         .choosenCategoryTextBlock p {
-            margin: 0;
-            width: auto;
-            font-size: 11px;
-         }
-         .choosenCategoryTextBlock h5 {
-            margin: 0 10px 0 10px;
-         }
-         
-         .closeChoosenCategoryButton {
-            width: 20px;
-            height: 20px;
-            margin: 0px 5px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
          }
 
          /*стили блока с подсказками для поиска*/
@@ -707,7 +693,20 @@ export default class InteractiveMap {
 
          .searchResultBlock_item h5, .searchResultBlock_item p {
             margin: 0;
+            pointer-events: none;
          }
+
+         /* Скрываем scrollbar для Chrome, Safari и Opera */
+         .searchResultBlock::-webkit-scrollbar {
+            display: none;
+         }
+         
+         /* Скрываем scrollbar для IE, Edge и Firefox */
+         .searchResultBlock {
+            -ms-overflow-style: none;  /* IE и Edge */
+            scrollbar-width: none;  /* Firefox */
+         }
+
 
          .interactiveBlockController {
             position: absolute;
