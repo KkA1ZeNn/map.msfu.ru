@@ -30,6 +30,7 @@ export default class InteractiveMap {
       this.searchingBlock = document.createElement('div');
          this.searchInputWrapper = document.createElement('div');
             this.searchInput = document.createElement('input');
+            this.searchCloseButton = document.createElement('button');
          this.categoriesBlock = document.createElement('div');
             this.choosenCategoryBlock = document.createElement('div'),
             this.choosenCategoryTextBlock = document.createElement('div'),
@@ -140,6 +141,7 @@ export default class InteractiveMap {
 
       this.searchingBlock.append(this.searchInputWrapper, this.searchResultBlock);
       this.searchInputWrapper.append(this.searchInput);
+      this.searchInputWrapper.append(this.searchCloseButton);
       this.categoriesBlock.append(this.choosenCategoryBlock);
       this.choosenCategoryBlock.append(this.choosenCategoryTextBlock, this.closeChoosenCategoryButton);
 
@@ -163,6 +165,7 @@ export default class InteractiveMap {
       this.searchingBlock.classList.add('searchingBlock', 'hidden');
       this.searchInputWrapper.classList.add('searchInputWrapper');
       this.searchInput.classList.add('searchInput');
+      this.searchCloseButton.classList.add('searchCloseButton');
       this.categoriesBlock.classList.add('categoriesBlock');
       this.choosenCategoryBlock.classList.add('choosenCategoryBlock','hidden');
       this.choosenCategoryTextBlock.classList.add('choosenCategoryTextBlock');
@@ -619,6 +622,9 @@ export default class InteractiveMap {
          .searchInputWrapper {
             width: 100%;
             min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             position: relative;
          }
 
@@ -626,13 +632,13 @@ export default class InteractiveMap {
             padding: 0;
             padding-left: 40px;
             box-sizing: border-box;
-            width: 100%;
+            width: calc(100% - 36px);;
             min-height: 100%;
             border: none;
             font: normal 16px/1 'ALS Sector Regular';
          }
 
-         .searchInputWrapper::after {
+         .searchInputWrapper::before {
             position: absolute;
             content: "";
             background-image: url('./img/nav_search.svg');
@@ -642,6 +648,29 @@ export default class InteractiveMap {
             top: calc(50% - 10px);
             left: 10px;
             pointer-events: none;
+         }
+
+         .searchCloseButton {
+            min-width: 16px !important;
+            height: 16px !important;
+            position: relative;
+            cursor: pointer;
+            padding: 22px 10px;
+            border: none;
+            box-sizing: content-box;
+            background-color: #fff;
+            cursor: pointer;
+         }
+
+         .searchCloseButton::after {
+            position: absolute;
+            content: "";
+            background-image: url('./img/close-icon.svg');
+            width: 16px;
+            height: 16px;
+            z-index: 9990;
+            top: calc(50% - 8px);
+            right: 10px;
          }
 
          .searchInput:focus-visible {
@@ -689,6 +718,10 @@ export default class InteractiveMap {
             border: none !important;
             background-color: #fff;
             font: normal 16px/1 'ALS Sector Regular';
+         }
+
+         .searchResultBlock_item:hover {
+            background-color: #F2F3F4;
          }
 
          .searchResultBlock_item h5, .searchResultBlock_item p {
