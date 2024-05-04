@@ -3,8 +3,10 @@ export default class InteractiveMap {
       this.mapData;
       this.svg;
       this.instance;
-      this.categoriesAndRoomsList;
-      this.choosenCategory;
+      this.groupsNames;
+      this.roomNames;
+      this.choosenGroup = "";
+      this.choosenSubGroup;
       this.currentFloor;
       this.searchParams = ['id', 'title', 'about'];
       this.baseUrl = window.location.href.split('?')[0];
@@ -28,9 +30,11 @@ export default class InteractiveMap {
                this.zoomReduceBtn = document.createElement('button');
 
       this.searchingBlock = document.createElement('div');
-         this.searchInputWrapper = document.createElement('div');
-            this.searchInput = document.createElement('input');
-            this.searchCloseButton = document.createElement('button');
+      this.choosenCategoryWrapper = document.createElement('div');
+         this.choosenCategoryName = document.createElement('div');
+      this.searchInputWrapper = document.createElement('div');
+         this.searchInput = document.createElement('input');
+         this.searchCloseButton = document.createElement('button');
          this.categoriesBlock = document.createElement('div');
             this.choosenCategoryBlock = document.createElement('div'),
             this.choosenCategoryTextBlock = document.createElement('div'),
@@ -76,7 +80,7 @@ export default class InteractiveMap {
       this.searchInput.addEventListener('input', this.debounce(() => { this.formSearchResultList(this.searchParams) }, 700));
 
       this.closeChoosenCategoryButton.addEventListener('click', () => {
-         this.choosenCategory = "";
+         this.choosenGroup = "";
          this.hide(this.choosenCategoryBlock);
          this.formSearchResultList(this.searchParams);
       });
@@ -139,9 +143,9 @@ export default class InteractiveMap {
       this.changeZoomBar.append(this.zoomIncreaseBtn, this.zoomReduceBtn);
 
 
-      this.searchingBlock.append(this.searchInputWrapper, this.searchResultBlock);
-      this.searchInputWrapper.append(this.searchInput);
-      this.searchInputWrapper.append(this.searchCloseButton);
+      this.searchingBlock.append(this.searchInputWrapper, this.choosenCategoryWrapper, this.searchResultBlock);
+      this.choosenCategoryWrapper.append(this.choosenCategoryName);
+      this.searchInputWrapper.append(this.searchInput, this.searchCloseButton);
       this.categoriesBlock.append(this.choosenCategoryBlock);
       this.choosenCategoryBlock.append(this.choosenCategoryTextBlock, this.closeChoosenCategoryButton);
 
@@ -164,6 +168,8 @@ export default class InteractiveMap {
 
       this.searchingBlock.classList.add('searchingBlock', 'hidden');
       this.searchInputWrapper.classList.add('searchInputWrapper');
+      this.choosenCategoryWrapper.classList.add('choosenCategoryWrapper', 'hidden');
+      this.choosenCategoryName.classList.add('choosenCategoryName');
       this.searchInput.classList.add('searchInput');
       this.searchCloseButton.classList.add('searchCloseButton');
       this.categoriesBlock.classList.add('categoriesBlock');
@@ -198,12 +204,12 @@ export default class InteractiveMap {
       .then(response => response.json())
       .then(json => {
          this.mapData = json;
-         //Формируем массив из комнат и категорий, можно вынести в отдельную функцию
-         this.categoriesAndRoomsList = this.mapData.categories.map(categories => ({category: categories})).concat(
-            this.mapData.floors.flatMap(floor => floor.locations.map(locations => ({
+         //Формируем массив из категорий и из комнат
+         this.groupsNames = this.mapData.groups.map(groups => ({group: groups}));
+         this.roomNames = this.mapData.floors.flatMap(floor => floor.locations.map(locations => ({
                floor: floor.id,
                room: locations
-         }))));
+         })));
 
          this.createFloorsController();
 
@@ -398,19 +404,19 @@ export default class InteractiveMap {
    }
 
    formSearchResultList(parameters) {
-      const textInput = this.searchInput.value.toLowerCase();
+      let textInput = this.searchInput.value.toLowerCase();
       let SearchResultList;
    
-      if (this.choosenCategory) {
+      if (textInput === "") {
          if (textInput === "") {
-            SearchResultList = this.categoriesAndRoomsList.filter(item => {
+            SearchResultList = this.groupsNames.filter(item => {
                if (item.room && item.room.category) {
-                  return item.room.category === this.choosenCategory;
+                  return item.room.category === this.choosenGroup;
                }
             });
          } else {
-            SearchResultList = this.categoriesAndRoomsList.filter(item => {
-               if (item.room && item.room.category && item.room.category === this.choosenCategory) {
+            SearchResultList = this.groupsNames.filter(item => {
+               if (item.room && item.room.category && item.room.category === this.choosenGroup) {
                   for (let i = 0; i < parameters.length; ++i) {
                      if (item.room[parameters[i]] && item.room[parameters[i]].toLowerCase().includes(textInput)) {
                         return true;
@@ -420,13 +426,14 @@ export default class InteractiveMap {
             });
          }
       } else {
-         if (textInput === "") {
+         if (this.choosenGroup === "") {
+            if (this.choo)
             SearchResultList = this.mapData.categories.map(item => {
                return {category: item};
             });
          }
          else {
-            SearchResultList = this.categoriesAndRoomsList.filter(item => {
+            SearchResultList = this.groupsNames.filter(item => {
                if(item.category) {
                   for (let i = 0; i < parameters.length; ++i) {
                      if (item.category[parameters[i]] && item.category[parameters[i]].toLowerCase().includes(textInput)) {
@@ -479,7 +486,7 @@ export default class InteractiveMap {
    searchResultsClickHandler(event) {
       if (event.target.tagName === 'BUTTON') {
          if(event.target.dataset.categoryId) {
-            this.choosenCategory = event.target.dataset.categoryId;
+            this.choosenGroup = event.target.dataset.categoryId;
             this.searchInput.value = "";
             this.show(this.choosenCategoryBlock);
             this.formSearchResultList(this.searchParams);
@@ -498,7 +505,7 @@ export default class InteractiveMap {
       const roomIdFromUrl = urlParams.get('location');
       let result;
       if (roomIdFromUrl) {
-         this.categoriesAndRoomsList.forEach(element => {
+         this.groupsNames.forEach(element => {
             if (element.room) {
                if (element.room.id === roomIdFromUrl) {
                   result = roomIdFromUrl;
@@ -616,6 +623,19 @@ export default class InteractiveMap {
          }
 
          .searchingBlock.hidden {
+            display: none;
+         }
+
+         .choosenCategoryWrapper {
+            width: 100%;
+            min-height: 60px;
+         }
+
+         .choosenCategoryWrapper.hidden {
+            display: none;
+         }
+
+         .searchInputWrapper.hidden {
             display: none;
          }
 
