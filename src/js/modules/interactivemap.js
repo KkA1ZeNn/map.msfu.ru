@@ -4,9 +4,11 @@ export default class InteractiveMap {
       this.svg;
       this.instance;
       this.groupsNames;
-      this.roomNames;
+      this.roomObjects;
       this.choosenGroup = "";
-      this.choosenSubGroup;
+      this.choosenSubGroup = "";
+      this.indexOfGroup;
+      this.indexOfSubGroup;
       this.currentFloor;
       this.searchParams = ['id', 'title', 'about'];
       this.baseUrl = window.location.href.split('?')[0];
@@ -31,7 +33,7 @@ export default class InteractiveMap {
 
       this.searchingBlock = document.createElement('div');
       this.choosenCategoryWrapper = document.createElement('div');
-         this.choosenCategoryName = document.createElement('div');
+      this.choosenCategoryName = document.createElement('div');
       this.searchInputWrapper = document.createElement('div');
          this.searchInput = document.createElement('input');
          this.searchCloseButton = document.createElement('button');
@@ -144,8 +146,8 @@ export default class InteractiveMap {
 
 
       this.searchingBlock.append(this.searchInputWrapper, this.choosenCategoryWrapper, this.searchResultBlock);
-      this.choosenCategoryWrapper.append(this.choosenCategoryName);
       this.searchInputWrapper.append(this.searchInput, this.searchCloseButton);
+      this.choosenCategoryWrapper.append(this.choosenCategoryName, this.searchCloseButton);
       this.categoriesBlock.append(this.choosenCategoryBlock);
       this.choosenCategoryBlock.append(this.choosenCategoryTextBlock, this.closeChoosenCategoryButton);
 
@@ -206,7 +208,7 @@ export default class InteractiveMap {
          this.mapData = json;
          //Формируем массив из категорий и из комнат
          this.groupsNames = this.mapData.groups.map(groups => ({group: groups}));
-         this.roomNames = this.mapData.floors.flatMap(floor => floor.locations.map(locations => ({
+         this.roomObjects = this.mapData.floors.flatMap(floor => floor.locations.map(locations => ({
                floor: floor.id,
                room: locations
          })));
@@ -407,49 +409,58 @@ export default class InteractiveMap {
       let textInput = this.searchInput.value.toLowerCase();
       let SearchResultList;
    
-      if (textInput === "") {
-         if (textInput === "") {
-            SearchResultList = this.groupsNames.filter(item => {
-               if (item.room && item.room.category) {
-                  return item.room.category === this.choosenGroup;
-               }
-            });
-         } else {
-            SearchResultList = this.groupsNames.filter(item => {
-               if (item.room && item.room.category && item.room.category === this.choosenGroup) {
-                  for (let i = 0; i < parameters.length; ++i) {
-                     if (item.room[parameters[i]] && item.room[parameters[i]].toLowerCase().includes(textInput)) {
-                        return true;
-                     }
+      if (textInput !== "") { 
+         SearchResultList = this.roomObjects.filter(item => {
+            if (item.room && item.room.category && item.room.category === this.choosenGroup) {
+               for (let i = 0; i < parameters.length; ++i) {
+                  if (item.room[parameters[i]] && item.room[parameters[i]].toLowerCase().includes(textInput)) {
+                     return true;
                   }
                }
-            });
-         }
+            }
+         });
       } else {
          if (this.choosenGroup === "") {
-            if (this.choo)
-            SearchResultList = this.mapData.categories.map(item => {
-               return {category: item};
+            SearchResultList = this.mapData.groups.map(item => {
+               return {group: item};
             });
          }
-         else {
-            SearchResultList = this.groupsNames.filter(item => {
-               if(item.category) {
-                  for (let i = 0; i < parameters.length; ++i) {
-                     if (item.category[parameters[i]] && item.category[parameters[i]].toLowerCase().includes(textInput)) {
-                        return true;
-                     }
-                  }
-                  return false;
-               } else {
-                  for (let i = 0; i < parameters.length; ++i) {
-                     if (item.room[parameters[i]] && item.room[parameters[i]].toLowerCase().includes(textInput)) {
-                        return true;
-                     }
-                  }
-                  return false;
+         else if (this.choosenSubGroup === "") {
+            for (let i = 0; i < this.mapData.groups.length; ++i) {
+               if (this.mapData.groups[i].id === this.choosenGroup) {
+                  this.indexOfGroup = i;
+                  SearchResultList = this.mapData.groups[i].elements.map(element => {
+                     return {subGroup: element};
+                  });
+                  break;
                }
-            });
+            }
+               //if(item.category) {
+               //   for (let i = 0; i < parameters.length; ++i) {
+               //      if (item.category[parameters[i]] && item.category[parameters[i]].toLowerCase().includes(textInput)) {
+               //         return true;
+               //      }
+               //   }
+               //   return false;
+               //} else {
+               //   for (let i = 0; i < parameters.length; ++i) {
+               //      if (item.room[parameters[i]] && item.room[parameters[i]].toLowerCase().includes(textInput)) {
+               //         return true;
+               //      }
+               //   }
+               //   return false;
+               //}
+         } else {
+            let temp;
+            for (let i = 0; i < this.mapData.groups[this.indexOfGroup].elements.length; ++i) {
+               if (this.mapData.groups[this.indexOfGroup].elements[i].id === this.choosenSubGroup) {
+                  temp = this.mapData.groups[this.indexOfGroup].elements[i].rooms;
+                  SearchResultList = this.roomObjects.filter(roomObject => {
+                     return temp.includes(roomObject.room.id);
+                  });
+                  break;
+               }
+            }
          }
       }
    
@@ -463,19 +474,18 @@ export default class InteractiveMap {
          const variant = document.createElement('button');
          variant.classList.add('searchResultBlock_item');
    
-         if (element.category) {
-            variant.dataset.categoryId = element.category.id;
-            variant.dataset.title = element.category.title;
-            variant.dataset.about = element.category.about;
-            variant.innerHTML =
-               `<h5>${element.category.id}</h5>
-               <p>${element.category.title}</p>`;
+         if (element.group) {
+            variant.dataset.groupId = element.group.id;
+            variant.dataset.title = element.group.title;
+            variant.innerHTML =`<p>${element.group.title}</p>`;
+         } else if (element.subGroup) {
+            variant.dataset.subGroupId = element.subGroup.id;
+            variant.dataset.title = element.subGroup.title;
+            variant.innerHTML =`<p>${element.subGroup.title}</p>`;
          } else {
             variant.dataset.floor = element.floor;
             variant.dataset.room = element.room.id;
-            variant.innerHTML =
-               `<h5>${element.room.id}</h5>
-               <p>${element.room.title}</p>`;
+            variant.innerHTML = `<p>${element.room.title}</p>`;
          }
    
          this.searchResultBlock.appendChild(variant);
@@ -485,16 +495,29 @@ export default class InteractiveMap {
    // функция поиска комнаты после клика по кнопке комнаты в списке. Если комната на текущем этаже, то сразу ищем, если нет, то надо отрисовать нужный этаж и найти там
    searchResultsClickHandler(event) {
       if (event.target.tagName === 'BUTTON') {
-         if(event.target.dataset.categoryId) {
-            this.choosenGroup = event.target.dataset.categoryId;
-            this.searchInput.value = "";
-            this.show(this.choosenCategoryBlock);
+         if(event.target.dataset.groupId) {
+            this.hide(this.searchInputWrapper);
+            this.show(this.choosenCategoryWrapper);
+            this.choosenGroup = event.target.dataset.groupId;
+            this.formSearchResultList(this.searchParams);
+            this.choosenCategoryName.innerHTML =`<p>${event.target.dataset.title}</p>`;
+
+         } else if (event.target.dataset.subGroupId) {
+            this.choosenSubGroup = event.target.dataset.subGroupId;
+            this.choosenCategoryName.innerHTML =
+               `<p class = "backToCategory">${this.choosenCategoryName.textContent + ' '}</p>
+               <p>${'/ ' + event.target.dataset.title}</p>`;
+
+            this.backToCategory = document.querySelector(".backToCategory");
+            this.backToCategory.addEventListener('click', () => {
+               this.choosenSubGroup = "";
+               this.choosenCategoryName.innerHTML =`<p>${this.backToCategory.textContent}</p>`
+               this.formSearchResultList(this.searchParams);
+            });
             this.formSearchResultList(this.searchParams);
 
-            this.choosenCategoryTextBlock.innerHTML =
-                  `<h5>${event.target.dataset.title}</h5>
-                  <p>${event.target.dataset.about}</p>`;
          } else {
+            this.hide(this.searchingBlock);
             this.selectRoom(event.target.dataset.room);
          }
       }
@@ -613,7 +636,7 @@ export default class InteractiveMap {
             position: absolute;
             width: 100%;
             height: 100%;
-            z-index: 999;
+            z-index: 1110;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -629,6 +652,33 @@ export default class InteractiveMap {
          .choosenCategoryWrapper {
             width: 100%;
             min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+         }
+         
+         .choosenCategoryName {
+            width: 100%;
+            heigh: 100%;
+            cursor: default;
+            padding-left: 10px;
+            box-sizing: border-box;
+         }
+
+         .choosenCategoryName p {
+            overflow-x: hidden;
+            margin: 0;
+            height: auto;
+            width: auto;
+            font: normal 18px/1 'ALS Sector Bold';
+            font-weight: 700;
+            color: #429C97;
+            white-space: nowrap;
+         }
+
+         .backToCategory {
+            cursor: pointer;
          }
 
          .choosenCategoryWrapper.hidden {
