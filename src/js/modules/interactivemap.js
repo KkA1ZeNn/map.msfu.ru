@@ -411,7 +411,7 @@ export default class InteractiveMap {
    
       if (textInput !== "") { 
          SearchResultList = this.roomObjects.filter(item => {
-            if (item.room && item.room.category && item.room.category === this.choosenGroup) {
+            if (item.room) {
                for (let i = 0; i < parameters.length; ++i) {
                   if (item.room[parameters[i]] && item.room[parameters[i]].toLowerCase().includes(textInput)) {
                      return true;
