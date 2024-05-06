@@ -19,6 +19,11 @@ export default class InteractiveMap {
             this.svgContainer = document.createElement('div');
             this.descriptionBlock = document.createElement('div');
          this.mobileDescriptionBlock = document.createElement('div');
+            this.mobDescHeaderWrapper = document.createElement('div');
+               this.mobDescHeaderWrapperText = document.createElement('div');
+               this.closeMobileDecsription = document.createElement('button');
+               this.mobDescPWrapper = document.createElement('div');
+                  
          this.interactiveBlockController = document.createElement('div');
             this.switchFloorBar = document.createElement('div');
                this.currNameArrowsWrapper = document.createElement('div');
@@ -37,6 +42,7 @@ export default class InteractiveMap {
       this.searchInputWrapper = document.createElement('div');
          this.searchInput = document.createElement('input');
          this.searchCloseButton = document.createElement('button');
+         this.categoryCloseButton = document.createElement('button');
          this.categoriesBlock = document.createElement('div');
             this.choosenCategoryBlock = document.createElement('div'),
             this.choosenCategoryTextBlock = document.createElement('div'),
@@ -47,16 +53,11 @@ export default class InteractiveMap {
       // Обработчик событий SVG файла для реагирования комнат на нажатие
       this.svgContainer.addEventListener('click', (event) => {
          const roomElement = event.target.closest('[id^="room"]');
-         if (roomElement) {
-            this.selectRoom(roomElement.getAttribute('id'));
-         } else {
-            this.resetUrl();
+         const activeRoom = document.querySelector('[id^="room"].active');
 
-            const activeRoom = document.querySelector('[id^="room"].active');
-            if (activeRoom) {
-               this.removeSelectRoom(activeRoom);
-            }
-         }
+         if (roomElement && !activeRoom) {
+            this.selectRoom(roomElement.getAttribute('id'));
+         } 
       });
 
       // Обработчик событий для тех комнат, которые появились в списке поиска
@@ -88,10 +89,6 @@ export default class InteractiveMap {
       });
 
       this.currentFloorName.addEventListener('click', () => {
-         const activeRoom = document.querySelector('[id^="room"].active');
-         if (activeRoom) {
-            this.removeSelectRoom(activeRoom);
-         }
          this.floorNamesBlock.classList.toggle('hidden');
          this.switchFloorBar.addEventListener('mouseenter', () => {
             this.instance.pause();
@@ -129,6 +126,30 @@ export default class InteractiveMap {
             this.disable(this.zoomReduceBtn);
          }  
       });
+
+      this.searchCloseButton.addEventListener('click', () => {
+         this.choosenGroup = "";
+         this.choosenSubGroup = "";
+         this.searchInput.value = "";
+         this.formSearchResultList(this.searchParams);
+      })
+      this.categoryCloseButton.addEventListener('click', () => {
+         this.choosenGroup = "";
+         this.choosenSubGroup = "";
+         this.searchInput.value = "";
+         this.choosenCategoryName.innerHTML = ``;
+         this.show(this.searchInputWrapper);
+         this.hide(this.choosenCategoryWrapper);
+         this.formSearchResultList(this.searchParams);
+      })
+      this.closeMobileDecsription.addEventListener('click', () => {
+         this.resetUrl();
+
+         const activeRoom = document.querySelector('[id^="room"].active');
+         if (activeRoom) {
+            this.removeSelectRoom(activeRoom);
+         }
+      })
    }
 
    render() {
@@ -144,10 +165,12 @@ export default class InteractiveMap {
       this.switchFloorBar.append(this.floorNamesBlock);
       this.changeZoomBar.append(this.zoomIncreaseBtn, this.zoomReduceBtn);
 
+      this.mobileDescriptionBlock.append(this.mobDescHeaderWrapper, this.mobDescPWrapper);
+      this.mobDescHeaderWrapper.append(this.mobDescHeaderWrapperText, this.closeMobileDecsription);
 
       this.searchingBlock.append(this.searchInputWrapper, this.choosenCategoryWrapper, this.searchResultBlock);
       this.searchInputWrapper.append(this.searchInput, this.searchCloseButton);
-      this.choosenCategoryWrapper.append(this.choosenCategoryName, this.searchCloseButton);
+      this.choosenCategoryWrapper.append(this.choosenCategoryName, this.categoryCloseButton);
       this.categoriesBlock.append(this.choosenCategoryBlock);
       this.choosenCategoryBlock.append(this.choosenCategoryTextBlock, this.closeChoosenCategoryButton);
 
@@ -156,6 +179,11 @@ export default class InteractiveMap {
       this.svgContainer.classList.add('svgConteiner');
       this.descriptionBlock.classList.add('descriptionBlock', 'hidden');
       this.mobileDescriptionBlock.classList.add('mobileDescriptionBlock', 'hidden');
+      this.mobDescHeaderWrapper.classList.add('mobDescHeaderWrapper');
+      this.mobDescPWrapper.classList.add('mobDescPWrapper');
+      this.mobDescHeaderWrapperText.classList.add('mobDescHeaderWrapperText');
+      this.closeMobileDecsription.classList.add('closeMobileDecsription');
+
       this.interactiveBlockController.classList.add('interactiveBlockController');
       this.currNameArrowsWrapper.classList.add("currNameArrowsWrapper");
       this.currentFloorName.classList.add("currentFloorName");
@@ -174,6 +202,7 @@ export default class InteractiveMap {
       this.choosenCategoryName.classList.add('choosenCategoryName');
       this.searchInput.classList.add('searchInput');
       this.searchCloseButton.classList.add('searchCloseButton');
+      this.categoryCloseButton.classList.add('categoryCloseButton');
       this.categoriesBlock.classList.add('categoriesBlock');
       this.choosenCategoryBlock.classList.add('choosenCategoryBlock','hidden');
       this.choosenCategoryTextBlock.classList.add('choosenCategoryTextBlock');
@@ -237,7 +266,6 @@ export default class InteractiveMap {
          });
 
          //--------
-         console.log('двойной клик для сброса карты');
          this.formSearchResultList(this.searchParams);
          this.disable(this.zoomReduceBtn);
       })
@@ -308,9 +336,8 @@ export default class InteractiveMap {
          `<h4>${title}</h4>
          <p>${about}</p>`;
 
-      this.mobileDescriptionBlock.innerHTML =
-         `<h4>${title}</h4>
-         <p>${about}</p>`;
+      this.mobDescHeaderWrapperText.innerHTML =`<h4>${title}</h4>`;
+      this.mobDescPWrapper.innerHTML =`<p>${about}</p>`;
    
       // функция для считывания размера элемента и перемещения окна, но пока работает КРИВО
       const roomRect = currentRoom.getBoundingClientRect();
@@ -391,6 +418,8 @@ export default class InteractiveMap {
          
          this.currentFloor = floor;
 
+         this.resetZoom()
+         this.resetUrl();
          this.hide(this.floorNamesBlock);
          this.hide(this.descriptionBlock);
          this.hide(this.mobileDescriptionBlock);
@@ -435,21 +464,6 @@ export default class InteractiveMap {
                   break;
                }
             }
-               //if(item.category) {
-               //   for (let i = 0; i < parameters.length; ++i) {
-               //      if (item.category[parameters[i]] && item.category[parameters[i]].toLowerCase().includes(textInput)) {
-               //         return true;
-               //      }
-               //   }
-               //   return false;
-               //} else {
-               //   for (let i = 0; i < parameters.length; ++i) {
-               //      if (item.room[parameters[i]] && item.room[parameters[i]].toLowerCase().includes(textInput)) {
-               //         return true;
-               //      }
-               //   }
-               //   return false;
-               //}
          } else {
             let temp;
             for (let i = 0; i < this.mapData.groups[this.indexOfGroup].elements.length; ++i) {
@@ -528,7 +542,7 @@ export default class InteractiveMap {
       const roomIdFromUrl = urlParams.get('location');
       let result;
       if (roomIdFromUrl) {
-         this.groupsNames.forEach(element => {
+         this.roomObjects.forEach(element => {
             if (element.room) {
                if (element.room.id === roomIdFromUrl) {
                   result = roomIdFromUrl;
@@ -720,7 +734,7 @@ export default class InteractiveMap {
             pointer-events: none;
          }
 
-         .searchCloseButton {
+         .searchCloseButton, .categoryCloseButton {
             min-width: 16px !important;
             height: 16px !important;
             position: relative;
@@ -732,7 +746,7 @@ export default class InteractiveMap {
             cursor: pointer;
          }
 
-         .searchCloseButton::after {
+         .searchCloseButton::after, .categoryCloseButton::after {
             position: absolute;
             content: "";
             background-image: url('./img/close-icon.svg');
@@ -1016,28 +1030,65 @@ export default class InteractiveMap {
             align-items: center;
             justify-content: flex-start;
             border-radius: 10px 10px 0 0;
-            padding: 15px 20px 20px 20px;
+            padding-left: 20px;
             box-sizing: border-box;
          }
+
+            .mobDescHeaderWrapper {
+               width: 100%;
+               min-height: 36px;
+               display: flex;
+               align-items: center;
+               justify-content: space-between;
+               margin-bottom: 10px;
+            }
+
+            .mobDescHeaderWrapperText {
+               font: bold 16px/1 'ALS Sector Bold';
+               width: calc(100% - 35px);
+               height: auto;
+               padding-top: 20px;
+               box-sizing: border-box;
+            }
+
+            .closeMobileDecsription {
+               width: 35px;
+               height: 35px;
+               position: relative;
+               border: none;
+               background-color: #fff;
+               cursor: pointer;
+            }
+
+            .closeMobileDecsription::after {
+               position: absolute;
+               content: "";
+               background-image: url('./img/close-icon.svg');
+               background-size: cover;
+               width: 20px;
+               height: 20px;
+               z-index: 9990;
+               bottom: 0;
+               left: 0;
+            }
+
+            .mobDescPWrapper {
+               padding-right: 20px;
+               box-sizing: border-box;
+               width: 100%;
+               font: bold 16px/1 'ALS Sector Bold';
+            }
+
+            .mobDescPWrapper p, .mobDescHeaderWrapperText h4 {
+               margin: 0;
+            } 
 
          .mobileDescriptionBlock.hidden{
             display: none !important;
          }
 
-         .mobileDescriptionBlock h4 {
-            width: 100%;
-            font: bold 16px/1 'ALS Sector Bold';
-            margin: 0 0 10px 0;
-         }
-
-         .mobileDescriptionBlock p {
-            font: normal 14px/1 'ALS Sector Regular';
-            width: 100%;
-            margin: 0;
-         }
-
          /*стили для комнат при наведении*/
-         [id^="room-"]:hover polygon {
+         [id^="room-"]:hover path {
             filter: brightness(1.15);
             cursor: pointer;
          }
@@ -1046,6 +1097,10 @@ export default class InteractiveMap {
          [id^="Текст"] * {
             pointer-events: none;
          }
+
+         path[fill="#133533"] {
+            pointer-events: none;
+        }
 
          /*стили для нажатых комнат*/
          .active polygon{
